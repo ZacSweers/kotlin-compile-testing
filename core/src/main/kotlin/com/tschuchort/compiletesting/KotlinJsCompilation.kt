@@ -2,8 +2,10 @@ package com.tschuchort.compiletesting
 
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.cli.js.K2JSCompiler
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.*
 
+@ExperimentalCompilerApi
 @Suppress("MemberVisibilityCanBePrivate")
 class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
 
@@ -28,7 +30,7 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
   var irDcePrintReachabilityInfo: Boolean = false
 
   /** Disables pre-IR backend */
-  var irOnly: Boolean = false
+  var irOnly: Boolean = true
 
   /** Specify a compilation module name for IR backend */
   var irModuleName: String? = null
