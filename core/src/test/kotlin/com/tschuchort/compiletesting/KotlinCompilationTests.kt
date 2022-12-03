@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -18,6 +19,7 @@ import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 
+@OptIn(ExperimentalCompilerApi::class)
 @Suppress("MemberVisibilityCanBePrivate")
 class KotlinCompilationTests {
 	@Rule @JvmField val temporaryFolder = TemporaryFolder()

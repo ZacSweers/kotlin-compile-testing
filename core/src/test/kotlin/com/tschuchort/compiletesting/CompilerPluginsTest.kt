@@ -5,6 +5,7 @@ import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.verify
 import org.assertj.core.api.Assertions
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.Mockito
@@ -12,6 +13,7 @@ import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 
+@OptIn(ExperimentalCompilerApi::class)
 class CompilerPluginsTest {
 
     @Test

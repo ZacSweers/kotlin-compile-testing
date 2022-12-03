@@ -10,16 +10,15 @@ import org.jetbrains.kotlin.cli.common.arguments.validateArguments
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.cli.js.K2JSCompiler
-import org.jetbrains.kotlin.cli.jvm.plugins.ServiceLoaderLite
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.load.java.JvmAbi
+import org.jetbrains.kotlin.util.ServiceLoaderLite
 import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream
-import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.ReflectPermission
 import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -29,6 +28,7 @@ import java.nio.file.Paths
  * functionality. Should not be used outside of this library as it is an
  * implementation detail.
  */
+@ExperimentalCompilerApi
 abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal constructor() {
     /** Working directory for the compilation */
     var workingDir: File by default {
@@ -300,11 +300,11 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
     internal val internalMessageStreamAccess: PrintStream get() = internalMessageStream
 }
 
+@ExperimentalCompilerApi
 internal fun convertKotlinExitCode(code: ExitCode) = when(code) {
     ExitCode.OK -> KotlinCompilation.ExitCode.OK
-    ExitCode.OOM_ERROR,
+    ExitCode.OOM_ERROR -> throw OutOfMemoryError("Kotlin compiler ran out of memory")
     ExitCode.INTERNAL_ERROR -> KotlinCompilation.ExitCode.INTERNAL_ERROR
     ExitCode.COMPILATION_ERROR -> KotlinCompilation.ExitCode.COMPILATION_ERROR
     ExitCode.SCRIPT_EXECUTION_ERROR -> KotlinCompilation.ExitCode.SCRIPT_EXECUTION_ERROR
-    ExitCode.OOM_ERROR -> throw OutOfMemoryError("Kotlin compiler ran out of memory")
 }

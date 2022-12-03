@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.JVMAssertionsMode
 import org.jetbrains.kotlin.config.JvmDefaultMode
 import org.jetbrains.kotlin.config.JvmTarget
@@ -44,6 +45,7 @@ typealias PluginId = String
 typealias OptionName = String
 typealias OptionValue = String
 
+@ExperimentalCompilerApi
 @Suppress("MemberVisibilityCanBePrivate")
 class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 	/** Arbitrary arguments to be passed to kapt */
@@ -125,9 +127,6 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
 	/** Path to JSON file to dump Java to Kotlin declaration mappings */
 	var declarationsOutputPath: File? = null
-
-	/** Combine modules for source files and binary dependencies into a single module */
-	var singleModule: Boolean = false
 
 	/** Suppress the \"cannot access built-in declaration\" error (useful with -no-stdlib) */
 	var suppressMissingBuiltinsError: Boolean = false
@@ -355,8 +354,6 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
 		if(declarationsOutputPath != null)
 			args.declarationsOutputPath = declarationsOutputPath!!.toString()
-
-		args.singleModule = singleModule
 
 		if(javacArguments.isNotEmpty())
 			args.javacArguments = javacArguments.toTypedArray()
@@ -705,6 +702,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
  * this.classpaths += previousResult.outputDirectory
  * ```
  */
+@ExperimentalCompilerApi
 fun KotlinCompilation.addPreviousResultToClasspath(
 	previousResult: KotlinCompilation.Result
 ): KotlinCompilation = apply {
