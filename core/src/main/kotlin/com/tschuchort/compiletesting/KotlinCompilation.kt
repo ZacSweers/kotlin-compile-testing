@@ -423,7 +423,8 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 				MainComponentRegistrar.ThreadLocalParameters(
 					annotationProcessors.map { IncrementalProcessor(it, DeclaredProcType.NON_INCREMENTAL, kaptLogger) },
 					kaptOptions,
-					compilerPlugins,
+					componentRegistrars,
+					compilerPluginRegistrars,
 					supportsK2,
 				)
 		)

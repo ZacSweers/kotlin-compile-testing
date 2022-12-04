@@ -19,7 +19,6 @@ import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 
-@OptIn(ExperimentalCompilerApi::class)
 @Suppress("MemberVisibilityCanBePrivate")
 class KotlinCompilationTests {
 	@Rule @JvmField val temporaryFolder = TemporaryFolder()
@@ -910,7 +909,7 @@ class KotlinCompilationTests {
 	fun `runs the K2 compiler without compiler plugins`() {
 		val result = defaultCompilerConfig().apply {
 			sources = listOf(SourceFile.kotlin("kSource.kt", "class KSource"))
-			compilerPlugins = emptyList()
+			componentRegistrars = emptyList()
 			pluginClasspaths = emptyList()
 			useK2 = true
 		}.compile()

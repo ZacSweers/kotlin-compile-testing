@@ -13,7 +13,6 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
 
-@OptIn(ExperimentalCompilerApi::class)
 @Suppress("MemberVisibilityCanBePrivate")
 class KotlinJsCompilationTests {
 	@Rule @JvmField val temporaryFolder = TemporaryFolder()

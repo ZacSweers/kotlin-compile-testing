@@ -5,9 +5,8 @@ import org.assertj.core.api.Assertions
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
 
-@OptIn(ExperimentalCompilerApi::class)
 fun defaultCompilerConfig(): KotlinCompilation {
-    return KotlinCompilation( ).apply {
+    return KotlinCompilation().apply {
         inheritClassPath = false
         correctErrorTypes = true
         verbose = true
@@ -16,7 +15,6 @@ fun defaultCompilerConfig(): KotlinCompilation {
     }
 }
 
-@OptIn(ExperimentalCompilerApi::class)
 fun defaultJsCompilerConfig(): KotlinJsCompilation {
     return KotlinJsCompilation( ).apply {
         inheritClassPath = false
@@ -27,7 +25,6 @@ fun defaultJsCompilerConfig(): KotlinJsCompilation {
 }
 
 
-@OptIn(ExperimentalCompilerApi::class)
 fun assertClassLoadable(compileResult: KotlinCompilation.Result, className: String): Class<*> {
     return try {
         val clazz = compileResult.classLoader.loadClass(className)

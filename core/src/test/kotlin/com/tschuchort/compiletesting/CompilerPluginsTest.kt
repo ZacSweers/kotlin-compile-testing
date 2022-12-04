@@ -3,9 +3,8 @@ package com.tschuchort.compiletesting
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.verify
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
-import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.Mockito
@@ -13,23 +12,25 @@ import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 
-@OptIn(ExperimentalCompilerApi::class)
 class CompilerPluginsTest {
 
     @Test
     fun `when compiler plugins are added they get executed`() {
 
         val mockPlugin = Mockito.mock(ComponentRegistrar::class.java)
+        val fakeRegistrar = FakeCompilerPluginRegistrar()
 
         val result = defaultCompilerConfig().apply {
             sources = listOf(SourceFile.new("emptyKotlinFile.kt", ""))
-            compilerPlugins = listOf(mockPlugin)
+            componentRegistrars = listOf(mockPlugin)
+            compilerPluginRegistrars = listOf(fakeRegistrar)
             inheritClassPath = true
         }.compile()
 
         verify(mockPlugin, atLeastOnce()).registerProjectComponents(any(), any())
+        fakeRegistrar.assertRegistered()
 
-        Assertions.assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
+        assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
     }
 
     @Test
@@ -62,13 +63,13 @@ class CompilerPluginsTest {
         val result = defaultCompilerConfig().apply {
             sources = listOf(jSource)
             annotationProcessors = listOf(annotationProcessor)
-            compilerPlugins = listOf(mockPlugin)
+            componentRegistrars = listOf(mockPlugin)
             inheritClassPath = true
         }.compile()
 
         verify(mockPlugin, atLeastOnce()).registerProjectComponents(any(), any())
 
-        Assertions.assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
+        assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
     }
 
     @Test
@@ -77,11 +78,12 @@ class CompilerPluginsTest {
 
         val result = defaultJsCompilerConfig().apply {
             sources = listOf(SourceFile.new("emptyKotlinFile.kt", ""))
-            compilerPlugins = listOf(mockPlugin)
+            componentRegistrars = listOf(mockPlugin)
             inheritClassPath = true
         }.compile()
 
         verify(mockPlugin, atLeastOnce()).registerProjectComponents(any(), any())
-        Assertions.assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
+        assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
     }
 }
+

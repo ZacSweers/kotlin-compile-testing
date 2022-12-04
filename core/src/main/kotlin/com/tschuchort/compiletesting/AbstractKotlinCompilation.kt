@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.cli.js.K2JSCompiler
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
+import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.Services
@@ -49,10 +50,23 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
      */
     var pluginClasspaths: List<File> = emptyList()
 
-    /**
-     * Compiler plugins that should be added to the compilation
-     */
+    @Deprecated(
+        "Use componentRegistrars instead",
+        ReplaceWith("componentRegistrars"),
+        DeprecationLevel.ERROR
+    )
     var compilerPlugins: List<ComponentRegistrar> = emptyList()
+
+    /**
+     * Legacy [ComponentRegistrar] plugins that should be added to the compilation.
+     */
+    @Deprecated("Migrate to ComponentPluginRegistrar and use componentPluginRegistrars instead")
+    var componentRegistrars: List<ComponentRegistrar> = emptyList()
+
+    /**
+     * [CompilerPluginRegistrars][CompilerPluginRegistrar] that should be added to the compilation.
+     */
+    var compilerPluginRegistrars: List<CompilerPluginRegistrar> = emptyList()
 
     /**
      * Commandline processors for compiler plugins that should be added to the compilation
@@ -195,7 +209,8 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
             MainComponentRegistrar.ThreadLocalParameters(
                 listOf(),
                 KaptOptions.Builder(),
-                compilerPlugins,
+                componentRegistrars,
+                compilerPluginRegistrars,
                 supportsK2
             )
         )
@@ -216,9 +231,9 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
                      be found by the Kotlin compiler's service loader. We add it only when the user has actually given
                      us ComponentRegistrar instances to be loaded by the MainComponentRegistrar because the experimental
                      K2 compiler doesn't support plugins yet. This way, users of K2 can prevent MainComponentRegistrar
-                     from being loaded and crashing K2 by setting both [compilerPlugins] and [commandLineProcessors] to
+                     from being loaded and crashing K2 by setting both [componentRegistrars] and [commandLineProcessors] to
                      the emptyList. */
-                    if (compilerPlugins.isNotEmpty() || commandLineProcessors.isNotEmpty())
+                    if (componentRegistrars.isNotEmpty() || commandLineProcessors.isNotEmpty())
                         arrayOf(getResourcesPath())
                     else emptyArray()
         }
