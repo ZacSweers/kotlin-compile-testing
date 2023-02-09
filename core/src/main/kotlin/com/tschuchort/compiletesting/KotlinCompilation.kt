@@ -17,7 +17,6 @@
 package com.tschuchort.compiletesting
 
 import com.facebook.buck.jvm.java.javax.SynchronizedToolProvider
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.JvmCompilationResult
 import org.jetbrains.kotlin.base.kapt3.AptMode
 import org.jetbrains.kotlin.base.kapt3.KaptFlag
 import org.jetbrains.kotlin.base.kapt3.KaptOptions

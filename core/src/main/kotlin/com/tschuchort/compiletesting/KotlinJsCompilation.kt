@@ -1,7 +1,5 @@
 package com.tschuchort.compiletesting
 
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.CompilationResult
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.JsCompilationResult
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.cli.js.K2JSCompiler
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi

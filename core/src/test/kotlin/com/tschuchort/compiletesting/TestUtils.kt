@@ -1,9 +1,7 @@
 package com.tschuchort.compiletesting
 
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.JvmCompilationResult
 import io.github.classgraph.ClassGraph
 import org.assertj.core.api.Assertions
-import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
 
 fun defaultCompilerConfig(): KotlinCompilation {

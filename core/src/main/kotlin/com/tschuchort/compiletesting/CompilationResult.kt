@@ -1,8 +1,5 @@
-package com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting
+package com.tschuchort.compiletesting
 
-import com.tschuchort.compiletesting.KotlinCompilation
-import com.tschuchort.compiletesting.KotlinJsCompilation
-import com.tschuchort.compiletesting.listFilesRecursively
 import java.io.File
 import java.net.URLClassLoader
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
