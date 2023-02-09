@@ -6,21 +6,24 @@ import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 
 /** Result of the compilation. */
 @ExperimentalCompilerApi
-sealed class CompilationResult(
+sealed interface CompilationResult {
   /** The exit code of the compilation. */
-  val exitCode: KotlinCompilation.ExitCode,
+  val exitCode: KotlinCompilation.ExitCode
   /** Messages that were printed by the compilation. */
-  val messages: String,
-  /** The directory where only the final files will be. */
+  val messages: String
+  /** The directory where compiled files will be output to. */
   val outputDirectory: File
-)
+}
 
 @ExperimentalCompilerApi
 class JsCompilationResult(
-  exitCode: KotlinCompilation.ExitCode,
-  messages: String,
-  compilation: KotlinJsCompilation,
-) : CompilationResult(exitCode, messages, compilation.outputDir) {
+  override val exitCode: KotlinCompilation.ExitCode,
+  override val messages: String,
+  private val compilation: KotlinJsCompilation,
+) : CompilationResult {
+  override val outputDirectory: File
+    get() = compilation.outputDir
+
   /** JS files output by the compilation. */
   val jsFiles: List<File> = outputDirectory.listFilesRecursively()
 }
@@ -28,10 +31,13 @@ class JsCompilationResult(
 /** Result of the compilation */
 @ExperimentalCompilerApi
 class JvmCompilationResult(
-  exitCode: KotlinCompilation.ExitCode,
-  messages: String,
-  compilation: KotlinCompilation,
-) : CompilationResult(exitCode, messages, compilation.classesDir) {
+  override val exitCode: KotlinCompilation.ExitCode,
+  override val messages: String,
+  private val compilation: KotlinCompilation,
+) : CompilationResult {
+  override val outputDirectory: File
+    get() = compilation.classesDir
+
   /** ClassLoader to load the compiled classes */
   val classLoader =
     URLClassLoader(
