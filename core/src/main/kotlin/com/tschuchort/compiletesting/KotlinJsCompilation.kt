@@ -9,6 +9,8 @@ import java.io.*
 @Suppress("MemberVisibilityCanBePrivate")
 class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
 
+  var outputFileName: String = "test.js"
+
   /**
    * Generate unpacked KLIB into parent directory of output JS file. In combination with -meta-info
    * generates both IR and pre-IR versions of library.
@@ -62,6 +64,7 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
     args.noStdlib = true
 
     args.moduleKind = "commonjs"
+    args.outputFile = File(outputDir, outputFileName).absolutePath
     args.outputDir = outputDir.absolutePath
     args.sourceMapBaseDirs = jsClasspath().joinToString(separator = File.pathSeparator)
     args.libraries = listOfNotNull(kotlinStdLibJsJar).joinToString(separator = ":")
