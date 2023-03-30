@@ -7,7 +7,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
-import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -128,8 +127,8 @@ fun main(addKotlincArgs: Array<String>) {
 	fun `Custom plugin receives CLI argument`() {
 	    val kSource = SourceFile.kotlin(
 			"KSource.kt", """
-				package com.tschuchort.compiletesting;
-				class KSource()
+				package com.tschuchort.compiletesting
+				class KSource
 			""".trimIndent()
 		)
 
