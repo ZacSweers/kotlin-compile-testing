@@ -10,7 +10,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.25.2" }
 
 [libraries]
-autoService = "com.google.auto.service:auto-service-annotations:1.0.1"
+autoService = "com.google.auto.service:auto-service-annotations:1.1.0"
 autoService-ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.0.0"
 
 classgraph = "io.github.classgraph:classgraph:4.8.158"
@@ -24,7 +24,7 @@ kotlin-stdlibJs = { module = "org.jetbrains.kotlin:kotlin-stdlib-js", version.re
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 
-kotlinpoet = "com.squareup:kotlinpoet:1.13.2"
+kotlinpoet = "com.squareup:kotlinpoet:1.14.0"
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
