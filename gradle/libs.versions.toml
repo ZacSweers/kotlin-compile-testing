@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.8.21"
+kotlin = "1.9.20-station-823"
 ksp = "1.8.21-1.0.11"
 
 [plugins]
