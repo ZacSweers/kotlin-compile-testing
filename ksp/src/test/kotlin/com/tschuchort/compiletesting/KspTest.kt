@@ -8,8 +8,9 @@ import com.nhaarman.mockitokotlin2.inOrder
 import com.nhaarman.mockitokotlin2.mock
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.mockito.Mockito.`when`
@@ -18,6 +19,11 @@ import kotlin.text.Typography.ellipsis
 
 @RunWith(JUnit4::class)
 class KspTest {
+
+    @JvmField
+    @Rule
+    val tmpFolder = TemporaryFolder()
+
     @Test
     fun failedKspTest() {
         val instance = mock<SymbolProcessor>()
@@ -77,13 +83,17 @@ class KspTest {
         val annotation = SourceFile.kotlin(
             "TestAnnotation.kt", """
             package foo.bar
+            
             annotation class TestAnnotation
         """.trimIndent()
         )
+
         val targetClass = SourceFile.kotlin(
             "AppCode.kt", """
             package foo.bar
+        
             import foo.bar.generated.AppCode_Gen
+    
             @TestAnnotation
             class AppCode {
                 init {
@@ -95,6 +105,8 @@ class KspTest {
         )
         val result = KotlinCompilation().apply {
             sources = listOf(annotation, targetClass)
+            workingDir = tmpFolder.newFolder("testmodule")
+            kspWithCompilation = true
             symbolProcessorProviders = listOf(processorProviderOf { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -123,6 +135,8 @@ class KspTest {
             })
         }.compile()
         assertThat(result.exitCode).isEqualTo(ExitCode.OK)
+        assertThat(result.classLoader.loadClass("foo.bar.generated.AppCode_Gen")).isNotNull
+        assertThat(result.classLoader.loadClass("foo.bar.AppCode")).isNotNull
     }
 
     @Test
