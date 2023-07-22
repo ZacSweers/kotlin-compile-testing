@@ -11,7 +11,7 @@ mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.25.3" }
 
 [libraries]
 autoService = "com.google.auto.service:auto-service-annotations:1.1.1"
-autoService-ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.0.0"
+autoService-ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.1.0"
 
 classgraph = "io.github.classgraph:classgraph:4.8.161"
 
@@ -29,7 +29,7 @@ kotlinpoet = "com.squareup:kotlinpoet:1.14.2"
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 
-okio = "com.squareup.okio:okio:3.3.0"
+okio = "com.squareup.okio:okio:3.4.0"
 
 truth = { module = "com.google.truth:truth", version = "1.1.5" }
 junit = "junit:junit:4.13.2"
