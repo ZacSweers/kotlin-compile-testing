@@ -542,11 +542,12 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
             val diagnosticCollector = DiagnosticCollector<JavaFileObject>()
 
             fun printDiagnostics() = diagnosticCollector.diagnostics.forEach { diag ->
+				// Print toString() for these to get the full error message
                 when(diag.kind) {
-                    Diagnostic.Kind.ERROR -> error(diag.getMessage(null))
+                    Diagnostic.Kind.ERROR -> error(diag.toString())
                     Diagnostic.Kind.WARNING,
-                    Diagnostic.Kind.MANDATORY_WARNING -> warn(diag.getMessage(null))
-                    else -> log(diag.getMessage(null))
+                    Diagnostic.Kind.MANDATORY_WARNING -> warn(diag.toString())
+                    else -> log(diag.toString())
                 }
             }
 
@@ -567,7 +568,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
                     ExitCode.COMPILATION_ERROR
             }
             catch (e: Exception) {
-                if(e is RuntimeException || e is IllegalArgumentException) {
+                if (e is RuntimeException) {
                     printDiagnostics()
                     error(e.toString())
                     return ExitCode.INTERNAL_ERROR
