@@ -95,7 +95,7 @@ class KspTest {
         )
         val result = KotlinCompilation().apply {
             sources = listOf(annotation, targetClass)
-            symbolProcessorProviders = listOf(processorProviderOf { env ->
+            symbolProcessorProviders = listOf(SymbolProcessorProvider { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
                         val symbols = resolver.getSymbolsWithAnnotation("foo.bar.TestAnnotation").toList()
@@ -140,10 +140,10 @@ class KspTest {
         val result = KotlinCompilation().apply {
             sources = listOf(source)
             symbolProcessorProviders = listOf(
-                processorProviderOf { env -> ClassGeneratingProcessor(env.codeGenerator, "generated", "A") },
-                processorProviderOf { env -> ClassGeneratingProcessor(env.codeGenerator, "generated", "B") })
+                SymbolProcessorProvider { env -> ClassGeneratingProcessor(env.codeGenerator, "generated", "A") },
+                SymbolProcessorProvider { env -> ClassGeneratingProcessor(env.codeGenerator, "generated", "B") })
             symbolProcessorProviders = symbolProcessorProviders +
-                    processorProviderOf { env -> ClassGeneratingProcessor(env.codeGenerator, "generated", "C") }
+                    SymbolProcessorProvider { env -> ClassGeneratingProcessor(env.codeGenerator, "generated", "C") }
         }.compile()
         assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     }
@@ -179,7 +179,7 @@ class KspTest {
     fun outputDirectoryContents() {
         val compilation = KotlinCompilation().apply {
             sources = listOf(DUMMY_KOTLIN_SRC)
-            symbolProcessorProviders = listOf(processorProviderOf { env ->
+            symbolProcessorProviders = listOf(SymbolProcessorProvider { env ->
                 ClassGeneratingProcessor(env.codeGenerator, "generated", "Gen")
             })
         }
@@ -212,7 +212,7 @@ class KspTest {
         val result = mutableListOf<String>()
         val compilation = KotlinCompilation().apply {
             sources = listOf(javaSource, kotlinSource)
-            symbolProcessorProviders += processorProviderOf { env ->
+            symbolProcessorProviders += SymbolProcessorProvider { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
                         resolver.getSymbolsWithAnnotation(
@@ -274,7 +274,7 @@ class KspTest {
         )
         val result = KotlinCompilation().apply {
             sources = listOf(annotation, targetClass)
-            symbolProcessorProviders = listOf(processorProviderOf { env ->
+            symbolProcessorProviders = listOf(SymbolProcessorProvider { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
                         env.logger.logging("This is a log message")
@@ -308,7 +308,7 @@ class KspTest {
         )
         val result = KotlinCompilation().apply {
             sources = listOf(annotation, targetClass)
-            symbolProcessorProviders = listOf(processorProviderOf { env ->
+            symbolProcessorProviders = listOf(SymbolProcessorProvider { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
                         env.logger.error("This is an error message")
@@ -340,7 +340,7 @@ class KspTest {
         )
         val result = KotlinCompilation().apply {
             sources = listOf(annotation, targetClass)
-            symbolProcessorProviders = listOf(processorProviderOf { env ->
+            symbolProcessorProviders = listOf(SymbolProcessorProvider { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
                         env.logger.logging("This is a log message with ellipsis $ellipsis")
