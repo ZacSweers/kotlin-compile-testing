@@ -72,9 +72,6 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 	/** Generate metadata for Java 1.8 reflection on method parameters */
 	var javaParameters: Boolean = false
 
-	/** Use the IR backend */
-	var useIR: Boolean = true
-
 	/** Use the old JVM backend */
 	var useOldBackend: Boolean = false
 
@@ -294,7 +291,6 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
 		args.jvmTarget = jvmTarget
 		args.javaParameters = javaParameters
-		args.useIR = useIR
 		args.useOldBackend = useOldBackend
 
 		if(javaModulePath != null)
@@ -337,6 +333,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
 		args.javaPackagePrefix = javaPackagePrefix
 		args.suppressMissingBuiltinsError = suppressMissingBuiltinsError
+		args.disableStandardScript = disableStandardScript
 	}
 
 	/** Performs the 1st and 2nd compilation step to generate stubs and run annotation processors */
