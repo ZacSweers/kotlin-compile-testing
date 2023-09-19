@@ -32,12 +32,14 @@ import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.kapt3.base.incremental.DeclaredProcType
 import org.jetbrains.kotlin.kapt3.base.incremental.IncrementalProcessor
 import org.jetbrains.kotlin.kapt3.util.MessageCollectorBackedKaptLogger
-import java.io.*
-import java.lang.RuntimeException
+import java.io.File
+import java.io.OutputStreamWriter
 import java.net.URLClassLoader
 import java.nio.file.Path
 import javax.annotation.processing.Processor
-import javax.tools.*
+import javax.tools.Diagnostic
+import javax.tools.DiagnosticCollector
+import javax.tools.JavaFileObject
 
 data class PluginOption(val pluginId: PluginId, val optionName: OptionName, val optionValue: OptionValue)
 
