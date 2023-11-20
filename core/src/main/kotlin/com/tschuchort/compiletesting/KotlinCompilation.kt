@@ -17,6 +17,7 @@
 package com.tschuchort.compiletesting
 
 import com.facebook.buck.jvm.java.javax.SynchronizedToolProvider
+import com.tschuchort.compiletesting.kapt.toPluginOptions
 import org.jetbrains.kotlin.kapt3.base.AptMode
 import org.jetbrains.kotlin.kapt3.base.KaptFlag
 import org.jetbrains.kotlin.kapt3.base.KaptOptions
@@ -32,6 +33,7 @@ import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.kapt3.base.incremental.DeclaredProcType
 import org.jetbrains.kotlin.kapt3.base.incremental.IncrementalProcessor
 import org.jetbrains.kotlin.kapt3.util.MessageCollectorBackedKaptLogger
+import org.jetbrains.kotlin.kapt4.Kapt4CompilerPluginRegistrar
 import java.io.File
 import java.io.OutputStreamWriter
 import java.net.URLClassLoader
@@ -55,6 +57,9 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
 	/** Arbitrary flags to be passed to kapt */
 	var kaptFlags: MutableSet<KaptFlag> = mutableSetOf()
+
+	/** Enables the new Kapt 4 impl for K2 support. */
+	var useKapt4: Boolean? = null
 
 	/** Annotation processors to be passed to kapt */
 	var annotationProcessors: List<Processor> = emptyList()
@@ -267,6 +272,10 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 		OK, INTERNAL_ERROR, COMPILATION_ERROR, SCRIPT_EXECUTION_ERROR
 	}
 
+	private fun useKapt4(): Boolean {
+		return (useKapt4 ?: languageVersion?.startsWith("2")) == true
+	}
+
 	// setup common arguments for the two kotlinc calls
 	private fun commonK2JVMArgs() = commonArguments(K2JVMCompilerArguments()) { args ->
 		args.destination = classesDir.absolutePath
@@ -344,7 +353,16 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 			log("No services were given. Not running kapt steps.")
 			return ExitCode.OK
 		}
+		// TODO consolidate more here
+		val isK2 = useKapt4()
+		return if (isK2) {
+			stubsAndApt4(sourceFiles)
+		} else {
+			stubsAndApt3(sourceFiles)
+		}
+	}
 
+	private fun stubsAndApt3(sourceFiles: List<File>): ExitCode {
 		val kaptOptions = KaptOptions.Builder().also {
 			it.stubsOutputDir = kaptStubsDir
 			it.sourcesOutputDir = kaptSourceDir
@@ -435,6 +453,85 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
 		return convertKotlinExitCode(
             K2JVMCompiler().exec(compilerMessageCollector, Services.EMPTY, k2JvmArgs)
+		)
+	}
+
+	private fun stubsAndApt4(sourceFiles: List<File>): ExitCode {
+		val kaptOptions = KaptOptions.Builder().also {
+			it.stubsOutputDir = kaptStubsDir
+			it.sourcesOutputDir = kaptSourceDir
+			it.incrementalDataOutputDir = kaptIncrementalDataDir
+			it.classesOutputDir = classesDir
+			it.processingOptions.apply {
+				putAll(kaptArgs)
+				putIfAbsent(OPTION_KAPT_KOTLIN_GENERATED, kaptKotlinGeneratedDir.absolutePath)
+			}
+
+			it.mode = AptMode.STUBS_AND_APT
+
+			it.flags.apply {
+				addAll(kaptFlags)
+
+				if (verbose) {
+					addAll(KaptFlag.MAP_DIAGNOSTIC_LOCATIONS, KaptFlag.VERBOSE)
+				}
+			}
+		}
+
+		val compilerMessageCollector = PrintingMessageCollector(
+			internalMessageStream, MessageRenderer.GRADLE_STYLE, verbose
+		)
+
+		val kaptLogger = MessageCollectorBackedKaptLogger(kaptOptions.build(), compilerMessageCollector)
+
+		/**
+		 * The main compiler plugin (MainComponentRegistrar)
+		 *  is instantiated by K2JVMCompiler using
+		 *  a service locator. So we can't just pass parameters to it easily.
+		 *  Instead, we need to use a thread-local global variable to pass
+		 *  any parameters that change between compilations
+		 */
+		MainComponentRegistrar.threadLocalParameters.set(
+			MainComponentRegistrar.ThreadLocalParameters(
+				annotationProcessors.map { IncrementalProcessor(it, DeclaredProcType.NON_INCREMENTAL, kaptLogger) },
+				kaptOptions,
+				componentRegistrars,
+				compilerPluginRegistrars,
+				supportsK2,
+			)
+		)
+
+		val kotlinSources = sourceFiles.filter(File::hasKotlinFileExtension)
+		val javaSources = sourceFiles.filter(File::hasJavaFileExtension)
+
+		val sourcePaths = mutableListOf<File>().apply {
+			addAll(javaSources)
+
+			if(kotlinSources.isNotEmpty()) {
+				addAll(kotlinSources)
+			} else {
+				/* __HACK__: The K2JVMCompiler expects at least one Kotlin source file or it will crash.
+                   We still need kapt to run even if there are no Kotlin sources because it executes APs
+                   on Java sources as well. Alternatively we could call the JavaCompiler instead of kapt
+                   to do annotation processing when there are only Java sources, but that's quite a lot
+                   of work (It can not be done in the compileJava step because annotation processors on
+                   Java files might generate Kotlin files which then need to be compiled in the
+                   compileKotlin step before the compileJava step). So instead we trick K2JVMCompiler
+                   by just including an empty .kt-File. */
+				add(SourceFile.new("emptyKotlinFile.kt", "").writeIfNeeded(kaptBaseDir))
+			}
+		}.map(File::getAbsolutePath).distinct()
+
+		this.compilerPluginRegistrars += Kapt4CompilerPluginRegistrar()
+		this.kotlincArguments += kaptOptions.toPluginOptions()
+
+		val k2JvmArgs = commonK2JVMArgs().also {
+			it.freeArgs = sourcePaths
+			it.pluginClasspaths = (it.pluginClasspaths ?: emptyArray()) + arrayOf(getResourcesPath())
+		}
+
+		return convertKotlinExitCode(
+			K2JVMCompiler().exec(compilerMessageCollector, Services.EMPTY, k2JvmArgs)
 		)
 	}
 

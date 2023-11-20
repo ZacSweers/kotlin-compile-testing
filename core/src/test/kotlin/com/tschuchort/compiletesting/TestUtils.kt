@@ -1,16 +1,23 @@
 package com.tschuchort.compiletesting
 
 import io.github.classgraph.ClassGraph
+import org.assertj.core.api.AbstractCharSequenceAssert
 import org.assertj.core.api.Assertions
 import java.io.File
 
-fun defaultCompilerConfig(): KotlinCompilation {
+fun defaultCompilerConfig(useK2: Boolean): KotlinCompilation {
     return KotlinCompilation().apply {
         inheritClassPath = false
         correctErrorTypes = true
         verbose = true
         reportOutputFiles = false
         messageOutputStream = System.out
+        if (useK2) {
+            languageVersion = "2.0"
+            useKapt4 = true
+        } else {
+            languageVersion = "1.9"
+        }
     }
 }
 

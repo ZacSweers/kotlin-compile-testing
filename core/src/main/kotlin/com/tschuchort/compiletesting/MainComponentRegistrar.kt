@@ -22,8 +22,12 @@ import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
+import org.jetbrains.kotlin.config.CommonConfigurationKeys.USE_FIR
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.fir.extensions.FirAnalysisHandlerExtension
+import org.jetbrains.kotlin.kapt3.KAPT_OPTIONS
 import org.jetbrains.kotlin.kapt3.base.incremental.IncrementalProcessor
+import org.jetbrains.kotlin.kapt4.Kapt4CompilerPluginRegistrar
 
 @ExperimentalCompilerApi
 @AutoService(ComponentRegistrar::class, CompilerPluginRegistrar::class)
@@ -46,8 +50,8 @@ internal class MainComponentRegistrar : ComponentRegistrar, CompilerPluginRegist
   override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
     val parameters = getThreadLocalParameters("registerExtensions") ?: return
 
-    parameters.compilerPluginRegistrar.forEach { componentRegistrar ->
-      with(componentRegistrar) {
+    parameters.compilerPluginRegistrar.forEach { pluginRegistrar ->
+      with(pluginRegistrar) {
         registerExtensions(configuration)
       }
     }
@@ -68,8 +72,10 @@ internal class MainComponentRegistrar : ComponentRegistrar, CompilerPluginRegist
       componentRegistrar.registerProjectComponents(project, configuration)
     }
 
-    KaptComponentRegistrar(parameters.processors, parameters.kaptOptions)
-      .registerProjectComponents(project, configuration)
+    if (!configuration.getBoolean(USE_FIR)) {
+      KaptComponentRegistrar(parameters.processors, parameters.kaptOptions)
+        .registerProjectComponents(project, configuration)
+    }
   }
 
   companion object {

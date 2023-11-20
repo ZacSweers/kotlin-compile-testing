@@ -38,6 +38,7 @@ dependencies {
     // an obsolete version of Guava
     api(libs.kotlin.compilerEmbeddable)
     api(libs.kotlin.annotationProcessingEmbeddable)
+    api(libs.kotlin.kapt4)
     testImplementation(libs.kotlin.junit)
     testImplementation(libs.mockito)
     testImplementation(libs.mockitoKotlin)
