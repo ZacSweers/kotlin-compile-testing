@@ -1,7 +1,6 @@
 package com.tschuchort.compiletesting
 
 import okio.Buffer
-import org.jetbrains.kotlin.base.kapt3.KaptOptions
 import org.jetbrains.kotlin.cli.common.CLICompiler
 import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
@@ -15,6 +14,7 @@ import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.Services
+import org.jetbrains.kotlin.kapt3.base.KaptOptions
 import org.jetbrains.kotlin.util.ServiceLoaderLite
 import java.io.File
 import java.io.OutputStream
@@ -126,10 +126,10 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
     }
 
     /** Enable support for the new K2 compiler. */
-    var supportsK2 = false
+    var supportsK2 = true
 
     /** Disables compiler scripting support. */
-    var disableStandardScript = false
+    var disableStandardScript = true
 
     // Directory for input source files
     protected val sourcesDir get() = workingDir.resolve("sources")
