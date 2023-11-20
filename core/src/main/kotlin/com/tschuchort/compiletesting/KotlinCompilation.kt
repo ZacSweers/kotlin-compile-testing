@@ -381,12 +381,12 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
 		val kaptLogger = MessageCollectorBackedKaptLogger(kaptOptions.build(), compilerMessageCollector)
 
-		/** The main compiler plugin (MainComponentRegistrar)
-		 *  is instantiated by K2JVMCompiler using
-		 *  a service locator. So we can't just pass parameters to it easily.
-		 *  Instead, we need to use a thread-local global variable to pass
-		 *  any parameters that change between compilations
-		 *
+		/*
+		 * The main compiler plugin (MainComponentRegistrar)
+		 * is instantiated by K2JVMCompiler using
+		 * a service locator. So we can't just pass parameters to it easily.
+		 * Instead, we need to use a thread-local global variable to pass
+		 * any parameters that change between compilations
 		 */
 		MainComponentRegistrar.threadLocalParameters.set(
 			MainComponentRegistrar.ThreadLocalParameters(
@@ -401,42 +401,13 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 		val kotlinSources = sourceFiles.filter(File::hasKotlinFileExtension)
 		val javaSources = sourceFiles.filter(File::hasJavaFileExtension)
 
-		val sourcePaths = mutableListOf<File>().apply {
-			addAll(javaSources)
+		val sourcePaths = javaSources
+			.plus(kotlinSources)
+			.map(File::getAbsolutePath).distinct()
 
-			if(kotlinSources.isNotEmpty()) {
-				addAll(kotlinSources)
-			}
-			else {
-				/* __HACK__: The K2JVMCompiler expects at least one Kotlin source file or it will crash.
-                   We still need kapt to run even if there are no Kotlin sources because it executes APs
-                   on Java sources as well. Alternatively we could call the JavaCompiler instead of kapt
-                   to do annotation processing when there are only Java sources, but that's quite a lot
-                   of work (It can not be done in the compileJava step because annotation processors on
-                   Java files might generate Kotlin files which then need to be compiled in the
-                   compileKotlin step before the compileJava step). So instead we trick K2JVMCompiler
-                   by just including an empty .kt-File. */
-				add(SourceFile.new("emptyKotlinFile.kt", "").writeIfNeeded(kaptBaseDir))
-			}
-		}.map(File::getAbsolutePath).distinct()
-
-		if(!isJdk9OrLater()) {
-			try {
-				Class.forName("com.sun.tools.javac.util.Context")
-			}
-			catch (e: ClassNotFoundException) {
-				require(toolsJar != null) {
-					"toolsJar must not be null on JDK 8 or earlier if it's classes aren't already on the classpath"
-				}
-
-				require(toolsJar!!.exists()) { "toolsJar file does not exist" }
-				(ClassLoader.getSystemClassLoader() as URLClassLoader).addUrl(toolsJar!!.toURI().toURL())
-			}
-		}
-
-		if (pluginClasspaths.isNotEmpty())
+		if (pluginClasspaths.isNotEmpty()) {
 			warn("Included plugins in pluginsClasspaths will be executed twice.")
-
+		}
 
 		val isK2 = useKapt4()
 		if (isK2) {
@@ -447,6 +418,9 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 		val k2JvmArgs = commonK2JVMArgs().also {
 			it.freeArgs = sourcePaths
 			it.pluginClasspaths = (it.pluginClasspaths ?: emptyArray()) + arrayOf(getResourcesPath())
+			if (kotlinSources.isEmpty()) {
+				it.allowNoSourceFiles = true
+			}
 		}
 
 		return convertKotlinExitCode(
