@@ -218,7 +218,7 @@ private class KspCompileTestingComponentRegistrar(
         }.build()
 
         // Temporary until friend-paths is fully supported https://youtrack.jetbrains.com/issue/KT-34102
-        @Suppress("invisible_member")
+        @Suppress("invisible_member", "invisible_reference")
         val messageCollector = PrintingMessageCollector(
             compilation.internalMessageStreamAccess,
             MessageRenderer.GRADLE_STYLE,
