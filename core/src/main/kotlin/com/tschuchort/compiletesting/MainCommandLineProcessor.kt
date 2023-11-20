@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import java.util.*
 
 @ExperimentalCompilerApi
 @AutoService(CommandLineProcessor::class)

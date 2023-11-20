@@ -18,9 +18,6 @@ package com.tschuchort.compiletesting
 
 import com.facebook.buck.jvm.java.javax.SynchronizedToolProvider
 import com.tschuchort.compiletesting.kapt.toPluginOptions
-import org.jetbrains.kotlin.kapt3.base.AptMode
-import org.jetbrains.kotlin.kapt3.base.KaptFlag
-import org.jetbrains.kotlin.kapt3.base.KaptOptions
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
@@ -30,6 +27,9 @@ import org.jetbrains.kotlin.config.JVMAssertionsMode
 import org.jetbrains.kotlin.config.JvmDefaultMode
 import org.jetbrains.kotlin.config.JvmTarget
 import org.jetbrains.kotlin.config.Services
+import org.jetbrains.kotlin.kapt3.base.AptMode
+import org.jetbrains.kotlin.kapt3.base.KaptFlag
+import org.jetbrains.kotlin.kapt3.base.KaptOptions
 import org.jetbrains.kotlin.kapt3.base.incremental.DeclaredProcType
 import org.jetbrains.kotlin.kapt3.base.incremental.IncrementalProcessor
 import org.jetbrains.kotlin.kapt3.util.MessageCollectorBackedKaptLogger

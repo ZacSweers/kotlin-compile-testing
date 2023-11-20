@@ -17,17 +17,14 @@
 package com.tschuchort.compiletesting
 
 import com.google.auto.service.AutoService
-import org.jetbrains.kotlin.kapt3.base.KaptOptions
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CommonConfigurationKeys.USE_FIR
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.fir.extensions.FirAnalysisHandlerExtension
-import org.jetbrains.kotlin.kapt3.KAPT_OPTIONS
+import org.jetbrains.kotlin.kapt3.base.KaptOptions
 import org.jetbrains.kotlin.kapt3.base.incremental.IncrementalProcessor
-import org.jetbrains.kotlin.kapt4.Kapt4CompilerPluginRegistrar
 
 @ExperimentalCompilerApi
 @AutoService(ComponentRegistrar::class, CompilerPluginRegistrar::class)

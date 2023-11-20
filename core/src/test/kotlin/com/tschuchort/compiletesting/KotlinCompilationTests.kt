@@ -3,7 +3,6 @@ package com.tschuchort.compiletesting
 import com.nhaarman.mockitokotlin2.*
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.MockitoAdditionalMatchersKotlin.Companion.not
-import org.assertj.core.api.AbstractCharSequenceAssert
 import org.assertj.core.api.AbstractStringAssert
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption

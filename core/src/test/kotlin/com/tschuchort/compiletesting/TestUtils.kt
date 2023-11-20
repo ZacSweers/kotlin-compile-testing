@@ -1,7 +1,6 @@
 package com.tschuchort.compiletesting
 
 import io.github.classgraph.ClassGraph
-import org.assertj.core.api.AbstractCharSequenceAssert
 import org.assertj.core.api.Assertions
 import java.io.File
 

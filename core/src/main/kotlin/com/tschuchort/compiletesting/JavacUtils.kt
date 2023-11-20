@@ -7,7 +7,6 @@ import java.nio.charset.Charset
 import javax.tools.JavaCompiler
 import javax.tools.JavaFileObject
 import javax.tools.SimpleJavaFileObject
-import kotlin.IllegalArgumentException
 
 /**
  * A [JavaFileObject] created from a source [File].
