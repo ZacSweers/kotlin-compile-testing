@@ -1,5 +1,6 @@
 package com.tschuchort.compiletesting
 
+import com.google.auto.service.AutoService
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -287,6 +288,49 @@ class KspTest {
             override fun process(resolver: Resolver): List<KSAnnotated> {
               resolver
                 .getSymbolsWithAnnotation(SuppressWarnings::class.java.canonicalName)
+                .filterIsInstance<KSClassDeclaration>()
+                .forEach { result.add(it.qualifiedName!!.asString()) }
+              return emptyList()
+            }
+          }
+        }
+      }
+    compilation.compile()
+    assertThat(result).containsExactlyInAnyOrder("JavaSubject", "KotlinSubject")
+  }
+
+  @Test
+  fun findInheritedClasspathSymbols() {
+    val javaSource =
+      SourceFile.java(
+        "JavaSubject.java",
+        """
+            @${AutoService::class.qualifiedName}(Runnable.class)
+            class JavaSubject
+            """
+          .trimIndent(),
+      )
+    val kotlinSource =
+      SourceFile.kotlin(
+        "KotlinSubject.kt",
+        """
+            import java.lang.Runnable
+
+            @${AutoService::class.qualifiedName}(Runnable::class)
+            class KotlinSubject
+            """
+          .trimIndent(),
+      )
+    val result = mutableListOf<String>()
+    val compilation =
+      newCompilation().apply {
+        sources = listOf(javaSource, kotlinSource)
+        inheritClassPath = true
+        symbolProcessorProviders += SymbolProcessorProvider { env ->
+          object : AbstractTestSymbolProcessor(env.codeGenerator) {
+            override fun process(resolver: Resolver): List<KSAnnotated> {
+              resolver
+                .getSymbolsWithAnnotation(AutoService::class.java.canonicalName)
                 .filterIsInstance<KSClassDeclaration>()
                 .forEach { result.add(it.qualifiedName!!.asString()) }
               return emptyList()

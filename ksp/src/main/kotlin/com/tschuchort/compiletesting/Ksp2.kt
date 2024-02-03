@@ -76,7 +76,8 @@ internal class Ksp2PrecursorTool : PrecursorTool, KspTool {
           moduleName = compilation.moduleName ?: "main"
           sourceRoots = sources.filter { it.extension == "kt" }
           javaSourceRoots = sources.filter { it.extension == "java" }
-          libraries = compilation.classpaths
+          @Suppress("invisible_member", "invisible_reference")
+          libraries = compilation.classpaths + compilation.commonClasspaths()
 
           cachesDir =
             compilation.kspCachesDir.also {

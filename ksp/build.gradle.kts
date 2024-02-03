@@ -40,6 +40,9 @@ dependencies {
   } else {
     testImplementation(libs.ksp)
   }
+  testImplementation(libs.autoService) {
+    because("To test accessing inherited classpath symbols")
+  }
   testImplementation(libs.kotlin.compilerEmbeddable)
   testImplementation(libs.ksp.api)
   testImplementation(libs.kotlin.junit)
