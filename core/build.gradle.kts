@@ -48,12 +48,12 @@ dependencies {
 tasks.withType<KotlinCompile>().configureEach {
     val isTest = name.contains("test", ignoreCase = true)
     compilerOptions {
-        freeCompilerArgs.addAll(
+        freeCompilerArgs.add(
             // https://github.com/tschuchortdev/kotlin-compile-testing/pull/63
-            "-Xno-optimized-callable-references",
+            "-Xno-optimized-callable-references"
         )
         if (isTest) {
-            freeCompilerArgs.add("-opt-in=org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi")
+            optIn.add("org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi")
         }
     }
 }
