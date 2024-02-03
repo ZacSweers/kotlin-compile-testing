@@ -51,7 +51,6 @@ tasks.withType<KotlinCompile>().configureEach {
         freeCompilerArgs.addAll(
             // https://github.com/tschuchortdev/kotlin-compile-testing/pull/63
             "-Xno-optimized-callable-references",
-            "-Xskip-runtime-version-check",
         )
         if (isTest) {
             freeCompilerArgs.add("-opt-in=org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi")
