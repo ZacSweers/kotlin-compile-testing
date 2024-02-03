@@ -20,11 +20,14 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
       // Irrelevant/unavailable on KSP 2
     }
 
-  override var symbolProcessorProviders: MutableList<SymbolProcessorProvider> = mutableListOf()
-  override var processorOptions: MutableMap<String, String> = mutableMapOf()
+  override val symbolProcessorProviders: MutableList<SymbolProcessorProvider> = mutableListOf()
+  override val processorOptions: MutableMap<String, String> = mutableMapOf()
   override var incremental: Boolean = false
   override var incrementalLog: Boolean = false
   override var allWarningsAsErrors: Boolean = false
+
+  // Extra hook for direct configuration of KspJvmConfig.Builder, for advanced use cases
+  var onBuilder: (KSPJvmConfig.Builder.() -> Unit)? = null
 
   override fun execute(
     compilation: KotlinCompilation,
@@ -89,6 +92,8 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
               it.deleteRecursively()
               it.mkdirs()
             }
+
+          onBuilder?.invoke(this)
         }
         .build()
     val messageCollector =

@@ -22,13 +22,23 @@ import org.jetbrains.kotlin.config.languageVersionSettings
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
+/** Configure the given KSP tool for this compilation. */
+@OptIn(ExperimentalCompilerApi::class)
+fun KotlinCompilation.configureKsp(useKsp2: Boolean = false, body: KspTool.() -> Unit) {
+  if (useKsp2) {
+    useKsp2()
+  }
+  getKspTool().body()
+}
+
 /** The list of symbol processors for the kotlin compilation. https://goo.gle/ksp */
 @OptIn(ExperimentalCompilerApi::class)
 var KotlinCompilation.symbolProcessorProviders: MutableList<SymbolProcessorProvider>
   get() = getKspTool().symbolProcessorProviders
   set(value) {
     val tool = getKspTool()
-    tool.symbolProcessorProviders = value
+    tool.symbolProcessorProviders.clear()
+    tool.symbolProcessorProviders.addAll(value)
   }
 
 /** The directory where generated KSP sources are written */
@@ -44,19 +54,19 @@ val KotlinCompilation.kspSourcesDir: File
     ReplaceWith("kspProcessorOptions", "com.tschuchort.compiletesting.kspProcessorOptions"),
 )
 var KotlinCompilation.kspArgs: MutableMap<String, String>
-  get() = getKspTool().processorOptions
-  set(value) {
-    val tool = getKspTool()
-    tool.processorOptions = value
+  get() = kspProcessorOptions
+  set(options) {
+    kspProcessorOptions = options
   }
 
 /** Arbitrary processor options to be passed to ksp */
 @OptIn(ExperimentalCompilerApi::class)
 var KotlinCompilation.kspProcessorOptions: MutableMap<String, String>
   get() = getKspTool().processorOptions
-  set(value) {
+  set(options) {
     val tool = getKspTool()
-    tool.processorOptions = value
+    tool.processorOptions.clear()
+    tool.processorOptions.putAll(options)
   }
 
 /** Controls for enabling incremental processing in KSP. */
