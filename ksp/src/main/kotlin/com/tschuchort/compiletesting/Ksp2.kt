@@ -13,45 +13,18 @@ import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 
 @ExperimentalCompilerApi
-internal class Ksp2PrecursorTool : PrecursorTool, KspTool {
-  private val configBuilder: KSPJvmConfig.Builder =
-    KSPJvmConfig.Builder().apply {
-      incremental = false
-      incrementalLog = false
-      allWarningsAsErrors = false
-    }
-
+class Ksp2PrecursorTool : PrecursorTool, KspTool {
   override var withCompilation: Boolean
     get() = false
     set(value) {
-      // Unsupported on KSP 2
+      // Irrelevant/unavailable on KSP 2
     }
 
-  override var symbolProcessorProviders: List<SymbolProcessorProvider> = mutableListOf()
-
-  override var processorOptions: Map<String, String>
-    get() = configBuilder.processorOptions
-    set(value) {
-      configBuilder.processorOptions = value
-    }
-
-  override var incremental: Boolean
-    get() = configBuilder.incremental
-    set(value) {
-      configBuilder.incremental = value
-    }
-
-  override var incrementalLog: Boolean
-    get() = configBuilder.incrementalLog
-    set(value) {
-      configBuilder.incrementalLog = value
-    }
-
-  override var allWarningsAsErrors: Boolean
-    get() = configBuilder.allWarningsAsErrors
-    set(value) {
-      configBuilder.allWarningsAsErrors = value
-    }
+  override var symbolProcessorProviders: MutableList<SymbolProcessorProvider> = mutableListOf()
+  override var processorOptions: MutableMap<String, String> = mutableMapOf()
+  override var incremental: Boolean = false
+  override var incrementalLog: Boolean = false
+  override var allWarningsAsErrors: Boolean = false
 
   override fun execute(
     compilation: KotlinCompilation,
@@ -63,9 +36,14 @@ internal class Ksp2PrecursorTool : PrecursorTool, KspTool {
     }
 
     val config =
-      configBuilder
+      KSPJvmConfig.Builder()
         .apply {
           projectBaseDir = compilation.kspWorkingDir
+
+          incremental = this@Ksp2PrecursorTool.incremental
+          incrementalLog = this@Ksp2PrecursorTool.incrementalLog
+          allWarningsAsErrors = this@Ksp2PrecursorTool.allWarningsAsErrors
+          processorOptions = this@Ksp2PrecursorTool.processorOptions.toMap()
 
           jvmTarget = compilation.jvmTarget
           jdkHome = compilation.jdkHome
@@ -124,7 +102,11 @@ internal class Ksp2PrecursorTool : PrecursorTool, KspTool {
 
     return try {
       when (
-        KotlinSymbolProcessing(config, symbolProcessorProviders, messageCollectorBasedKSPLogger)
+        KotlinSymbolProcessing(
+            config,
+            symbolProcessorProviders.toList(),
+            messageCollectorBasedKSPLogger,
+          )
           .execute()
       ) {
         KotlinSymbolProcessing.ExitCode.OK -> KotlinCompilation.ExitCode.OK

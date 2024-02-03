@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
 /** The list of symbol processors for the kotlin compilation. https://goo.gle/ksp */
 @OptIn(ExperimentalCompilerApi::class)
-var KotlinCompilation.symbolProcessorProviders: List<SymbolProcessorProvider>
+var KotlinCompilation.symbolProcessorProviders: MutableList<SymbolProcessorProvider>
   get() = getKspTool().symbolProcessorProviders
   set(value) {
     val tool = getKspTool()
@@ -38,7 +38,21 @@ val KotlinCompilation.kspSourcesDir: File
 
 /** Arbitrary arguments to be passed to ksp */
 @OptIn(ExperimentalCompilerApi::class)
-var KotlinCompilation.kspArgs: Map<String, String>
+@Deprecated(
+  "Use kspProcessorOptions",
+  replaceWith =
+    ReplaceWith("kspProcessorOptions", "com.tschuchort.compiletesting.kspProcessorOptions"),
+)
+var KotlinCompilation.kspArgs: MutableMap<String, String>
+  get() = getKspTool().processorOptions
+  set(value) {
+    val tool = getKspTool()
+    tool.processorOptions = value
+  }
+
+/** Arbitrary processor options to be passed to ksp */
+@OptIn(ExperimentalCompilerApi::class)
+var KotlinCompilation.kspProcessorOptions: MutableMap<String, String>
   get() = getKspTool().processorOptions
   set(value) {
     val tool = getKspTool()
@@ -132,8 +146,8 @@ private class KspTestExtension(
 @OptIn(ExperimentalCompilerApi::class)
 internal class KspCompileTestingComponentRegistrar(private val compilation: KotlinCompilation) :
   ComponentRegistrar, KspTool {
-  override var symbolProcessorProviders = emptyList<SymbolProcessorProvider>()
-  override var processorOptions: Map<String, String> = mutableMapOf()
+  override var symbolProcessorProviders = mutableListOf<SymbolProcessorProvider>()
+  override var processorOptions = mutableMapOf<String, String>()
   override var incremental: Boolean = false
   override var incrementalLog: Boolean = false
   override var allWarningsAsErrors: Boolean = false

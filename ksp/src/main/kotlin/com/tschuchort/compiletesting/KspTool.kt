@@ -4,8 +4,8 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 
 internal interface KspTool {
-  var symbolProcessorProviders: List<SymbolProcessorProvider>
-  var processorOptions: Map<String, String>
+  var symbolProcessorProviders: MutableList<SymbolProcessorProvider>
+  var processorOptions: MutableMap<String, String>
   var incremental: Boolean
   var incrementalLog: Boolean
   var allWarningsAsErrors: Boolean

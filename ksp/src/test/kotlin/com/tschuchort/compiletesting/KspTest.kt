@@ -58,7 +58,7 @@ class KspTest {
       newCompilation()
         .apply {
           sources = listOf(DUMMY_KOTLIN_SRC)
-          symbolProcessorProviders = listOf(providerInstance)
+          symbolProcessorProviders += providerInstance
         }
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.INTERNAL_ERROR)
@@ -74,7 +74,7 @@ class KspTest {
       newCompilation()
         .apply {
           sources = listOf(DUMMY_KOTLIN_SRC)
-          symbolProcessorProviders = listOf(providerInstance)
+          symbolProcessorProviders += providerInstance
         }
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
@@ -94,7 +94,7 @@ class KspTest {
       newCompilation()
         .apply {
           sources = listOf(DUMMY_JAVA_SRC)
-          symbolProcessorProviders = listOf(providerInstance)
+          symbolProcessorProviders += providerInstance
         }
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
@@ -136,42 +136,38 @@ class KspTest {
       newCompilation()
         .apply {
           sources = listOf(annotation, targetClass)
-          symbolProcessorProviders =
-            listOf(
-              SymbolProcessorProvider { env ->
-                object : AbstractTestSymbolProcessor(env.codeGenerator) {
-                  override fun process(resolver: Resolver): List<KSAnnotated> {
-                    val symbols =
-                      resolver.getSymbolsWithAnnotation("foo.bar.TestAnnotation").toList()
-                    if (symbols.isNotEmpty()) {
-                      assertThat(symbols.size).isEqualTo(1)
-                      val klass = symbols.first()
-                      check(klass is KSClassDeclaration)
-                      val qName = klass.qualifiedName ?: error("should've found qualified name")
-                      val genPackage = "${qName.getQualifier()}.generated"
-                      val genClassName = "${qName.getShortName()}_Gen"
-                      codeGenerator
-                        .createNewFile(
-                          dependencies = Dependencies.ALL_FILES,
-                          packageName = genPackage,
-                          fileName = genClassName,
-                        )
-                        .bufferedWriter()
-                        .use {
-                          it.write(
-                            """
+          symbolProcessorProviders += SymbolProcessorProvider { env ->
+            object : AbstractTestSymbolProcessor(env.codeGenerator) {
+              override fun process(resolver: Resolver): List<KSAnnotated> {
+                val symbols = resolver.getSymbolsWithAnnotation("foo.bar.TestAnnotation").toList()
+                if (symbols.isNotEmpty()) {
+                  assertThat(symbols.size).isEqualTo(1)
+                  val klass = symbols.first()
+                  check(klass is KSClassDeclaration)
+                  val qName = klass.qualifiedName ?: error("should've found qualified name")
+                  val genPackage = "${qName.getQualifier()}.generated"
+                  val genClassName = "${qName.getShortName()}_Gen"
+                  codeGenerator
+                    .createNewFile(
+                      dependencies = Dependencies.ALL_FILES,
+                      packageName = genPackage,
+                      fileName = genClassName,
+                    )
+                    .bufferedWriter()
+                    .use {
+                      it.write(
+                        """
                             package $genPackage
                             class $genClassName() {}
                         """
-                              .trimIndent()
-                          )
-                        }
+                          .trimIndent()
+                      )
                     }
-                    return emptyList()
-                  }
                 }
+                return emptyList()
               }
-            )
+            }
+          }
         }
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
@@ -196,7 +192,7 @@ class KspTest {
       newCompilation()
         .apply {
           sources = listOf(source)
-          symbolProcessorProviders =
+          symbolProcessorProviders +=
             listOf(
               SymbolProcessorProvider { env ->
                 ClassGeneratingProcessor(env.codeGenerator, "generated", "A")
@@ -218,11 +214,11 @@ class KspTest {
     val instance1 = mock<SymbolProcessorProvider>()
     val instance2 = mock<SymbolProcessorProvider>()
     newCompilation().apply {
-      symbolProcessorProviders = listOf(instance1)
+      symbolProcessorProviders += instance1
       assertThat(symbolProcessorProviders).containsExactly(instance1)
-      symbolProcessorProviders = listOf(instance2)
+      symbolProcessorProviders = mutableListOf(instance2)
       assertThat(symbolProcessorProviders).containsExactly(instance2)
-      symbolProcessorProviders = symbolProcessorProviders + instance1
+      symbolProcessorProviders = (symbolProcessorProviders + instance1).toMutableList()
       assertThat(symbolProcessorProviders).containsExactly(instance2, instance1)
     }
   }
@@ -245,12 +241,9 @@ class KspTest {
     val compilation =
       newCompilation().apply {
         sources = listOf(DUMMY_KOTLIN_SRC)
-        symbolProcessorProviders =
-          listOf(
-            SymbolProcessorProvider { env ->
-              ClassGeneratingProcessor(env.codeGenerator, "generated", "Gen")
-            }
-          )
+        symbolProcessorProviders += SymbolProcessorProvider { env ->
+          ClassGeneratingProcessor(env.codeGenerator, "generated", "Gen")
+        }
       }
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
@@ -399,19 +392,16 @@ class KspTest {
       newCompilation()
         .apply {
           sources = listOf(annotation, targetClass)
-          symbolProcessorProviders =
-            listOf(
-              SymbolProcessorProvider { env ->
-                object : AbstractTestSymbolProcessor(env.codeGenerator) {
-                  override fun process(resolver: Resolver): List<KSAnnotated> {
-                    env.logger.logging("This is a log message")
-                    env.logger.info("This is an info message")
-                    env.logger.warn("This is an warn message")
-                    return emptyList()
-                  }
-                }
+          symbolProcessorProviders += SymbolProcessorProvider { env ->
+            object : AbstractTestSymbolProcessor(env.codeGenerator) {
+              override fun process(resolver: Resolver): List<KSAnnotated> {
+                env.logger.logging("This is a log message")
+                env.logger.info("This is an info message")
+                env.logger.warn("This is an warn message")
+                return emptyList()
               }
-            )
+            }
+          }
         }
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
@@ -445,18 +435,15 @@ class KspTest {
       newCompilation()
         .apply {
           sources = listOf(annotation, targetClass)
-          symbolProcessorProviders =
-            listOf(
-              SymbolProcessorProvider { env ->
-                object : AbstractTestSymbolProcessor(env.codeGenerator) {
-                  override fun process(resolver: Resolver): List<KSAnnotated> {
-                    env.logger.error("This is an error message")
-                    env.logger.exception(Throwable("This is a failure"))
-                    return emptyList()
-                  }
-                }
+          symbolProcessorProviders += SymbolProcessorProvider { env ->
+            object : AbstractTestSymbolProcessor(env.codeGenerator) {
+              override fun process(resolver: Resolver): List<KSAnnotated> {
+                env.logger.error("This is an error message")
+                env.logger.exception(Throwable("This is a failure"))
+                return emptyList()
               }
-            )
+            }
+          }
         }
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
@@ -489,19 +476,16 @@ class KspTest {
       newCompilation()
         .apply {
           sources = listOf(annotation, targetClass)
-          symbolProcessorProviders =
-            listOf(
-              SymbolProcessorProvider { env ->
-                object : AbstractTestSymbolProcessor(env.codeGenerator) {
-                  override fun process(resolver: Resolver): List<KSAnnotated> {
-                    env.logger.logging("This is a log message with ellipsis $ellipsis")
-                    env.logger.info("This is an info message with unicode \uD83D\uDCAB")
-                    env.logger.warn("This is an warn message with emoji 🔥")
-                    return emptyList()
-                  }
-                }
+          symbolProcessorProviders += SymbolProcessorProvider { env ->
+            object : AbstractTestSymbolProcessor(env.codeGenerator) {
+              override fun process(resolver: Resolver): List<KSAnnotated> {
+                env.logger.logging("This is a log message with ellipsis $ellipsis")
+                env.logger.info("This is an info message with unicode \uD83D\uDCAB")
+                env.logger.warn("This is an warn message with emoji 🔥")
+                return emptyList()
               }
-            )
+            }
+          }
         }
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
@@ -539,63 +523,60 @@ class KspTest {
       compilation
         .apply {
           sources = listOf(annotation, targetClass)
-          symbolProcessorProviders =
-            listOf(
-              SymbolProcessorProvider { env ->
-                object : AbstractTestSymbolProcessor(env.codeGenerator) {
-                  override fun process(resolver: Resolver): List<KSAnnotated> {
-                    resolver.getSymbolsWithAnnotation("foo.bar.TestAnnotation").forEach { symbol ->
-                      check(symbol is KSClassDeclaration) { "Expected class declaration" }
-                      @Suppress("DEPRECATION")
-                      val simpleName = "${symbol.simpleName.asString().capitalize(Locale.US)}Dummy"
-                      env.codeGenerator
-                        .createNewFile(
-                          dependencies = Dependencies.ALL_FILES,
-                          packageName = "foo.bar",
-                          fileName = simpleName,
-                          extensionName = "java",
-                        )
-                        .bufferedWriter()
-                        .use {
-                          // language=JAVA
-                          it.write(
-                            """
+          symbolProcessorProviders += SymbolProcessorProvider { env ->
+            object : AbstractTestSymbolProcessor(env.codeGenerator) {
+              override fun process(resolver: Resolver): List<KSAnnotated> {
+                resolver.getSymbolsWithAnnotation("foo.bar.TestAnnotation").forEach { symbol ->
+                  check(symbol is KSClassDeclaration) { "Expected class declaration" }
+                  @Suppress("DEPRECATION")
+                  val simpleName = "${symbol.simpleName.asString().capitalize(Locale.US)}Dummy"
+                  env.codeGenerator
+                    .createNewFile(
+                      dependencies = Dependencies.ALL_FILES,
+                      packageName = "foo.bar",
+                      fileName = simpleName,
+                      extensionName = "java",
+                    )
+                    .bufferedWriter()
+                    .use {
+                      // language=JAVA
+                      it.write(
+                        """
                                         package foo.bar;
                                         
                                         class ${simpleName}Java {
                                         
                                         }
                                         """
-                              .trimIndent()
-                          )
-                        }
-                      env.codeGenerator
-                        .createNewFile(
-                          dependencies = Dependencies.ALL_FILES,
-                          packageName = "foo.bar",
-                          fileName = "${simpleName}Kt",
-                          extensionName = "kt",
-                        )
-                        .bufferedWriter()
-                        .use {
-                          // language=KOTLIN
-                          it.write(
-                            """
+                          .trimIndent()
+                      )
+                    }
+                  env.codeGenerator
+                    .createNewFile(
+                      dependencies = Dependencies.ALL_FILES,
+                      packageName = "foo.bar",
+                      fileName = "${simpleName}Kt",
+                      extensionName = "kt",
+                    )
+                    .bufferedWriter()
+                    .use {
+                      // language=KOTLIN
+                      it.write(
+                        """
                                         package foo.bar
                                         
                                         class ${simpleName}Kt {
                                         
                                         }
                                         """
-                              .trimIndent()
-                          )
-                        }
+                          .trimIndent()
+                      )
                     }
-                    return emptyList()
-                  }
                 }
+                return emptyList()
               }
-            )
+            }
+          }
           kspWithCompilation = true
         }
         .compile()
