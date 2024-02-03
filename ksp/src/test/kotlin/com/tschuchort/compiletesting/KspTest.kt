@@ -9,15 +9,38 @@ import com.nhaarman.mockitokotlin2.mock
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import org.mockito.Mockito.`when`
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.text.Typography.ellipsis
 
-@RunWith(JUnit4::class)
 class KspTest {
+    companion object {
+        private val DUMMY_KOTLIN_SRC = SourceFile.kotlin(
+            "foo.bar.Dummy.kt", """
+            class Dummy {}
+        """.trimIndent()
+        )
+
+        private val DUMMY_JAVA_SRC = SourceFile.java(
+            "foo.bar.DummyJava.java", """
+            class DummyJava {}
+        """.trimIndent()
+        )
+    }
+
+    private val useKSP2 = System.getProperty("kct.test.useKsp2", "false").toBoolean()
+
+    private fun newCompilation(): KotlinCompilation {
+        return KotlinCompilation().apply {
+            if (useKSP2) {
+                useKsp2()
+            } else {
+                languageVersion = "1.9"
+            }
+        }
+    }
+
     @Test
     fun failedKspTest() {
         val instance = mock<SymbolProcessor>()
@@ -26,10 +49,9 @@ class KspTest {
         `when`(instance.process(any())).thenThrow(
             RuntimeException("intentional fail")
         )
-        val result = KotlinCompilation().apply {
+        val result = newCompilation().apply {
             sources = listOf(DUMMY_KOTLIN_SRC)
             symbolProcessorProviders = listOf(providerInstance)
-            languageVersion = "1.9"
         }.compile()
         assertThat(result.exitCode).isEqualTo(ExitCode.INTERNAL_ERROR)
         assertThat(result.messages).contains("intentional fail")
@@ -40,10 +62,9 @@ class KspTest {
         val instance = mock<SymbolProcessor>()
         val providerInstance = mock<SymbolProcessorProvider>()
         `when`(providerInstance.create(any())).thenReturn(instance)
-        val result = KotlinCompilation().apply {
+        val result = newCompilation().apply {
             sources = listOf(DUMMY_KOTLIN_SRC)
             symbolProcessorProviders = listOf(providerInstance)
-            languageVersion = "1.9"
         }.compile()
         assertThat(result.exitCode).isEqualTo(ExitCode.OK)
         providerInstance.inOrder {
@@ -60,10 +81,9 @@ class KspTest {
         val instance = mock<SymbolProcessor>()
         val providerInstance = mock<SymbolProcessorProvider>()
         `when`(providerInstance.create(any())).thenReturn(instance)
-        val result = KotlinCompilation().apply {
+        val result = newCompilation().apply {
             sources = listOf(DUMMY_JAVA_SRC)
             symbolProcessorProviders = listOf(providerInstance)
-            languageVersion = "1.9"
         }.compile()
         assertThat(result.exitCode).isEqualTo(ExitCode.OK)
         providerInstance.inOrder {
@@ -96,9 +116,8 @@ class KspTest {
             }
         """.trimIndent()
         )
-        val result = KotlinCompilation().apply {
+        val result = newCompilation().apply {
             sources = listOf(annotation, targetClass)
-            languageVersion = "1.9"
             symbolProcessorProviders = listOf(SymbolProcessorProvider { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -143,14 +162,13 @@ class KspTest {
             class Dummy(val a:A, val b:B, val c:C)
         """.trimIndent()
         )
-        val result = KotlinCompilation().apply {
+        val result = newCompilation().apply {
             sources = listOf(source)
-            languageVersion = "1.9"
             symbolProcessorProviders = listOf(
                 SymbolProcessorProvider { env -> ClassGeneratingProcessor(env.codeGenerator, "generated", "A") },
-                SymbolProcessorProvider { env -> ClassGeneratingProcessor(env.codeGenerator, "generated", "B") })
-            symbolProcessorProviders = symbolProcessorProviders +
-                    SymbolProcessorProvider { env -> ClassGeneratingProcessor(env.codeGenerator, "generated", "C") }
+                SymbolProcessorProvider { env -> ClassGeneratingProcessor(env.codeGenerator, "generated", "B") },
+                SymbolProcessorProvider { env -> ClassGeneratingProcessor(env.codeGenerator, "generated", "C") },
+            )
         }.compile()
         assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     }
@@ -159,8 +177,7 @@ class KspTest {
     fun readProcessors() {
         val instance1 = mock<SymbolProcessorProvider>()
         val instance2 = mock<SymbolProcessorProvider>()
-        KotlinCompilation().apply {
-            languageVersion = "1.9"
+        newCompilation().apply {
             symbolProcessorProviders = listOf(instance1)
             assertThat(symbolProcessorProviders).containsExactly(instance1)
             symbolProcessorProviders = listOf(instance2)
@@ -172,7 +189,7 @@ class KspTest {
 
     @Test
     fun incremental() {
-        KotlinCompilation().apply {
+        newCompilation().apply {
             // Disabled by default
             assertThat(kspIncremental).isFalse()
             assertThat(kspIncrementalLog).isFalse()
@@ -180,15 +197,13 @@ class KspTest {
             assertThat(kspIncremental).isTrue()
             kspIncrementalLog = true
             assertThat(kspIncrementalLog).isTrue()
-            languageVersion = "1.9"
         }
     }
 
     @Test
     fun outputDirectoryContents() {
-        val compilation = KotlinCompilation().apply {
+        val compilation = newCompilation().apply {
             sources = listOf(DUMMY_KOTLIN_SRC)
-            languageVersion = "1.9"
             symbolProcessorProviders = listOf(SymbolProcessorProvider { env ->
                 ClassGeneratingProcessor(env.codeGenerator, "generated", "Gen")
             })
@@ -220,9 +235,8 @@ class KspTest {
             """.trimIndent()
         )
         val result = mutableListOf<String>()
-        val compilation = KotlinCompilation().apply {
+        val compilation = newCompilation().apply {
             sources = listOf(javaSource, kotlinSource)
-            languageVersion = "1.9"
             symbolProcessorProviders += SymbolProcessorProvider { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -285,9 +299,8 @@ class KspTest {
             class AppCode
         """.trimIndent()
         )
-        val result = KotlinCompilation().apply {
+        val result = newCompilation().apply {
             sources = listOf(annotation, targetClass)
-            languageVersion = "1.9"
             symbolProcessorProviders = listOf(SymbolProcessorProvider { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -320,9 +333,8 @@ class KspTest {
             class AppCode
         """.trimIndent()
         )
-        val result = KotlinCompilation().apply {
+        val result = newCompilation().apply {
             sources = listOf(annotation, targetClass)
-            languageVersion = "1.9"
             symbolProcessorProviders = listOf(SymbolProcessorProvider { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -353,9 +365,8 @@ class KspTest {
             class AppCode
         """.trimIndent()
         )
-        val result = KotlinCompilation().apply {
+        val result = newCompilation().apply {
             sources = listOf(annotation, targetClass)
-            languageVersion = "1.9"
             symbolProcessorProviders = listOf(SymbolProcessorProvider { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -390,10 +401,9 @@ class KspTest {
             class AppCode
         """.trimIndent()
         )
-        val compilation = KotlinCompilation()
+        val compilation = newCompilation()
         val result = compilation.apply {
             sources = listOf(annotation, targetClass)
-            languageVersion = "1.9"
             symbolProcessorProviders = listOf(SymbolProcessorProvider { env ->
                 object : AbstractTestSymbolProcessor(env.codeGenerator) {
                     override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -446,19 +456,5 @@ class KspTest {
         assertThat(result.exitCode).isEqualTo(ExitCode.OK)
         assertThat(result.classLoader.loadClass("foo.bar.AppCodeDummyJava")).isNotNull()
         assertThat(result.classLoader.loadClass("foo.bar.AppCodeDummyKt")).isNotNull()
-    }
-
-    companion object {
-        private val DUMMY_KOTLIN_SRC = SourceFile.kotlin(
-            "foo.bar.Dummy.kt", """
-            class Dummy {}
-        """.trimIndent()
-        )
-
-        private val DUMMY_JAVA_SRC = SourceFile.java(
-            "foo.bar.DummyJava.java", """
-            class DummyJava {}
-        """.trimIndent()
-        )
     }
 }
