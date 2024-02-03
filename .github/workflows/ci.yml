@@ -4,7 +4,7 @@ on: [ push, pull_request, workflow_dispatch ]
 
 jobs:
   build:
-    name: Build / ${{ matrix.platform }} / KSP2=${{ matrix.ksp2 }}
+    name: "${{ matrix.platform }} / KSP2 = ${{ matrix.ksp2 }}"
     runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
@@ -22,4 +22,5 @@ jobs:
           java-version: '21'
 
       - name: Check
+        shell: zsh
         run: ./gradlew check -Dkct.test.useKsp2=${{ matrix.ksp2 }}
