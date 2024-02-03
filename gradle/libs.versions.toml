@@ -32,6 +32,10 @@ kotlinpoet = "com.squareup:kotlinpoet:1.16.0"
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+ksp-cli = { module = "com.google.devtools.ksp:symbol-processing-cmdline", version.ref = "ksp" }
+ksp-aa = { module = "com.google.devtools.ksp:symbol-processing-aa", version.ref = "ksp" }
+ksp-aa-embeddable = { module = "com.google.devtools.ksp:symbol-processing-aa-embeddable", version.ref = "ksp" }
+ksp-commonDeps = { module = "com.google.devtools.ksp:symbol-processing-common-deps", version.ref = "ksp" }
 
 okio = "com.squareup.okio:okio:3.7.0"
 
