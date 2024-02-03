@@ -2,6 +2,10 @@ name: CI
 
 on: [ push, pull_request, workflow_dispatch ]
 
+concurrency:
+  group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'
+  cancel-in-progress: true
+
 jobs:
   build:
     name: "${{ matrix.platform }} / KSP2 = ${{ matrix.ksp2 }}"
