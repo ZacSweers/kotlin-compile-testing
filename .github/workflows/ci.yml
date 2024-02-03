@@ -23,5 +23,4 @@ jobs:
           java-version: '21'
 
       - name: Check
-        shell: zsh
-        run: ./gradlew check -Dkct.test.useKsp2=${{ matrix.ksp2 }}
+        run: ./gradlew check -D kct.test.useKsp2=${{ matrix.ksp2 }}
