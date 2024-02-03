@@ -95,6 +95,7 @@ tags
 .idea/**/gradle.xml
 .idea/**/libraries
 .gradle/
+.kotlin/
 
 # CMake
 cmake-build-debug/
