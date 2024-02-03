@@ -7,6 +7,7 @@ jobs:
     name: "${{ matrix.platform }} / KSP2 = ${{ matrix.ksp2 }}"
     runs-on: ${{ matrix.platform }}
     strategy:
+      fail-fast: false
       matrix:
         platform: [ 'windows-latest', 'ubuntu-latest' ]
         ksp2: [ 'true', 'false' ]
