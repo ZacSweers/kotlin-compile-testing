@@ -1,7 +1,7 @@
 [versions]
-idea = "232.10227.11" # Flamingo | 2022.2.1 (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
-kotlin = "2.0.0-Beta1"
-ksp = "2.0.0-Beta1-1.0.14"
+idea = "241.194" # (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
+kotlin = "2.0.0-Beta3"
+ksp = "2.0.0-Beta3-1.0.17"
 
 [plugins]
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "3.1.0" }
@@ -14,7 +14,7 @@ mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.25.3" }
 autoService = "com.google.auto.service:auto-service-annotations:1.1.1"
 autoService-ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.1.0"
 
-classgraph = "io.github.classgraph:classgraph:4.8.162"
+classgraph = "io.github.classgraph:classgraph:4.8.165"
 
 intellij-core = { module = "com.jetbrains.intellij.platform:core", version.ref = "idea" }
 intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "idea" }
@@ -28,15 +28,15 @@ kotlin-scriptingCompiler = { module = "org.jetbrains.kotlin:kotlin-scripting-com
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 
-kotlinpoet = "com.squareup:kotlinpoet:1.14.2"
+kotlinpoet = "com.squareup:kotlinpoet:1.16.0"
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 
-okio = "com.squareup.okio:okio:3.6.0"
+okio = "com.squareup.okio:okio:3.7.0"
 
 truth = { module = "com.google.truth:truth", version = "1.1.5" }
 junit = "junit:junit:4.13.2"
-mockito = "org.mockito:mockito-core:5.7.0"
+mockito = "org.mockito:mockito-core:5.10.0"
 mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 assertJ = "org.assertj:assertj-core:3.24.2"
