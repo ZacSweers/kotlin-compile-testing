@@ -7,6 +7,7 @@ import com.google.devtools.ksp.processing.KSPJvmConfig
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import java.io.File
 import java.io.PrintStream
+import java.util.EnumSet
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
@@ -25,7 +26,8 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
   override var incremental: Boolean = false
   override var incrementalLog: Boolean = false
   override var allWarningsAsErrors: Boolean = false
-  override var loggingLevels: Set<CompilerMessageSeverity> = CompilerMessageSeverity.VERBOSE
+  override var loggingLevels: Set<CompilerMessageSeverity> =
+    EnumSet.allOf(CompilerMessageSeverity::class.java)
 
   // Extra hook for direct configuration of KspJvmConfig.Builder, for advanced use cases
   var onBuilder: (KSPJvmConfig.Builder.() -> Unit)? = null

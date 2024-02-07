@@ -7,6 +7,7 @@ import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.processing.impl.MessageCollectorBasedKSPLogger
 import java.io.File
+import java.util.EnumSet
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
@@ -109,7 +110,7 @@ var KotlinCompilation.kspWithCompilation: Boolean
     tool.withCompilation = value
   }
 
-/** Sets logging levels for KSP. Default is [CompilerMessageSeverity.VERBOSE]. */
+/** Sets logging levels for KSP. Default is all. */
 @OptIn(ExperimentalCompilerApi::class)
 var KotlinCompilation.kspLoggingLevels: Set<CompilerMessageSeverity>
   get() = getKspTool().loggingLevels
@@ -172,7 +173,8 @@ internal class KspCompileTestingComponentRegistrar(private val compilation: Kotl
   override var incrementalLog: Boolean = false
   override var allWarningsAsErrors: Boolean = false
   override var withCompilation: Boolean = false
-  override var loggingLevels: Set<CompilerMessageSeverity> = CompilerMessageSeverity.VERBOSE
+  override var loggingLevels: Set<CompilerMessageSeverity> =
+    EnumSet.allOf(CompilerMessageSeverity::class.java)
 
   override fun registerProjectComponents(
     project: MockProject,
