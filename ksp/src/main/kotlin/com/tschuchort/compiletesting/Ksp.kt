@@ -8,6 +8,7 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.processing.impl.MessageCollectorBasedKSPLogger
 import java.io.File
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.cli.jvm.config.JavaSourceRoot
@@ -108,6 +109,15 @@ var KotlinCompilation.kspWithCompilation: Boolean
     tool.withCompilation = value
   }
 
+/** Sets logging levels for KSP. Default is [CompilerMessageSeverity.VERBOSE]. */
+@OptIn(ExperimentalCompilerApi::class)
+var KotlinCompilation.kspLoggingLevels: Set<CompilerMessageSeverity>
+  get() = getKspTool().loggingLevels
+  set(value) {
+    val tool = getKspTool()
+    tool.loggingLevels = value
+  }
+
 @OptIn(ExperimentalCompilerApi::class)
 internal val KotlinCompilation.kspJavaSourceDir: File
   get() = kspSourcesDir.resolve("java")
@@ -162,6 +172,7 @@ internal class KspCompileTestingComponentRegistrar(private val compilation: Kotl
   override var incrementalLog: Boolean = false
   override var allWarningsAsErrors: Boolean = false
   override var withCompilation: Boolean = false
+  override var loggingLevels: Set<CompilerMessageSeverity> = CompilerMessageSeverity.VERBOSE
 
   override fun registerProjectComponents(
     project: MockProject,
@@ -224,10 +235,11 @@ internal class KspCompileTestingComponentRegistrar(private val compilation: Kotl
     @Suppress("invisible_member", "invisible_reference")
     val messageCollector =
       PrintingMessageCollector(
-        compilation.internalMessageStreamAccess,
-        MessageRenderer.GRADLE_STYLE,
-        compilation.verbose,
-      )
+          compilation.internalMessageStreamAccess,
+          MessageRenderer.GRADLE_STYLE,
+          compilation.verbose,
+        )
+        .filterBy(loggingLevels)
     val messageCollectorBasedKSPLogger =
       MessageCollectorBasedKSPLogger(
         messageCollector = messageCollector,

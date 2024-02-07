@@ -7,6 +7,7 @@ import com.google.devtools.ksp.processing.KSPJvmConfig
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import java.io.File
 import java.io.PrintStream
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
@@ -24,6 +25,7 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
   override var incremental: Boolean = false
   override var incrementalLog: Boolean = false
   override var allWarningsAsErrors: Boolean = false
+  override var loggingLevels: Set<CompilerMessageSeverity> = CompilerMessageSeverity.VERBOSE
 
   // Extra hook for direct configuration of KspJvmConfig.Builder, for advanced use cases
   var onBuilder: (KSPJvmConfig.Builder.() -> Unit)? = null
@@ -98,6 +100,7 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
 
     val messageCollector =
       PrintingMessageCollector(output, MessageRenderer.GRADLE_STYLE, compilation.verbose)
+        .filterBy(loggingLevels)
     val logger =
       TestKSPLogger(
         messageCollector = messageCollector,

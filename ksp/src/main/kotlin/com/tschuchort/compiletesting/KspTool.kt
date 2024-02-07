@@ -1,6 +1,7 @@
 package com.tschuchort.compiletesting
 
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 
 sealed interface KspTool {
@@ -10,6 +11,7 @@ sealed interface KspTool {
   var incrementalLog: Boolean
   var allWarningsAsErrors: Boolean
   var withCompilation: Boolean
+  var loggingLevels: Set<CompilerMessageSeverity>
 }
 
 /** Gets or creates the [KspTool] if it doesn't exist. */

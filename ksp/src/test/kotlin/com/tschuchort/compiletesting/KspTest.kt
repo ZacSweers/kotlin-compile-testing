@@ -12,10 +12,12 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.inOrder
 import com.nhaarman.mockitokotlin2.mock
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
+import java.util.EnumSet
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.text.Typography.ellipsis
 import org.assertj.core.api.Assertions.assertThat
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.junit.Test
 import org.mockito.Mockito.`when`
 
@@ -410,6 +412,50 @@ class KspTest {
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     assertThat(result.messages).contains("This is a log message")
+    assertThat(result.messages).contains("This is an info message")
+    assertThat(result.messages).contains("This is an warn message")
+  }
+
+  @Test
+  fun loggingLevels() {
+    val annotation =
+      SourceFile.kotlin(
+        "TestAnnotation.kt",
+        """
+            package foo.bar
+            annotation class TestAnnotation
+        """
+          .trimIndent(),
+      )
+    val targetClass =
+      SourceFile.kotlin(
+        "AppCode.kt",
+        """
+            package foo.bar
+            @TestAnnotation
+            class AppCode
+        """
+          .trimIndent(),
+      )
+    val result =
+      newCompilation()
+        .apply {
+          sources = listOf(annotation, targetClass)
+          kspLoggingLevels =
+            EnumSet.of(CompilerMessageSeverity.INFO, CompilerMessageSeverity.WARNING)
+          symbolProcessorProviders += SymbolProcessorProvider { env ->
+            object : AbstractTestSymbolProcessor(env.codeGenerator) {
+              override fun process(resolver: Resolver): List<KSAnnotated> {
+                env.logger.logging("This is a log message")
+                env.logger.info("This is an info message")
+                env.logger.warn("This is an warn message")
+                return emptyList()
+              }
+            }
+          }
+        }
+        .compile()
+    assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     assertThat(result.messages).contains("This is an info message")
     assertThat(result.messages).contains("This is an warn message")
   }
