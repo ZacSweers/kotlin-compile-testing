@@ -1,14 +1,18 @@
 package com.tschuchort.compiletesting
 
 import com.google.auto.service.AutoService
-import com.google.devtools.ksp.processing.*
+import com.google.devtools.ksp.processing.CodeGenerator
+import com.google.devtools.ksp.processing.Dependencies
+import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.inOrder
 import com.nhaarman.mockitokotlin2.mock
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.text.Typography.ellipsis
 import org.assertj.core.api.Assertions.assertThat

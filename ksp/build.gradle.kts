@@ -26,17 +26,16 @@ dependencies {
   api(projects.core)
 
   // KSP's AA dependencies point to the wrong common-deps artifact
-  compileOnly(libs.ksp.aa) { exclude(group = "com.google.devtools.ksp", module = "common-deps") }
+  compileOnly(libs.ksp.aaEmbeddable) { exclude(group = "com.google.devtools.ksp", module = "common-deps") }
   compileOnly(libs.ksp.commonDeps)
   compileOnly(libs.ksp.api)
   compileOnly(libs.ksp)
 
+  testImplementation(libs.ksp.commonDeps)
   if (testKsp2) {
-    testImplementation(libs.ksp.aa.embeddable) {
+    testImplementation(libs.ksp.aaEmbeddable) {
       exclude(group = "com.google.devtools.ksp", module = "common-deps")
     }
-    testImplementation(libs.ksp.commonDeps)
-    testImplementation(libs.ksp.cli)
   } else {
     testImplementation(libs.ksp)
   }

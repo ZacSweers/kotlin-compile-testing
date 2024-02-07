@@ -5,7 +5,6 @@ import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.PrecursorT
 import com.google.devtools.ksp.impl.KotlinSymbolProcessing
 import com.google.devtools.ksp.processing.KSPJvmConfig
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
-import com.google.devtools.ksp.processing.impl.MessageCollectorBasedKSPLogger
 import java.io.File
 import java.io.PrintStream
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
@@ -96,30 +95,23 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
           onBuilder?.invoke(this)
         }
         .build()
+
     val messageCollector =
       PrintingMessageCollector(output, MessageRenderer.GRADLE_STYLE, compilation.verbose)
-    val messageCollectorBasedKSPLogger =
-      MessageCollectorBasedKSPLogger(
+    val logger =
+      TestKSPLogger(
         messageCollector = messageCollector,
-        wrappedMessageCollector = messageCollector,
         allWarningsAsErrors = config.allWarningsAsErrors,
       )
 
     return try {
-      when (
-        KotlinSymbolProcessing(
-            config,
-            symbolProcessorProviders.toList(),
-            messageCollectorBasedKSPLogger,
-          )
-          .execute()
-      ) {
+      when (KotlinSymbolProcessing(config, symbolProcessorProviders.toList(), logger).execute()) {
         KotlinSymbolProcessing.ExitCode.OK -> KotlinCompilation.ExitCode.OK
         KotlinSymbolProcessing.ExitCode.PROCESSING_ERROR ->
           KotlinCompilation.ExitCode.COMPILATION_ERROR
       }
     } finally {
-      messageCollectorBasedKSPLogger.reportAll()
+      logger.reportAll()
     }
   }
 }
