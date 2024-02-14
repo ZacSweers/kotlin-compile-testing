@@ -137,9 +137,6 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
   @Deprecated("Removed in Kotlinc, this does nothing now.")
   var skipRuntimeVersionCheck: Boolean? = null
 
-  /** Path to JSON file to dump Java to Kotlin declaration mappings */
-  var declarationsOutputPath: File? = null
-
   /** Combine modules for source files and binary dependencies into a single module */
   @Deprecated("Removed in Kotlinc, this does nothing now.") var singleModule: Boolean = false
 
@@ -310,9 +307,6 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
       args.inheritMultifileParts = inheritMultifileParts
       args.useTypeTable = useTypeTable
-
-      if (declarationsOutputPath != null)
-        args.declarationsOutputPath = declarationsOutputPath!!.toString()
 
       if (javacArguments.isNotEmpty()) args.javacArguments = javacArguments.toTypedArray()
 
