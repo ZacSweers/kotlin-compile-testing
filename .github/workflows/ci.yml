@@ -17,13 +17,12 @@ concurrency:
 
 jobs:
   build:
-    name: "${{ matrix.platform }} / KSP2 = ${{ matrix.ksp2 }}"
+    name: "${{ matrix.platform }}"
     runs-on: ${{ matrix.platform }}
     strategy:
       fail-fast: false
       matrix:
         platform: [ 'windows-latest', 'ubuntu-latest' ]
-        ksp2: [ 'true', 'false' ]
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
@@ -36,4 +35,4 @@ jobs:
           java-version: '21'
 
       - name: Check
-        run: ./gradlew check -D kct.test.useKsp2=${{ matrix.ksp2 }}
+        run: ./gradlew check

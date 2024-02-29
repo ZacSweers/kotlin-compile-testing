@@ -19,9 +19,12 @@ import kotlin.text.Typography.ellipsis
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 import org.mockito.Mockito.`when`
 
-class KspTest {
+@RunWith(Parameterized::class)
+class KspTest(private val useKSP2: Boolean) {
   companion object {
     private val DUMMY_KOTLIN_SRC =
       SourceFile.kotlin(
@@ -40,9 +43,13 @@ class KspTest {
         """
           .trimIndent(),
       )
-  }
 
-  private val useKSP2 = System.getProperty("kct.test.useKsp2", "false").toBoolean()
+    @JvmStatic
+    @Parameterized.Parameters(name = "useKSP2={0}")
+    fun data(): Collection<Array<Any>> {
+      return listOf(arrayOf(true), arrayOf(false))
+    }
+  }
 
   private fun newCompilation(): KotlinCompilation {
     return KotlinCompilation().apply {
