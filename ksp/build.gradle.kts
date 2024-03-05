@@ -19,22 +19,16 @@ tasks.test {
 }
 
 dependencies {
-  compileOnly(libs.kotlin.compilerEmbeddable)
   api(projects.core)
+  api(libs.ksp.api)
 
-  compileOnly(libs.ksp.aaEmbeddable)
-  compileOnly(libs.ksp.commonDeps)
-  compileOnly(libs.ksp.api)
-  compileOnly(libs.ksp)
+  implementation(libs.ksp)
+  implementation(libs.ksp.commonDeps)
+  implementation(libs.ksp.aaEmbeddable)
 
-  testImplementation(libs.ksp.commonDeps)
-  testImplementation(libs.ksp.aaEmbeddable)
-  testImplementation(libs.ksp)
   testImplementation(libs.autoService) {
     because("To test accessing inherited classpath symbols")
   }
-  testImplementation(libs.kotlin.compilerEmbeddable)
-  testImplementation(libs.ksp.api)
   testImplementation(libs.kotlin.junit)
   testImplementation(libs.mockito)
   testImplementation(libs.mockitoKotlin)

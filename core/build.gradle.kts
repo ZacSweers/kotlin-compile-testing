@@ -19,12 +19,9 @@ buildConfig {
 }
 
 dependencies {
-    implementation(libs.autoService)
     ksp(libs.autoService.ksp)
 
-    testImplementation(libs.kotlinpoet)
-    testImplementation(libs.javapoet)
-
+    implementation(libs.autoService)
     implementation(libs.okio)
     implementation(libs.classgraph)
 
@@ -34,11 +31,12 @@ dependencies {
     testRuntimeOnly(libs.intellij.core)
     testRuntimeOnly(libs.intellij.util)
 
-    // The Kotlin compiler should be near the end of the list because its .jar file includes
-    // an obsolete version of Guava
     api(libs.kotlin.compilerEmbeddable)
     api(libs.kotlin.annotationProcessingEmbeddable)
     api(libs.kotlin.kapt4)
+
+    testImplementation(libs.kotlinpoet)
+    testImplementation(libs.javapoet)
     testImplementation(libs.kotlin.junit)
     testImplementation(libs.mockito)
     testImplementation(libs.mockitoKotlin)
