@@ -168,7 +168,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
    * Allow to use '@JvmDefault' annotation for JVM default method support.
    * {disable|enable|compatibility}
    */
-  var jvmDefault: String = JvmDefaultMode.DEFAULT.description
+  var jvmDefault: String = JvmDefaultMode.DISABLE.description
 
   /** Generate metadata with strict version semantics (see kdoc on Metadata.extraInt) */
   var strictMetadataVersionSemantics: Boolean = false
