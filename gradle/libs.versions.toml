@@ -1,5 +1,5 @@
 [versions]
-idea = "241.194" # (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
+idea = "242.2339" # (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
 kotlin = "2.0.0-Beta4"
 ksp = "2.0.0-Beta4-1.0.18"
 
@@ -8,13 +8,13 @@ buildconfig = { id = "com.github.gmazzo.buildconfig", version = "3.1.0" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version = "1.9.20" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.27.0" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.28.0" }
 
 [libraries]
 autoService = "com.google.auto.service:auto-service-annotations:1.1.1"
 autoService-ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.1.0"
 
-classgraph = "io.github.classgraph:classgraph:4.8.166"
+classgraph = "io.github.classgraph:classgraph:4.8.168"
 
 intellij-core = { module = "com.jetbrains.intellij.platform:core", version.ref = "idea" }
 intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "idea" }
@@ -35,7 +35,7 @@ ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.re
 ksp-aaEmbeddable = { module = "com.google.devtools.ksp:symbol-processing-aa-embeddable", version.ref = "ksp" }
 ksp-commonDeps = { module = "com.google.devtools.ksp:symbol-processing-common-deps", version.ref = "ksp" }
 
-okio = "com.squareup.okio:okio:3.8.0"
+okio = "com.squareup.okio:okio:3.9.0"
 
 truth = { module = "com.google.truth:truth", version = "1.4.2" }
 junit = "junit:junit:4.13.2"
