@@ -250,6 +250,7 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
             }?.toString() ?: throw AssertionError("Could not get path to ComponentRegistrar service from META-INF")
     }
 
+    /** Maps a URL resource for a class from a JAR or file to an absolute Path on disk  */
     internal fun urlToResourcePath(url: URL): Path? {
         val uri = url.toURI()
         val uriPath = when (uri.scheme) {
