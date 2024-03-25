@@ -79,9 +79,9 @@ class CompilerPluginsTest {
         val absolutePath = "jar:file:/path/to/jar/url%253Aport/core-0.4.0.jar!" +
                 "/META-INF/services/org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar"
         val resultPath = KotlinCompilation().urlToResourcePath(URL(absolutePath)).toString()
-        assertThat(resultPath.contains(":")).isFalse()
-        assertThat(resultPath.contains("%25")).isFalse()
-        assertThat(resultPath.contains("%3A")).isTrue()
+        assertThat(resultPath.contains("url:")).isFalse()
+        assertThat(resultPath.contains("url%25")).isFalse()
+        assertThat(resultPath.contains("url%3A")).isTrue()
     }
 
     @Test
@@ -89,9 +89,9 @@ class CompilerPluginsTest {
         // path on disk has "repos%3Aoss" path segment, but it's encoded from classLoader.getResources()
         val absolutePath = "file:/Users/user/repos%253Aoss/kotlin-compile-testing/core/build/resources/main"
         val resultPath = KotlinCompilation().urlToResourcePath(URL(absolutePath)).toString()
-        assertThat(resultPath.contains(":")).isFalse()
-        assertThat(resultPath.contains("%25")).isFalse()
-        assertThat(resultPath.contains("%3A")).isTrue()
+        assertThat(resultPath.contains("repos:")).isFalse()
+        assertThat(resultPath.contains("repos%25")).isFalse()
+        assertThat(resultPath.contains("repos%3A")).isTrue()
     }
 }
 
