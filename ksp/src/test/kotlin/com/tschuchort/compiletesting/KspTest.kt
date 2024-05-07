@@ -305,14 +305,22 @@ class KspTest(private val useKSP2: Boolean) {
     assertThat(result).containsExactlyInAnyOrder("JavaSubject", "KotlinSubject")
   }
 
+  class InheritedClasspathClass
+
   @Test
   fun findInheritedClasspathSymbols() {
     val javaSource =
       SourceFile.java(
         "JavaSubject.java",
         """
+            import com.tschuchort.compiletesting.InheritedClasspathClass;            
+
             @${AutoService::class.qualifiedName}(Runnable.class)
-            class JavaSubject
+            class JavaSubject {
+              public InheritedClasspathClass create() {
+                return new InheritedClasspathClass();
+              }
+            }
             """
           .trimIndent(),
       )
@@ -321,9 +329,14 @@ class KspTest(private val useKSP2: Boolean) {
         "KotlinSubject.kt",
         """
             import java.lang.Runnable
+            import com.tschuchort.compiletesting.InheritedClasspathClass
 
             @${AutoService::class.qualifiedName}(Runnable::class)
-            class KotlinSubject
+            class KotlinSubject {
+              fun create(): InheritedClasspathClass {
+                return InheritedClasspathClass()
+              }
+            }
             """
           .trimIndent(),
       )
