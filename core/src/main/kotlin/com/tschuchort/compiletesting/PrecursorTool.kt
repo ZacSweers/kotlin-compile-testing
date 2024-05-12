@@ -1,6 +1,5 @@
-package com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting
+package com.tschuchort.compiletesting
 
-import com.tschuchort.compiletesting.KotlinCompilation
 import java.io.File
 import java.io.PrintStream
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi

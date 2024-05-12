@@ -1,7 +1,6 @@
-/** Adds support for KSP (https://goo.gle/ksp). */
+/* Adds support for KSP (https://goo.gle/ksp). */
 package com.tschuchort.compiletesting
 
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.PrecursorTool
 import com.google.devtools.ksp.impl.KotlinSymbolProcessing
 import com.google.devtools.ksp.processing.KSPJvmConfig
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
