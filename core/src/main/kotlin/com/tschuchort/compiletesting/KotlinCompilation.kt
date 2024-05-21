@@ -69,6 +69,9 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
   /** Annotation processors to be passed to kapt */
   var annotationProcessors: List<Processor> = emptyList()
 
+  /** Include Kotlin runtime in to resulting .jar */
+  var includeRuntime: Boolean = false
+
   /** Make kapt correct error types */
   var correctErrorTypes: Boolean = true
 
