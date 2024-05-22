@@ -219,7 +219,9 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
         }
 
         // Update sources to include any generated in a precursor tool
-        val finalSources = sources + extraGeneratedSources.flatMap(File::listFilesRecursively).filter(File::hasKotlinFileExtension)
+        val generatedSourceFiles = extraGeneratedSources.flatMap(File::listFilesRecursively).filter(File::hasKotlinFileExtension)
+            .map { it.absoluteFile }
+        val finalSources = sources + generatedSourceFiles
 
         /**
          * Here the list of compiler plugins is set

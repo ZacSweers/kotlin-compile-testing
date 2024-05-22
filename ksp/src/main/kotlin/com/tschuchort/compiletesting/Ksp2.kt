@@ -43,7 +43,7 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
     val config =
       KSPJvmConfig.Builder()
         .apply {
-          projectBaseDir = compilation.kspWorkingDir
+          projectBaseDir = compilation.kspWorkingDir.absoluteFile
 
           incremental = this@Ksp2PrecursorTool.incremental
           incrementalLog = this@Ksp2PrecursorTool.incrementalLog
@@ -55,10 +55,10 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
           languageVersion = compilation.languageVersion ?: "2.0"
           apiVersion = compilation.apiVersion ?: "2.0"
 
-          // TODO wat
+          // TODO adopt new roots model
           moduleName = compilation.moduleName ?: "main"
-          sourceRoots = sources.filter { it.extension == "kt" }
-          javaSourceRoots = sources.filter { it.extension == "java" }
+          sourceRoots = sources.filter { it.extension == "kt" }.mapNotNull { it.parentFile.absoluteFile }.distinct()
+          javaSourceRoots = sources.filter { it.extension == "java" }.mapNotNull { it.parentFile.absoluteFile }.distinct()
           @Suppress("invisible_member", "invisible_reference")
           libraries = compilation.classpaths + compilation.commonClasspaths()
 
@@ -66,34 +66,34 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
             compilation.kspCachesDir.also {
               it.deleteRecursively()
               it.mkdirs()
-            }
+            }.absoluteFile
           outputBaseDir =
             compilation.kspSourcesDir.also {
               it.deleteRecursively()
               it.mkdirs()
-            }
+            }.absoluteFile
           classOutputDir =
             compilation.kspClassesDir.also {
               it.deleteRecursively()
               it.mkdirs()
-            }
+            }.absoluteFile
           javaOutputDir =
             compilation.kspJavaSourceDir.also {
               it.deleteRecursively()
               it.mkdirs()
               compilation.registerGeneratedSourcesDir(it)
-            }
+            }.absoluteFile
           kotlinOutputDir =
             compilation.kspKotlinSourceDir.also {
               it.deleteRecursively()
               it.mkdirs()
               compilation.registerGeneratedSourcesDir(it)
-            }
+            }.absoluteFile
           resourceOutputDir =
             compilation.kspResources.also {
               it.deleteRecursively()
               it.mkdirs()
-            }
+            }.absoluteFile
 
           onBuilder?.invoke(this)
         }
