@@ -11,7 +11,13 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.inOrder
 import com.nhaarman.mockitokotlin2.mock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.ksp.toAnnotationSpec
+import com.squareup.kotlinpoet.ksp.writeTo
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
+import com.tschuchort.compiletesting.SourceFile.Companion.java
+import com.tschuchort.compiletesting.SourceFile.Companion.kotlin
 import java.util.EnumSet
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
@@ -27,7 +33,7 @@ import org.mockito.Mockito.`when`
 class KspTest(private val useKSP2: Boolean) {
   companion object {
     private val DUMMY_KOTLIN_SRC =
-      SourceFile.kotlin(
+      kotlin(
         "foo.bar.Dummy.kt",
         """
             class Dummy {}
@@ -36,7 +42,7 @@ class KspTest(private val useKSP2: Boolean) {
       )
 
     private val DUMMY_JAVA_SRC =
-      SourceFile.java(
+      java(
         "foo.bar.DummyJava.java",
         """
             class DummyJava {}
@@ -53,6 +59,7 @@ class KspTest(private val useKSP2: Boolean) {
 
   private fun newCompilation(): KotlinCompilation {
     return KotlinCompilation().apply {
+      inheritClassPath = true
       if (useKSP2) {
         useKsp2()
       } else {
@@ -121,7 +128,7 @@ class KspTest(private val useKSP2: Boolean) {
   @Test
   fun processorGeneratedCodeIsVisible() {
     val annotation =
-      SourceFile.kotlin(
+      kotlin(
         "TestAnnotation.kt",
         """
             package foo.bar
@@ -130,7 +137,7 @@ class KspTest(private val useKSP2: Boolean) {
           .trimIndent(),
       )
     val targetClass =
-      SourceFile.kotlin(
+      kotlin(
         "AppCode.kt",
         """
             package foo.bar
@@ -190,7 +197,7 @@ class KspTest(private val useKSP2: Boolean) {
   fun multipleProcessors() {
     // access generated code by multiple processors
     val source =
-      SourceFile.kotlin(
+      kotlin(
         "foo.bar.Dummy.kt",
         """
             package foo.bar
@@ -268,7 +275,7 @@ class KspTest(private val useKSP2: Boolean) {
   @Test
   fun findSymbols() {
     val javaSource =
-      SourceFile.java(
+      java(
         "JavaSubject.java",
         """
             @${SuppressWarnings::class.qualifiedName}("")
@@ -277,7 +284,7 @@ class KspTest(private val useKSP2: Boolean) {
           .trimIndent(),
       )
     val kotlinSource =
-      SourceFile.kotlin(
+      kotlin(
         "KotlinSubject.kt",
         """
             @${SuppressWarnings::class.qualifiedName}("")
@@ -310,7 +317,7 @@ class KspTest(private val useKSP2: Boolean) {
   @Test
   fun findInheritedClasspathSymbols() {
     val javaSource =
-      SourceFile.java(
+      java(
         "JavaSubject.java",
         """
             import com.tschuchort.compiletesting.InheritedClasspathClass;            
@@ -325,7 +332,7 @@ class KspTest(private val useKSP2: Boolean) {
           .trimIndent(),
       )
     val kotlinSource =
-      SourceFile.kotlin(
+      kotlin(
         "KotlinSubject.kt",
         """
             import java.lang.Runnable
@@ -359,6 +366,55 @@ class KspTest(private val useKSP2: Boolean) {
       }
     compilation.compile()
     assertThat(result).containsExactlyInAnyOrder("JavaSubject", "KotlinSubject")
+  }
+
+  // This test ensures that we can access files on the same source compilation as the test itself
+  @Test
+  fun inheritedSourceClasspath() {
+    val source = kotlin(
+      "Example.kt",
+      """
+        package test
+        
+        import com.tschuchort.compiletesting.ClasspathTestAnnotation
+        import com.tschuchort.compiletesting.AnnotationEnumValue
+        import com.tschuchort.compiletesting.AnotherAnnotation
+        
+        @ClasspathTestAnnotation(
+          enumValue = AnnotationEnumValue.ONE,
+          enumValueArray = [AnnotationEnumValue.ONE, AnnotationEnumValue.TWO],
+          anotherAnnotation = AnotherAnnotation(""),
+          anotherAnnotationArray = [AnotherAnnotation("Hello")]
+        )
+        class Example
+      """
+    )
+
+    val compilation =
+      newCompilation().apply {
+        sources = listOf(source)
+        symbolProcessorProviders += simpleProcessor { resolver, codeGenerator ->
+          resolver
+            .getSymbolsWithAnnotation(ClasspathTestAnnotation::class.java.canonicalName)
+            .filterIsInstance<KSClassDeclaration>()
+            .filterNot { !it.simpleName.asString().startsWith("Gen_") }
+            .forEach {
+              val annotation = it.annotations.first().toAnnotationSpec()
+              FileSpec.get(
+                it.packageName.asString(), TypeSpec.classBuilder("Gen_${it.simpleName.asString()}")
+                  .addAnnotation(annotation)
+                  .build()
+              )
+                .writeTo(
+                  codeGenerator,
+                  aggregating = false
+                )
+            }
+        }
+      }
+
+    val result = compilation.compile()
+    assertThat(result.exitCode).isEqualTo(ExitCode.OK)
   }
 
   internal class ClassGeneratingProcessor(
@@ -396,7 +452,7 @@ class KspTest(private val useKSP2: Boolean) {
   @Test
   fun nonErrorMessagesAreReadable() {
     val annotation =
-      SourceFile.kotlin(
+      kotlin(
         "TestAnnotation.kt",
         """
             package foo.bar
@@ -405,7 +461,7 @@ class KspTest(private val useKSP2: Boolean) {
           .trimIndent(),
       )
     val targetClass =
-      SourceFile.kotlin(
+      kotlin(
         "AppCode.kt",
         """
             package foo.bar
@@ -439,7 +495,7 @@ class KspTest(private val useKSP2: Boolean) {
   @Test
   fun loggingLevels() {
     val annotation =
-      SourceFile.kotlin(
+      kotlin(
         "TestAnnotation.kt",
         """
             package foo.bar
@@ -448,7 +504,7 @@ class KspTest(private val useKSP2: Boolean) {
           .trimIndent(),
       )
     val targetClass =
-      SourceFile.kotlin(
+      kotlin(
         "AppCode.kt",
         """
             package foo.bar
@@ -483,7 +539,7 @@ class KspTest(private val useKSP2: Boolean) {
   @Test
   fun errorMessagesAreReadable() {
     val annotation =
-      SourceFile.kotlin(
+      kotlin(
         "TestAnnotation.kt",
         """
             package foo.bar
@@ -492,7 +548,7 @@ class KspTest(private val useKSP2: Boolean) {
           .trimIndent(),
       )
     val targetClass =
-      SourceFile.kotlin(
+      kotlin(
         "AppCode.kt",
         """
             package foo.bar
@@ -524,7 +580,7 @@ class KspTest(private val useKSP2: Boolean) {
   @Test
   fun messagesAreEncodedAndDecodedWithUtf8() {
     val annotation =
-      SourceFile.kotlin(
+      kotlin(
         "TestAnnotation.kt",
         """
             package foo.bar
@@ -533,7 +589,7 @@ class KspTest(private val useKSP2: Boolean) {
           .trimIndent(),
       )
     val targetClass =
-      SourceFile.kotlin(
+      kotlin(
         "AppCode.kt",
         """
             package foo.bar
@@ -570,7 +626,7 @@ class KspTest(private val useKSP2: Boolean) {
   @Test
   fun withCompilationAndJavaTest() {
     val annotation =
-      SourceFile.kotlin(
+      kotlin(
         "TestAnnotation.kt",
         """
             package foo.bar
@@ -579,7 +635,7 @@ class KspTest(private val useKSP2: Boolean) {
           .trimIndent(),
       )
     val targetClass =
-      SourceFile.kotlin(
+      kotlin(
         "AppCode.kt",
         """
             package foo.bar
