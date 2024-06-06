@@ -12,12 +12,6 @@ tasks
     compilerOptions { optIn.add("org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi") }
   }
 
-tasks.test {
-  // KSP2 needs more memory to run
-  minHeapSize = "1024m"
-  maxHeapSize = "1024m"
-}
-
 dependencies {
   api(projects.core)
   api(libs.ksp.api)
@@ -26,6 +20,7 @@ dependencies {
   implementation(libs.ksp.commonDeps)
   implementation(libs.ksp.aaEmbeddable)
 
+  testImplementation(libs.kotlinpoet.ksp)
   testImplementation(libs.autoService) {
     because("To test accessing inherited classpath symbols")
   }

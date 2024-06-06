@@ -37,16 +37,6 @@ dependencyResolutionManagement {
 
         google()
 
-        // Kotlin dev repository, useful for testing against Kotlin dev builds. Usually only tested on CI shadow jobs
-        // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1616514468003200?thread_ts=1616509748.001400&cid=C0KLZSCHF
-        maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev/") {
-            name = "Kotlin-Dev"
-            content {
-                // this repository *only* contains Kotlin artifacts (don't try others here)
-                includeGroupByRegex("org\\.jetbrains.*")
-            }
-        }
-
         maven("https://www.jetbrains.com/intellij-repository/releases") {
             name = "Intellij"
         }
@@ -83,16 +73,6 @@ pluginManagement {
 
         google()
 
-        // Kotlin bootstrap repository, useful for testing against Kotlin dev builds. Usually only tested on CI shadow jobs
-        // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1616514468003200?thread_ts=1616509748.001400&cid=C0KLZSCHF
-        maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev/") {
-            name = "Kotlin-Dev"
-            content {
-                // this repository *only* contains Kotlin artifacts (don't try others here)
-                includeGroupByRegex("org\\.jetbrains.*")
-            }
-        }
-
         // Gradle's plugin portal proxies jcenter, which we don't want. To avoid this, we specify
         // exactly which dependencies to pull from here.
         exclusiveContent {
@@ -108,7 +88,7 @@ pluginManagement {
             }
         }
     }
-    plugins { id("com.gradle.enterprise") version "3.12.1" }
+    plugins { id("com.gradle.enterprise") version "3.17.4" }
 }
 
 rootProject.name = "kotlin-compile-testing"

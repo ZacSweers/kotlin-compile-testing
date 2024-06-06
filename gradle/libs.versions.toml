@@ -1,7 +1,8 @@
 [versions]
 idea = "242.8057" # (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
 kotlin = "2.0.0"
-ksp = "2.0.0-1.0.21"
+kotlinpoet = "1.17.0"
+ksp = "2.0.0-1.0.22"
 
 [plugins]
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "3.1.0" }
@@ -28,7 +29,8 @@ kotlin-scriptingCompiler = { module = "org.jetbrains.kotlin:kotlin-scripting-com
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 
-kotlinpoet = "com.squareup:kotlinpoet:1.16.0"
+kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet"}
+kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet"}
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
