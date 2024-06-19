@@ -1,5 +1,8 @@
 package com.tschuchort.compiletesting
 
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticMessage
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticsMessageCollector
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.MultiMessageCollector
 import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream
@@ -14,6 +17,7 @@ import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
 import org.jetbrains.kotlin.cli.common.arguments.validateArguments
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
@@ -335,22 +339,39 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
         /* autoFlush = */ false,
         /* encoding = */ "UTF-8",
     )
+    private val _diagnostics: MutableList<DiagnosticMessage> = mutableListOf()
+    protected val diagnostics: List<DiagnosticMessage> get() = _diagnostics
 
-    protected fun log(s: String) {
-        if (verbose)
-            internalMessageStream.println("logging: $s")
+    protected fun createMessageCollector(stepName: String): MessageCollector {
+        val diagnosticsMessageCollector = DiagnosticsMessageCollector(stepName, verbose, _diagnostics)
+        val printMessageCollector = PrintingMessageCollector(
+            internalMessageStream,
+            MessageRenderer.GRADLE_STYLE,
+            verbose
+        )
+        return MultiMessageCollector(diagnosticsMessageCollector, printMessageCollector)
     }
 
-    protected fun warn(s: String) = internalMessageStream.println("warning: $s")
-    protected fun error(s: String) = internalMessageStream.println("error: $s")
+    protected fun log(s: String) {
+        if (verbose) {
+            internalMessageStream.println("logging: $s")
+        }
+    }
 
-    internal val internalMessageStreamAccess: PrintStream get() = internalMessageStream
+    protected fun warn(s: String) {
+        internalMessageStream.println("warning: $s")
+    }
+    protected fun error(s: String) {
+        internalMessageStream.println("error: $s")
+    }
+
+    internal fun createMessageCollectorAccess(stepName: String): MessageCollector = createMessageCollector(stepName)
 
     private val resourceName = "META-INF/services/org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar"
 }
 
 @ExperimentalCompilerApi
-internal fun convertKotlinExitCode(code: ExitCode) = when(code) {
+internal fun convertKotlinExitCode(code: ExitCode) = when (code) {
     ExitCode.OK -> KotlinCompilation.ExitCode.OK
     ExitCode.OOM_ERROR -> throw OutOfMemoryError("Kotlin compiler ran out of memory")
     ExitCode.INTERNAL_ERROR -> KotlinCompilation.ExitCode.INTERNAL_ERROR

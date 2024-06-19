@@ -118,7 +118,7 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
     if (exitCode != KotlinCompilation.ExitCode.OK)
       searchSystemOutForKnownErrors(messages)
 
-    return JsCompilationResult(exitCode, messages, this)
+    return JsCompilationResult(exitCode, messages, diagnostics, this)
   }
 
   private fun jsClasspath() = mutableListOf<File>().apply {

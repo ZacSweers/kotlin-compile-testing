@@ -1,5 +1,7 @@
 package com.tschuchort.compiletesting
 
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticMessage
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticSeverity
 import com.google.auto.service.AutoService
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
@@ -28,6 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.mockito.Mockito.`when`
+import javax.tools.Diagnostic
 
 @RunWith(Parameterized::class)
 class KspTest(private val useKSP2: Boolean) {
@@ -488,8 +491,14 @@ class KspTest(private val useKSP2: Boolean) {
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     assertThat(result.messages).contains("This is a log message")
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.LOGGING, "This is a log message"))
     assertThat(result.messages).contains("This is an info message")
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.INFO, "This is an info message"))
     assertThat(result.messages).contains("This is an warn message")
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.WARNING, "This is an warn message"))
   }
 
   @Test
@@ -533,7 +542,11 @@ class KspTest(private val useKSP2: Boolean) {
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     assertThat(result.messages).contains("This is an info message")
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.INFO, "This is an info message"))
     assertThat(result.messages).contains("This is an warn message")
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.WARNING, "This is an warn message"))
   }
 
   @Test
@@ -574,7 +587,11 @@ class KspTest(private val useKSP2: Boolean) {
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
     assertThat(result.messages).contains("This is an error message")
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.ERROR, "This is an error message"))
     assertThat(result.messages).contains("This is a failure")
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.ERROR, "This is a failure"))
   }
 
   @Test
@@ -616,8 +633,14 @@ class KspTest(private val useKSP2: Boolean) {
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     assertThat(result.messages).contains("This is a log message with ellipsis $ellipsis")
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.LOGGING, "This is a log message with ellipsis $ellipsis"))
     assertThat(result.messages).contains("This is an info message with unicode \uD83D\uDCAB")
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.INFO, "This is an info message with unicode \uD83D\uDCAB"))
     assertThat(result.messages).contains("This is an warn message with emoji 🔥")
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.WARNING, "This is an warn message with emoji 🔥"))
   }
 
   // This test exercises both using withCompilation (for in-process compilation of generated
@@ -709,5 +732,48 @@ class KspTest(private val useKSP2: Boolean) {
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     assertThat(result.classLoader.loadClass("foo.bar.AppCodeDummyJava")).isNotNull()
     assertThat(result.classLoader.loadClass("foo.bar.AppCodeDummyKt")).isNotNull()
+  }
+
+
+  @Test
+  fun `can filter messages by severity`() {
+    val annotation =
+      kotlin(
+        "TestAnnotation.kt",
+        """
+            package foo.bar
+            annotation class TestAnnotation
+        """
+          .trimIndent(),
+      )
+    val targetClass =
+      kotlin(
+        "AppCode.kt",
+        """
+            package foo.bar
+            @TestAnnotation
+            class AppCode
+        """
+          .trimIndent(),
+      )
+    val result =
+      newCompilation()
+        .apply {
+          sources = listOf(annotation, targetClass)
+          symbolProcessorProviders += SymbolProcessorProvider { env ->
+            object : AbstractTestSymbolProcessor(env.codeGenerator) {
+              override fun process(resolver: Resolver): List<KSAnnotated> {
+                env.logger.logging("This is a log message")
+                env.logger.info("This is an info message")
+                env.logger.warn("This is an warn message")
+                return emptyList()
+              }
+            }
+          }
+        }
+        .compile()
+    assertThat(result.messagesWithSeverity(DiagnosticSeverity.LOGGING)).contains("This is a log message")
+    assertThat(result.messagesWithSeverity(DiagnosticSeverity.INFO)).contains("This is an info message")
+    assertThat(result.messagesWithSeverity(DiagnosticSeverity.WARNING)).contains("This is an warn message")
   }
 }

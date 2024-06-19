@@ -1,6 +1,7 @@
 /** Adds support for KSP (https://goo.gle/ksp). */
 package com.tschuchort.compiletesting
 
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticMessage
 import com.google.devtools.ksp.AbstractKotlinSymbolProcessingExtension
 import com.google.devtools.ksp.KspOptions
 import com.google.devtools.ksp.processing.KSPLogger
@@ -21,6 +22,7 @@ import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.languageVersionSettings
+import org.jetbrains.kotlin.resolve.disableContractsInsideContractsBlock
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
@@ -235,13 +237,7 @@ internal class KspCompileTestingComponentRegistrar(private val compilation: Kotl
 
     // Temporary until friend-paths is fully supported https://youtrack.jetbrains.com/issue/KT-34102
     @Suppress("invisible_member", "invisible_reference")
-    val messageCollector =
-      PrintingMessageCollector(
-          compilation.internalMessageStreamAccess,
-          MessageRenderer.GRADLE_STYLE,
-          compilation.verbose,
-        )
-        .filterBy(loggingLevels)
+    val messageCollector = compilation.createMessageCollectorAccess("ksp")
     val messageCollectorBasedKSPLogger =
       MessageCollectorBasedKSPLogger(
         messageCollector = messageCollector,

@@ -17,6 +17,7 @@
 package com.tschuchort.compiletesting
 
 import com.facebook.buck.jvm.java.javax.SynchronizedToolProvider
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticMessage
 import com.tschuchort.compiletesting.kapt.toPluginOptions
 import java.io.File
 import java.io.OutputStreamWriter
@@ -26,8 +27,6 @@ import javax.tools.Diagnostic
 import javax.tools.DiagnosticCollector
 import javax.tools.JavaFileObject
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
-import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
-import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.JVMAssertionsMode
@@ -359,8 +358,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
         }
       }
 
-    val compilerMessageCollector =
-      PrintingMessageCollector(internalMessageStream, MessageRenderer.GRADLE_STYLE, verbose)
+    val compilerMessageCollector = createMessageCollector("kapt")
 
     val kaptLogger = MessageCollectorBackedKaptLogger(kaptOptions.build(), compilerMessageCollector)
 
@@ -621,7 +619,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
     if (exitCode != ExitCode.OK) searchSystemOutForKnownErrors(messages)
 
-    return JvmCompilationResult(exitCode, messages, this)
+    return JvmCompilationResult(exitCode, messages, diagnostics, this)
   }
 
   internal fun commonClasspaths() =

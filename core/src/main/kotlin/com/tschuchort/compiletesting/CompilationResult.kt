@@ -1,5 +1,7 @@
 package com.tschuchort.compiletesting
 
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticMessage
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticSeverity
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
 import java.net.URLClassLoader
@@ -11,14 +13,20 @@ sealed interface CompilationResult {
   val exitCode: KotlinCompilation.ExitCode
   /** Messages that were printed by the compilation. */
   val messages: String
+  /** Messages with captured diagnostic severity. */
+  val diagnosticMessages: List<DiagnosticMessage>
   /** The directory where compiled files will be output to. */
   val outputDirectory: File
+  /** Messages filtered by the given severities */
+  fun messagesWithSeverity(vararg severities: DiagnosticSeverity): String =
+    diagnosticMessages.filter { it.severity in severities }.joinToString("\n")
 }
 
 @ExperimentalCompilerApi
 class JsCompilationResult(
   override val exitCode: KotlinCompilation.ExitCode,
   override val messages: String,
+  override val diagnosticMessages: List<DiagnosticMessage>,
   private val compilation: KotlinJsCompilation,
 ) : CompilationResult {
   override val outputDirectory: File
@@ -33,6 +41,7 @@ class JsCompilationResult(
 class JvmCompilationResult(
   override val exitCode: KotlinCompilation.ExitCode,
   override val messages: String,
+  override val diagnosticMessages: List<DiagnosticMessage>,
   private val compilation: KotlinCompilation,
 ) : CompilationResult {
   override val outputDirectory: File

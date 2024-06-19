@@ -99,9 +99,9 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
         }
         .build()
 
-    val messageCollector =
-      PrintingMessageCollector(output, MessageRenderer.GRADLE_STYLE, compilation.verbose)
-        .filterBy(loggingLevels)
+    // Temporary until friend-paths is fully supported https://youtrack.jetbrains.com/issue/KT-34102
+    @Suppress("invisible_member", "invisible_reference")
+    val messageCollector = compilation.createMessageCollectorAccess("ksp")
     val logger =
       TestKSPLogger(
         messageCollector = messageCollector,

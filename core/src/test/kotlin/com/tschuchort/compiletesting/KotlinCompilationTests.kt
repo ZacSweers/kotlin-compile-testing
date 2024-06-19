@@ -1,5 +1,7 @@
 package com.tschuchort.compiletesting
 
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticMessage
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticSeverity
 import com.nhaarman.mockitokotlin2.*
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.MockitoAdditionalMatchersKotlin.Companion.not
@@ -484,6 +486,8 @@ class KotlinCompilationTests(
 
 		assertThat(result.exitCode).isEqualTo(ExitCode.OK)
 		assertThat(result.messages).contains(JavaTestProcessor.ON_INIT_MSG)
+		assertThat(result.diagnosticMessages)
+			.contains(DiagnosticMessage(DiagnosticSeverity.WARNING, JavaTestProcessor.ON_INIT_MSG))
 
 		assertThat(ProcessedElemMessage.parseAllIn(result.messages)).anyMatch {
 			it.elementSimpleName == "JSource"
