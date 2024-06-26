@@ -591,6 +591,8 @@ class KspTest(private val useKSP2: Boolean) {
       .contains(DiagnosticMessage(DiagnosticSeverity.ERROR, "This is an error message"))
     assertThat(result.messages).contains("This is a failure")
     assertThat(result.diagnosticMessages)
+      // use contains on message as error includes stacktrace
+      .usingElementComparator { a, b -> if (a.severity == b.severity && a.message.contains(b.message)) 0 else -1 }
       .contains(DiagnosticMessage(DiagnosticSeverity.ERROR, "This is a failure"))
   }
 
