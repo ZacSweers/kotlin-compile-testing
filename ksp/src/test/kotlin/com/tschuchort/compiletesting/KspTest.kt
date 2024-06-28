@@ -1,7 +1,5 @@
 package com.tschuchort.compiletesting
 
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticMessage
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticSeverity
 import com.google.auto.service.AutoService
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
@@ -30,7 +28,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.mockito.Mockito.`when`
-import javax.tools.Diagnostic
 
 @RunWith(Parameterized::class)
 class KspTest(private val useKSP2: Boolean) {
