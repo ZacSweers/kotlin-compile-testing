@@ -17,7 +17,6 @@
 package com.tschuchort.compiletesting
 
 import com.facebook.buck.jvm.java.javax.SynchronizedToolProvider
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticMessage
 import com.tschuchort.compiletesting.kapt.toPluginOptions
 import java.io.File
 import java.io.OutputStreamWriter

@@ -1,8 +1,5 @@
 package com.tschuchort.compiletesting
 
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticMessage
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticsMessageCollector
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.MultiMessageCollector
 import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream

@@ -1,7 +1,5 @@
 package com.tschuchort.compiletesting
 
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticMessage
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticSeverity
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
 import java.net.URLClassLoader

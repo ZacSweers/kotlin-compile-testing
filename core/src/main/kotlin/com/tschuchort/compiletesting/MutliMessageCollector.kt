@@ -1,4 +1,4 @@
-package com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting
+package com.tschuchort.compiletesting
 
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
