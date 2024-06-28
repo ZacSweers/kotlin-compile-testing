@@ -1,9 +1,9 @@
 package com.tschuchort.compiletesting
 
+import java.io.File
 import okio.buffer
 import okio.sink
 import org.intellij.lang.annotations.Language
-import java.io.File
 
 /**
  * A source file for the [KotlinCompilation]

@@ -1,9 +1,9 @@
 package com.tschuchort.compiletesting
 
+import java.io.File
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.cli.js.K2JSCompiler
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import java.io.File
 
 @ExperimentalCompilerApi
 @Suppress("MemberVisibilityCanBePrivate")

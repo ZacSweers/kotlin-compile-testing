@@ -18,7 +18,6 @@ package com.tschuchort.compiletesting
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import javax.tools.Diagnostic
 
 /**
  * Custom message collector for Kotlin compilation that collects messages into

@@ -3,6 +3,10 @@ package com.tschuchort.compiletesting
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.verify
+import java.net.URL
+import javax.annotation.processing.AbstractProcessor
+import javax.annotation.processing.RoundEnvironment
+import javax.lang.model.element.TypeElement
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.junit.Assert
@@ -10,10 +14,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.mockito.Mockito
-import java.net.URL
-import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.RoundEnvironment
-import javax.lang.model.element.TypeElement
 
 @RunWith(Parameterized::class)
 class CompilerPluginsTest(

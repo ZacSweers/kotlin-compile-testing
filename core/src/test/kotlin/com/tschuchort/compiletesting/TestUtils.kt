@@ -1,8 +1,8 @@
 package com.tschuchort.compiletesting
 
 import io.github.classgraph.ClassGraph
-import org.assertj.core.api.Assertions
 import java.io.File
+import org.assertj.core.api.Assertions
 
 fun defaultCompilerConfig(useK2: Boolean): KotlinCompilation {
     return KotlinCompilation().apply {

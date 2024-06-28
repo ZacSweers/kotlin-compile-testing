@@ -1,8 +1,8 @@
 package com.tschuchort.compiletesting
 
-import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import java.io.File
 import java.net.URLClassLoader
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 
 /** Result of the compilation. */
 @ExperimentalCompilerApi

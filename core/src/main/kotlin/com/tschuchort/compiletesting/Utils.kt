@@ -1,6 +1,5 @@
 package com.tschuchort.compiletesting
 
-import okio.Buffer
 import java.io.File
 import java.io.FileDescriptor
 import java.io.FileOutputStream
@@ -9,6 +8,7 @@ import java.net.URL
 import java.net.URLClassLoader
 import java.nio.charset.Charset
 import javax.lang.model.SourceVersion
+import okio.Buffer
 
 internal fun <E> MutableCollection<E>.addAll(vararg elems: E) = addAll(elems)
 

@@ -2,11 +2,11 @@ package com.tschuchort.compiletesting
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import java.io.OutputStream
+import java.io.PrintStream
 import okio.Buffer
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import java.io.OutputStream
-import java.io.PrintStream
 
 class StreamUtilTests {
 

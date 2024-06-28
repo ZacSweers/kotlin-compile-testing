@@ -3,10 +3,8 @@ package com.tschuchort.compiletesting;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.kotlinpoet.FileSpec;
 import com.squareup.kotlinpoet.TypeSpec;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import kotlin.text.Charsets;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
@@ -14,7 +12,10 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
-import kotlin.text.Charsets;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class JavaTestProcessor extends AbstractProcessor {
 

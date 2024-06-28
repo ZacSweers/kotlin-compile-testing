@@ -8,8 +8,6 @@ import java.io.File
 import java.io.PrintStream
 import java.util.EnumSet
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
-import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
-import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 
 @ExperimentalCompilerApi

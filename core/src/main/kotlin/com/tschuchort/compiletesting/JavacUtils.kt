@@ -1,12 +1,16 @@
 package com.tschuchort.compiletesting
 
-import okio.Buffer
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.File
+import java.io.InputStream
+import java.io.Reader
+import java.io.StringReader
 import java.net.URI
 import java.nio.charset.Charset
 import javax.tools.JavaCompiler
 import javax.tools.JavaFileObject
 import javax.tools.SimpleJavaFileObject
+import okio.Buffer
 
 /**
  * A [JavaFileObject] created from a source [File].
