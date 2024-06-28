@@ -1,10 +1,20 @@
 package com.tschuchort.compiletesting
 
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticMessage
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.DiagnosticSeverity
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.argWhere
+import com.nhaarman.mockitokotlin2.atLeastOnce
+import com.nhaarman.mockitokotlin2.eq
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.spy
+import com.nhaarman.mockitokotlin2.verify
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.MockitoAdditionalMatchersKotlin.Companion.not
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.nio.file.Files
+import javax.annotation.processing.AbstractProcessor
+import javax.annotation.processing.RoundEnvironment
+import javax.lang.model.element.TypeElement
 import org.assertj.core.api.AbstractStringAssert
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
@@ -16,12 +26,6 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.nio.file.Files
-import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.RoundEnvironment
-import javax.lang.model.element.TypeElement
 
 @RunWith(Parameterized::class)
 class KotlinCompilationTests(
