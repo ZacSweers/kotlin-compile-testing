@@ -1,7 +1,7 @@
 [versions]
 idea = "242.8057" # (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
 kotlin = "2.0.0"
-kotlinpoet = "1.17.0"
+kotlinpoet = "1.18.1"
 ksp = "2.0.0-1.0.22"
 
 [plugins]
