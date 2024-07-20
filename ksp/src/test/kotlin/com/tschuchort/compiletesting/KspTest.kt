@@ -28,6 +28,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.mockito.Mockito.`when`
+import java.nio.file.Files
 
 @RunWith(Parameterized::class)
 class KspTest(private val useKSP2: Boolean) {
@@ -774,5 +775,71 @@ class KspTest(private val useKSP2: Boolean) {
     assertThat(result.messagesWithSeverity(DiagnosticSeverity.LOGGING)).contains("This is a log message")
     assertThat(result.messagesWithSeverity(DiagnosticSeverity.INFO)).contains("This is an info message")
     assertThat(result.messagesWithSeverity(DiagnosticSeverity.WARNING)).contains("This is an warn message")
+  }
+
+  @Test
+  fun `removes old source files`() {
+    val tempDir = Files.createTempDirectory("Kotlin-Compilation").toFile()
+    val annotation =
+      kotlin(
+        "TestAnnotation.kt",
+        """
+            package foo.bar
+            annotation class TestAnnotation
+        """
+      )
+    val c1 =
+      kotlin(
+        "C1.kt",
+        """
+            package foo.bar
+            @TestAnnotation
+            class C1
+        """
+      )
+    val c2 =
+      kotlin(
+        "C2.kt",
+        """
+            package foo.bar
+            @TestAnnotation
+            class C2
+        """
+      )
+    val processor = simpleProcessor { resolver, codeGenerator ->
+      for (annotated in resolver.getSymbolsWithAnnotation("foo.bar.TestAnnotation")) {
+        annotated as KSClassDeclaration
+        codeGenerator.createNewFile(
+          dependencies = Dependencies(false, annotated.containingFile!!),
+          packageName = annotated.packageName.asString(),
+          fileName = "Generated${annotated.simpleName.asString()}",
+        ).close()
+      }
+    }
+
+    val result1 = newCompilation()
+        .apply {
+          workingDir = tempDir
+          kspIncremental = true
+          sources = listOf(annotation, c1)
+          symbolProcessorProviders += processor
+        }
+        .compile()
+
+    assertThat(result1.exitCode).isEqualTo(ExitCode.OK)
+    assertThat(result1.sourcesGeneratedBySymbolProcessor.map { it.name }.toList()).contains("GeneratedC1.kt")
+
+    val result2 = newCompilation()
+        .apply {
+          workingDir = tempDir
+          kspIncremental = true
+          sources = listOf(annotation, c2)
+          symbolProcessorProviders += processor
+        }
+        .compile()
+
+    assertThat(result2.exitCode).isEqualTo(ExitCode.OK)
+    assertThat(result2.sourcesGeneratedBySymbolProcessor.map { it.name }.toList()).contains("GeneratedC2.kt")
+    assertThat(result2.sourcesGeneratedBySymbolProcessor.map { it.name }.toList()).doesNotContain("GeneratedC1.kt")
   }
 }

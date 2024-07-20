@@ -9,7 +9,7 @@ import org.intellij.lang.annotations.Language
  * A source file for the [KotlinCompilation]
  */
 abstract class SourceFile {
-    internal abstract fun writeIfNeeded(dir: File): File
+    internal abstract fun writeTo(dir: File): File
 
     companion object {
         /**
@@ -34,7 +34,7 @@ abstract class SourceFile {
          * Create a new source file for the compilation when the compilation is run
          */
         fun new(name: String, contents: String) = object : SourceFile() {
-            override fun writeIfNeeded(dir: File): File {
+            override fun writeTo(dir: File): File {
                 val file = dir.resolve(name)
                 file.parentFile.mkdirs()
                 file.createNewFile()
@@ -50,12 +50,13 @@ abstract class SourceFile {
         /**
          * Compile an existing source file
          */
+        @Deprecated("This will not work reliably with KSP, use `new` instead")
         fun fromPath(path: File) = object : SourceFile() {
             init {
                 require(path.isFile)
             }
 
-            override fun writeIfNeeded(dir: File): File = path
+            override fun writeTo(dir: File): File = path
         }
     }
 }

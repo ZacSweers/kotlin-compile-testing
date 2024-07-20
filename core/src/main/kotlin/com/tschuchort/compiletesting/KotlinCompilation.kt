@@ -559,6 +559,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
   /** Runs the compilation task */
   fun compile(): JvmCompilationResult {
     // make sure all needed directories exist
+    sourcesDir.deleteRecursively()
     sourcesDir.mkdirs()
     classesDir.mkdirs()
     kaptSourceDir.mkdirs()
@@ -567,7 +568,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
     kaptKotlinGeneratedDir.mkdirs()
 
     // write given sources to working directory
-    val sourceFiles = sources.map { it.writeIfNeeded(sourcesDir) }
+    val sourceFiles = sources.map { it.writeTo(sourcesDir) }
 
     pluginClasspaths.forEach { filepath ->
       if (!filepath.exists()) {

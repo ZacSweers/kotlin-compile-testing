@@ -247,7 +247,7 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
                     /* __HACK__: The Kotlin compiler expects at least one Kotlin source file or it will crash,
                        so we trick the compiler by just including an empty .kt-File. We need the compiler to run
                        even if there are no Kotlin files because some compiler plugins may also process Java files. */
-                    listOf(SourceFile.new("emptyKotlinFile.kt", "").writeIfNeeded(sourcesDir).absolutePath)
+                    listOf(SourceFile.new("emptyKotlinFile.kt", "").writeTo(sourcesDir).absolutePath)
                 } else {
                     emptyList()
                 }

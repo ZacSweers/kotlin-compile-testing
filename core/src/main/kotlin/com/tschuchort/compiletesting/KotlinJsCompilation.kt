@@ -86,11 +86,12 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
   /** Runs the compilation task */
   fun compile(): JsCompilationResult {
     // make sure all needed directories exist
+    sourcesDir.deleteRecursively()
     sourcesDir.mkdirs()
     outputDir.mkdirs()
 
     // write given sources to working directory
-    val sourceFiles = sources.map { it.writeIfNeeded(sourcesDir) }
+    val sourceFiles = sources.map { it.writeTo(sourcesDir) }
 
     pluginClasspaths.forEach { filepath ->
       if (!filepath.exists()) {

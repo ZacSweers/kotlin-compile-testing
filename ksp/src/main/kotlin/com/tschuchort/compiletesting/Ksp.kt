@@ -117,6 +117,12 @@ var KotlinCompilation.kspLoggingLevels: Set<CompilerMessageSeverity>
     tool.loggingLevels = value
   }
 
+@ExperimentalCompilerApi
+val JvmCompilationResult.sourcesGeneratedBySymbolProcessor: Sequence<File>
+  get() = outputDirectory.parentFile.resolve("ksp/sources")
+    .walkTopDown()
+    .filter { it.isFile }
+
 @OptIn(ExperimentalCompilerApi::class)
 internal val KotlinCompilation.kspJavaSourceDir: File
   get() = kspSourcesDir.resolve("java")
