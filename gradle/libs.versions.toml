@@ -41,6 +41,6 @@ okio = "com.squareup.okio:okio:3.9.0"
 
 truth = { module = "com.google.truth:truth", version = "1.4.4" }
 junit = "junit:junit:4.13.2"
-mockito = "org.mockito:mockito-core:5.12.0"
+mockito = "org.mockito:mockito-core:5.13.0"
 mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 assertJ = "org.assertj:assertj-core:3.26.3"
