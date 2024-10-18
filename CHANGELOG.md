@@ -1,6 +1,11 @@
 Changelog
 =========
 
+**Unreleased**
+--------------
+
+- Remove `irOnly` option from `KotlinJsCompilation`.
+
 0.5.1
 -----
 

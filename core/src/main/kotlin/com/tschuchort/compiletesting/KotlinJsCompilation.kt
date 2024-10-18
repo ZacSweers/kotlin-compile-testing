@@ -30,9 +30,6 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
   /** Print declarations' reachability info to stdout during performing DCE */
   var irDcePrintReachabilityInfo: Boolean = false
 
-  /** Disables pre-IR backend */
-  var irOnly: Boolean = true
-
   /** Specify a compilation module name for IR backend */
   var irModuleName: String? = null
 
@@ -77,7 +74,6 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
     args.irProduceJs = irProduceJs
     args.irDce = irDce
     args.irDcePrintReachabilityInfo = irDcePrintReachabilityInfo
-    args.irOnly = irOnly
     args.moduleName = moduleName
     args.irModuleName = irModuleName
     args.generateDts = generateDts
