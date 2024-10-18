@@ -66,3 +66,8 @@ subprojects {
         }
     }
 }
+
+dependencies {
+    dokka(projects.core)
+    dokka(projects.ksp)
+}
