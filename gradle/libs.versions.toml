@@ -1,7 +1,7 @@
 [versions]
 idea = "242.8057" # (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
 kotlin = "2.1.0-RC"
-kotlinpoet = "1.18.1"
+kotlinpoet = "2.0.0"
 ksp = "2.1.0-RC-1.0.27"
 
 [plugins]
@@ -15,7 +15,7 @@ mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.30.0" }
 autoService = "com.google.auto.service:auto-service-annotations:1.1.1"
 autoService-ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.2.0"
 
-classgraph = "io.github.classgraph:classgraph:4.8.176"
+classgraph = "io.github.classgraph:classgraph:4.8.177"
 
 intellij-core = { module = "com.jetbrains.intellij.platform:core", version.ref = "idea" }
 intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "idea" }
@@ -41,6 +41,6 @@ okio = "com.squareup.okio:okio:3.9.1"
 
 truth = { module = "com.google.truth:truth", version = "1.4.4" }
 junit = "junit:junit:4.13.2"
-mockito = "org.mockito:mockito-core:5.13.0"
+mockito = "org.mockito:mockito-core:5.14.2"
 mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 assertJ = "org.assertj:assertj-core:3.26.3"

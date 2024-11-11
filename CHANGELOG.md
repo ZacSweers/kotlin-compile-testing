@@ -6,6 +6,19 @@ Changelog
 
 - Remove `irOnly` option from `KotlinJsCompilation`.
 
+0.6.0
+-----
+
+_2024-11-11_
+
+- **Enhancement**: Cleanup old sources between compilations.
+- Update to Kotlin `2.0.21`.
+- Update to KSP `2.0.21-1.0.27`. Note that this is now the minimum version of KSP support.
+- Update classgraph to `4.8.177`.
+- Update Okio to `3.9.1`.
+
+Special thanks to [@ansman](https://github.com/ansman) for contributing to this release!
+
 0.5.1
 -----
 
