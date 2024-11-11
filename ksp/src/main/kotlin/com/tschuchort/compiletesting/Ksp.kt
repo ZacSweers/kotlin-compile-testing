@@ -6,13 +6,12 @@ import com.google.devtools.ksp.KspOptions
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.processing.impl.MessageCollectorBasedKSPLogger
-import java.io.File
-import java.util.EnumSet
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.jvm.config.JavaSourceRoot
 import org.jetbrains.kotlin.com.intellij.core.CoreApplicationEnvironment
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
+import org.jetbrains.kotlin.com.intellij.openapi.Disposable
 import org.jetbrains.kotlin.com.intellij.psi.PsiTreeChangeAdapter
 import org.jetbrains.kotlin.com.intellij.psi.PsiTreeChangeListener
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
@@ -21,6 +20,8 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.languageVersionSettings
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
+import java.io.File
+import java.util.EnumSet
 
 /** Configure the given KSP tool for this compilation. */
 @OptIn(ExperimentalCompilerApi::class)
@@ -164,7 +165,7 @@ private class KspTestExtension(
 ) : AbstractKotlinSymbolProcessingExtension(options = options, logger = logger, testMode = false) {
   private val loadedProviders = processorProviders
 
-  override fun loadProviders() = loadedProviders
+  override fun loadProviders(rootDisposable: Disposable): List<SymbolProcessorProvider> = loadedProviders
 }
 
 /** Registers the [KspTestExtension] to load the given list of processors. */
