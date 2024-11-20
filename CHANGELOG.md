@@ -6,6 +6,8 @@ Changelog
 
 - Remove `irOnly` option from `KotlinJsCompilation`.
 - Default to the current language/api version if one isn't specified in KSP2 invocations.
+- Update to Kotlin `2.1.0`.
+- Update to KSP `2.1.0-1.0.28`.
 
 0.6.0
 -----
