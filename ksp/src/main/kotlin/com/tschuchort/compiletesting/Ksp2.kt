@@ -50,8 +50,8 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
 
           jvmTarget = compilation.jvmTarget
           jdkHome = compilation.jdkHome
-          languageVersion = compilation.languageVersion ?: "2.0"
-          apiVersion = compilation.apiVersion ?: "2.0"
+          languageVersion = compilation.languageVersion ?: KotlinVersion.CURRENT.languageVersion()
+          apiVersion = compilation.apiVersion ?: KotlinVersion.CURRENT.languageVersion()
 
           // TODO adopt new roots model
           moduleName = compilation.moduleName ?: "main"
@@ -116,6 +116,10 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
       logger.reportAll()
     }
   }
+}
+
+private fun KotlinVersion.languageVersion(): String {
+  return "$major.$minor"
 }
 
 /** Enables KSP2. */
