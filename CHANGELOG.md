@@ -4,6 +4,13 @@ Changelog
 **Unreleased**
 --------------
 
+0.7.1
+-----
+
+_2025-05-05_
+
+- Remove references to `useOldBackend`, which is removed in Kotlin `2.2.0`.
+
 0.7.0
 -----
 
