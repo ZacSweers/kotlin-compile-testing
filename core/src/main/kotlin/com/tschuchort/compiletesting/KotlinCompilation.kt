@@ -82,9 +82,6 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
   /** Generate metadata for Java 1.8 reflection on method parameters */
   var javaParameters: Boolean = false
 
-  /** Use the old JVM backend */
-  var useOldBackend: Boolean = false
-
   /** Paths where to find Java 9+ modules */
   var javaModulePath: Path? = null
 
@@ -288,7 +285,6 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
       args.jvmTarget = jvmTarget
       args.javaParameters = javaParameters
-      args.useOldBackend = useOldBackend
 
       if (javaModulePath != null) args.javaModulePath = javaModulePath!!.toString()
 
