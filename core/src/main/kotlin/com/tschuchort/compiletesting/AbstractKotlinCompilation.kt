@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.Services
-import org.jetbrains.kotlin.kapt3.base.KaptOptions
+import org.jetbrains.kotlin.kapt.base.KaptOptions
 import org.jetbrains.kotlin.util.ServiceLoaderLite
 
 /**

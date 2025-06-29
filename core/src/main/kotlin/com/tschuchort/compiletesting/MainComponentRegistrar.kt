@@ -16,6 +16,7 @@
 @file:Suppress("DEPRECATION")
 package com.tschuchort.compiletesting
 
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.KctKaptCompilerPluginRegistrar
 import com.google.auto.service.AutoService
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
@@ -23,8 +24,8 @@ import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CommonConfigurationKeys.USE_FIR
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.kapt3.base.KaptOptions
-import org.jetbrains.kotlin.kapt3.base.incremental.IncrementalProcessor
+import org.jetbrains.kotlin.kapt.base.KaptOptions
+import org.jetbrains.kotlin.kapt.base.incremental.IncrementalProcessor
 
 @ExperimentalCompilerApi
 @AutoService(ComponentRegistrar::class, CompilerPluginRegistrar::class)
@@ -51,6 +52,10 @@ internal class MainComponentRegistrar : ComponentRegistrar, CompilerPluginRegist
       with(pluginRegistrar) {
         registerExtensions(configuration)
       }
+    }
+
+    with(KctKaptCompilerPluginRegistrar(parameters.processors, parameters.kaptOptions)) {
+      registerExtensions(configuration)
     }
   }
 

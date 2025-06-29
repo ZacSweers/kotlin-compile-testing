@@ -33,7 +33,6 @@ dependencies {
 
     api(libs.kotlin.compilerEmbeddable)
     api(libs.kotlin.annotationProcessingEmbeddable)
-    api(libs.kotlin.kapt4)
 
     testImplementation(libs.kotlinpoet)
     testImplementation(libs.javapoet)

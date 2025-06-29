@@ -32,13 +32,13 @@ import org.jetbrains.kotlin.config.JVMAssertionsMode
 import org.jetbrains.kotlin.config.JvmDefaultMode
 import org.jetbrains.kotlin.config.JvmTarget
 import org.jetbrains.kotlin.config.Services
-import org.jetbrains.kotlin.kapt3.base.AptMode
-import org.jetbrains.kotlin.kapt3.base.KaptFlag
-import org.jetbrains.kotlin.kapt3.base.KaptOptions
-import org.jetbrains.kotlin.kapt3.base.incremental.DeclaredProcType
-import org.jetbrains.kotlin.kapt3.base.incremental.IncrementalProcessor
-import org.jetbrains.kotlin.kapt3.util.MessageCollectorBackedKaptLogger
-import org.jetbrains.kotlin.kapt4.Kapt4CompilerPluginRegistrar
+import org.jetbrains.kotlin.kapt.KaptCompilerPluginRegistrar
+import org.jetbrains.kotlin.kapt.base.AptMode
+import org.jetbrains.kotlin.kapt.base.KaptFlag
+import org.jetbrains.kotlin.kapt.base.KaptOptions
+import org.jetbrains.kotlin.kapt.base.incremental.DeclaredProcType
+import org.jetbrains.kotlin.kapt.base.incremental.IncrementalProcessor
+import org.jetbrains.kotlin.kapt.util.MessageCollectorBackedKaptLogger
 
 data class PluginOption(
   val pluginId: PluginId,
@@ -248,6 +248,8 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
   val kaptIncrementalDataDir
     get() = kaptBaseDir.resolve("incrementalData")
 
+  var processingClasspaths: List<File> = emptyList()
+
   /** ExitCode of the entire Kotlin compilation process */
   enum class ExitCode {
     OK,
@@ -337,6 +339,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
         it.sourcesOutputDir = kaptSourceDir
         it.incrementalDataOutputDir = kaptIncrementalDataDir
         it.classesOutputDir = classesDir
+        it.processingClasspath += commonClasspaths()
         it.processingOptions.apply {
           putAll(kaptArgs)
           putIfAbsent(OPTION_KAPT_KOTLIN_GENERATED, kaptKotlinGeneratedDir.absolutePath)
@@ -387,7 +390,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
     val isK2 = useKapt4()
     if (isK2) {
-      this.compilerPluginRegistrars += Kapt4CompilerPluginRegistrar()
+      this.compilerPluginRegistrars += KaptCompilerPluginRegistrar()
       this.kotlincArguments += kaptOptions.toPluginOptions()
     }
 
