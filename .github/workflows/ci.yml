@@ -17,22 +17,25 @@ concurrency:
 
 jobs:
   build:
-    name: "${{ matrix.platform }}"
-    runs-on: ${{ matrix.platform }}
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [ 'windows-latest', 'ubuntu-latest', 'macos-latest' ]
+    runs-on: 'ubuntu-latest'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - uses: gradle/actions/wrapper-validation@v4
 
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '22'
+          java-version: '23'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          # Only save Gradle User Home state for builds on the 'main' branch.
+          # Builds on other branches will only read existing entries from the cache.
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+          # Don't reuse cache entries from any other Job.
+          gradle-home-cache-strict-match: true
 
       - name: Check
         run: ./gradlew check
