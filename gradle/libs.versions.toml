@@ -1,8 +1,8 @@
 [versions]
 idea = "251.25410.159" # (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
-kotlin = "2.1.10"
+kotlin = "2.2.0"
 kotlinpoet = "2.2.0"
-ksp = "2.1.10-1.0.29"
+ksp = "2.2.0-2.0.2"
 
 [plugins]
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "3.1.0" }
@@ -24,7 +24,6 @@ javapoet = "com.squareup:javapoet:1.13.0"
 
 kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 kotlin-annotationProcessingEmbeddable = { module = "org.jetbrains.kotlin:kotlin-annotation-processing-embeddable", version.ref = "kotlin" }
-kotlin-kapt4 = { module = "org.jetbrains.kotlin:kotlin-annotation-processing-compiler", version.ref = "kotlin" }
 kotlin-scriptingCompiler = { module = "org.jetbrains.kotlin:kotlin-scripting-compiler", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }

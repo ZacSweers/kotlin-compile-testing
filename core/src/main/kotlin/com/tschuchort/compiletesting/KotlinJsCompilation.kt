@@ -56,15 +56,7 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
 
   // setup common arguments for the two kotlinc calls
   private fun jsArgs() = commonArguments(K2JSCompilerArguments()) { args ->
-    // the compiler should never look for stdlib or reflect in the
-    // kotlinHome directory (which is null anyway). We will put them
-    // in the classpath manually if they're needed
-    args.noStdlib = true
-
     args.moduleKind = "commonjs"
-    outputFileName?.let {
-      args.outputFile = File(outputDir, it).absolutePath
-    }
     args.outputDir = outputDir.absolutePath
     args.sourceMapBaseDirs = jsClasspath().joinToString(separator = File.pathSeparator)
     args.libraries = listOfNotNull(kotlinStdLibJsJar).joinToString(separator = ":")

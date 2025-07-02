@@ -2,8 +2,8 @@ package com.tschuchort.compiletesting.kapt
 
 import java.io.File
 import org.jetbrains.kotlin.kapt.cli.KaptCliOption
-import org.jetbrains.kotlin.kapt3.base.KaptFlag
-import org.jetbrains.kotlin.kapt3.base.KaptOptions
+import org.jetbrains.kotlin.kapt.base.KaptFlag
+import org.jetbrains.kotlin.kapt.base.KaptOptions
 
 fun KaptOptions.Builder.toPluginOptions(): List<String> {
     val options = mutableListOf<String>()

@@ -35,6 +35,7 @@ public data class DiagnosticMessage(
 internal fun CompilerMessageSeverity.toSeverity() = when (this) {
     CompilerMessageSeverity.EXCEPTION,
     CompilerMessageSeverity.ERROR -> DiagnosticSeverity.ERROR
+    CompilerMessageSeverity.FIXED_WARNING,
     CompilerMessageSeverity.STRONG_WARNING,
     CompilerMessageSeverity.WARNING -> DiagnosticSeverity.WARNING
     CompilerMessageSeverity.INFO -> DiagnosticSeverity.INFO
