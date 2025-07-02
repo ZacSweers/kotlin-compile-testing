@@ -57,7 +57,6 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
           moduleName = compilation.moduleName ?: "main"
           sourceRoots = sources.filter { it.extension == "kt" }.mapNotNull { it.parentFile.absoluteFile }.distinct()
           javaSourceRoots = sources.filter { it.extension == "java" }.mapNotNull { it.parentFile.absoluteFile }.distinct()
-          @Suppress("invisible_member", "invisible_reference")
           libraries = compilation.classpaths + compilation.commonClasspaths()
 
           cachesDir =
@@ -97,8 +96,6 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
         }
         .build()
 
-    // Temporary until friend-paths is fully supported https://youtrack.jetbrains.com/issue/KT-34102
-    @Suppress("invisible_member", "invisible_reference")
     val messageCollector = compilation.createMessageCollectorAccess("ksp")
     val logger =
       TestKSPLogger(
