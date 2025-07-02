@@ -4,6 +4,20 @@ Changelog
 **Unreleased**
 --------------
 
+0.8.0
+-----
+
+_2025-07-02_
+
+- Update classgraph to `4.8.180`.
+- Update okio to `3.15.0`.
+- Update to Kotlin `2.2.0`.
+- Update to KSP `2.2.0-2.0.2`.
+- Remove KAPT4 support as this was removed in Kotlin 2.2.
+- Support K2 KAPT.
+
+Special thanks to [@eygraber](https://github.com/eygraber) for contributing to this release!
+
 0.7.1
 -----
 
