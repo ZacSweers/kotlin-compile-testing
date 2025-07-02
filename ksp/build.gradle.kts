@@ -12,8 +12,52 @@ tasks
     compilerOptions { optIn.add("org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi") }
   }
 
+// From https://www.liutikas.net/2025/01/12/Kotlin-Library-Friends.html
+// Create configurations we can use to track friend libraries
+configurations {
+  val friendsApi = register("friendsApi") {
+    isCanBeResolved = true
+    isCanBeConsumed = false
+    isTransitive = true
+  }
+  val friendsImplementation = register("friendsImplementation") {
+    isCanBeResolved = true
+    isCanBeConsumed = false
+    isTransitive = false
+  }
+  val friendsTestImplementation = register("friendsTestImplementation") {
+    isCanBeResolved = true
+    isCanBeConsumed = false
+    isTransitive = false
+  }
+  configurations.configureEach {
+    if (name == "implementation") {
+      extendsFrom(friendsApi.get(), friendsImplementation.get())
+    }
+    if (name == "api") {
+      extendsFrom(friendsApi.get())
+    }
+    if (name == "testImplementation") {
+      extendsFrom(friendsTestImplementation.get())
+    }
+  }
+}
+
+// Make these libraries friends :)
+tasks.withType<KotlinCompile>().configureEach {
+  configurations.findByName("friendsApi")?.let {
+    friendPaths.from(it.incoming.artifactView { }.files)
+  }
+  configurations.findByName("friendsImplementation")?.let {
+    friendPaths.from(it.incoming.artifactView { }.files)
+  }
+  configurations.findByName("friendsTestImplementation")?.let {
+    friendPaths.from(it.incoming.artifactView { }.files)
+  }
+}
+
 dependencies {
-  api(projects.core)
+  "friendsApi"(projects.core)
   api(libs.ksp.api)
 
   implementation(libs.ksp)

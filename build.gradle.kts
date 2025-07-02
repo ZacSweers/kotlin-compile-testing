@@ -19,7 +19,7 @@ dokka {
 
 subprojects {
     pluginManager.withPlugin("java") {
-        configure<JavaPluginExtension> { toolchain { languageVersion.set(JavaLanguageVersion.of(22)) } }
+        configure<JavaPluginExtension> { toolchain { languageVersion.set(JavaLanguageVersion.of(23)) } }
 
         tasks.withType<JavaCompile>().configureEach { options.release.set(8) }
     }

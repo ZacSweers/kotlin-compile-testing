@@ -11,8 +11,12 @@ plugins {
 buildConfig {
     className.set("BuildConfig")
     packageName.set("com.tschuchort.compiletesting")
+    generateAtSync = false
+    useKotlinOutput {
+        topLevelConstants = true
+    }
     sourceSets {
-        test {
+        getByName("test") {
             buildConfigField("String", "KOTLIN_VERSION", "\"${libs.versions.kotlin.get()}\"")
         }
     }

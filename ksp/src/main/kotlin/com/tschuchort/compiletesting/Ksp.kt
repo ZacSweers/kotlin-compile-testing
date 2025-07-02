@@ -238,8 +238,6 @@ internal class KspCompileTestingComponentRegistrar(private val compilation: Kotl
         }
         .build()
 
-    // Temporary until friend-paths is fully supported https://youtrack.jetbrains.com/issue/KT-34102
-    @Suppress("invisible_member", "invisible_reference")
     val messageCollector = compilation.createMessageCollectorAccess("ksp")
     val messageCollectorBasedKSPLogger =
       MessageCollectorBasedKSPLogger(
