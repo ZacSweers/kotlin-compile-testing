@@ -8,7 +8,6 @@ fun defaultCompilerConfig(useK2: Boolean): KotlinCompilation {
     return KotlinCompilation().apply {
         inheritClassPath = false
         correctErrorTypes = true
-        verbose = true
         reportOutputFiles = false
         messageOutputStream = System.out
         if (useK2) {
