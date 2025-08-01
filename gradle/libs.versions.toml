@@ -2,7 +2,7 @@
 idea = "251.26927.90" # (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
 kotlin = "2.2.20-Beta2"
 kotlinpoet = "2.2.0"
-ksp = "2.2.0-2.0.2"
+ksp = "2.2.20-Beta2-2.0.2"
 
 [plugins]
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "5.6.7" }
