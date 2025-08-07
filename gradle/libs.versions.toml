@@ -42,4 +42,4 @@ truth = { module = "com.google.truth:truth", version = "1.4.4" }
 junit = "junit:junit:4.13.2"
 mockito = "org.mockito:mockito-core:5.18.0"
 mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
-assertJ = "org.assertj:assertj-core:3.27.3"
+assertJ = "org.assertj:assertj-core:3.27.4"
