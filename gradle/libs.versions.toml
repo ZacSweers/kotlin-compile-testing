@@ -1,5 +1,5 @@
 [versions]
-idea = "251.26927.90" # (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
+idea = "252.23892.449" # (see https://plugins.jetbrains.com/docs/intellij/android-studio-releases-list.html)
 kotlin = "2.2.10-RC"
 kotlinpoet = "2.2.0"
 ksp = "2.2.0-2.0.2"
@@ -36,10 +36,10 @@ ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.re
 ksp-aaEmbeddable = { module = "com.google.devtools.ksp:symbol-processing-aa-embeddable", version.ref = "ksp" }
 ksp-commonDeps = { module = "com.google.devtools.ksp:symbol-processing-common-deps", version.ref = "ksp" }
 
-okio = "com.squareup.okio:okio:3.15.0"
+okio = "com.squareup.okio:okio:3.16.0"
 
 truth = { module = "com.google.truth:truth", version = "1.4.4" }
 junit = "junit:junit:4.13.2"
 mockito = "org.mockito:mockito-core:5.18.0"
 mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
-assertJ = "org.assertj:assertj-core:3.27.3"
+assertJ = "org.assertj:assertj-core:3.27.4"
