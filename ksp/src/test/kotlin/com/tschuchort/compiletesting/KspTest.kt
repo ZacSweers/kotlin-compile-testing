@@ -61,6 +61,7 @@ class KspTest(private val useKSP2: Boolean) {
   private fun newCompilation(): KotlinCompilation {
     return KotlinCompilation().apply {
       inheritClassPath = true
+      verbose = true
       if (useKSP2) {
         useKsp2()
       } else {
