@@ -78,7 +78,7 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
     var sources: List<SourceFile> = emptyList()
 
     /** Print verbose logging info */
-    var verbose: Boolean = false
+    var verbose: Boolean = true
 
     /**
      * Helpful information (if [verbose] = true) and the compiler
