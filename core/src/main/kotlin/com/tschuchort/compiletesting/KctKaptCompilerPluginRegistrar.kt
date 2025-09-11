@@ -74,13 +74,10 @@ internal class KctKaptCompilerPluginRegistrar(
             logger.info(options.logString())
         }
 
+        configuration.put(KAPT_OPTIONS, optionsBuilder)
+
         val kaptFirAnalysisCompletedHandlerExtension =
             object : FirKaptAnalysisHandlerExtension(logger) {
-                override fun isApplicable(configuration: CompilerConfiguration): Boolean {
-                    configuration.put(KAPT_OPTIONS, optionsBuilder)
-                    optionsBuilder.processingClasspath
-                    return configuration.getBoolean(USE_FIR)
-                }
                 override fun loadProcessors() = LoadedProcessors(
                     processors = processors,
                     classLoader = this::class.java.classLoader
