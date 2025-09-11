@@ -4,6 +4,14 @@ Changelog
 **Unreleased**
 --------------
 
+0.9.0
+-----
+
+_2025-09-11_
+
+- Update to Kotlin `2.2.20`. This release requires `2.2.20` or later.
+- Build against KSP `2.2.20-2.0.2`.
+
 0.8.0
 -----
 
