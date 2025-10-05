@@ -18,6 +18,7 @@ import com.squareup.kotlinpoet.ksp.writeTo
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile.Companion.java
 import com.tschuchort.compiletesting.SourceFile.Companion.kotlin
+import java.nio.file.Files
 import java.util.EnumSet
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicInteger
@@ -25,13 +26,9 @@ import kotlin.text.Typography.ellipsis
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
 import org.mockito.Mockito.`when`
-import java.nio.file.Files
 
-@RunWith(Parameterized::class)
-class KspTest(private val useKSP2: Boolean) {
+class KspTest {
   companion object {
     private val DUMMY_KOTLIN_SRC =
       kotlin(
@@ -50,22 +47,12 @@ class KspTest(private val useKSP2: Boolean) {
         """
           .trimIndent(),
       )
-
-    @JvmStatic
-    @Parameterized.Parameters(name = "useKSP2={0}")
-    fun data(): Collection<Array<Any>> {
-      return listOf(arrayOf(true), arrayOf(false))
-    }
   }
 
   private fun newCompilation(): KotlinCompilation {
     return KotlinCompilation().apply {
       inheritClassPath = true
-      if (useKSP2) {
-        useKsp2()
-      } else {
-        languageVersion = "1.9"
-      }
+      useKsp2()
     }
   }
 
@@ -475,6 +462,7 @@ class KspTest(private val useKSP2: Boolean) {
       newCompilation()
         .apply {
           sources = listOf(annotation, targetClass)
+          verbose = true
           symbolProcessorProviders += SymbolProcessorProvider { env ->
             object : AbstractTestSymbolProcessor(env.codeGenerator) {
               override fun process(resolver: Resolver): List<KSAnnotated> {
@@ -618,6 +606,7 @@ class KspTest(private val useKSP2: Boolean) {
     val result =
       newCompilation()
         .apply {
+          verbose = true
           sources = listOf(annotation, targetClass)
           symbolProcessorProviders += SymbolProcessorProvider { env ->
             object : AbstractTestSymbolProcessor(env.codeGenerator) {
@@ -759,6 +748,7 @@ class KspTest(private val useKSP2: Boolean) {
     val result =
       newCompilation()
         .apply {
+          verbose = true
           sources = listOf(annotation, targetClass)
           symbolProcessorProviders += SymbolProcessorProvider { env ->
             object : AbstractTestSymbolProcessor(env.codeGenerator) {

@@ -22,6 +22,11 @@ buildConfig {
     }
 }
 
+tasks.named { it == "kspTestKotlin" }
+  .configureEach {
+    dependsOn(tasks.named { it == "generateTestBuildConfig" })
+  }
+
 dependencies {
     ksp(libs.autoService.ksp)
 

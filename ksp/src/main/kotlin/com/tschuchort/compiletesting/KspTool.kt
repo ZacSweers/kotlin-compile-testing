@@ -18,5 +18,5 @@ sealed interface KspTool {
 @OptIn(ExperimentalCompilerApi::class)
 internal fun KotlinCompilation.getKspTool(): KspTool {
   val ksp2Tool = precursorTools["ksp2"] as? Ksp2PrecursorTool?
-  return ksp2Tool ?: getKspRegistrar()
+  return ksp2Tool ?: error("KSP not configured")
 }

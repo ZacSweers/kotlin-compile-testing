@@ -5,7 +5,9 @@ Changelog
 --------------
 
 - Remove support for Kotlin `1.x`. Only Kotlin 2.x is supported now.
+- Remove support for KSP1. Only KSP2 is supported now.
 - Changed `verbose` to be `false` by default.
+- Build against KSP `2.2.20-2.0.3`.
 
 0.9.0
 -----

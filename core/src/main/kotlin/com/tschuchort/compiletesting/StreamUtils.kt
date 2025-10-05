@@ -1,6 +1,7 @@
 package com.tschuchort.compiletesting
 
-import java.io.*
+import java.io.IOException
+import java.io.OutputStream
 
 
 /** An output stream that does nothing, like /dev/null */

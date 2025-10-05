@@ -385,7 +385,7 @@ class KotlinCompilationTests {
     val clazz = result.classLoader.loadClass("com.tschuchort.compiletesting.Source")
     assertThat(clazz).isNotNull
 
-    val instance = clazz.newInstance()
+    val instance = clazz.constructors[0].newInstance()
     assertThat(instance).isNotNull
 
     assertThat(clazz).hasDeclaredMethods("helloWorld")
@@ -415,7 +415,7 @@ class KotlinCompilationTests {
     val clazz = result.classLoader.loadClass("com.tschuchort.compiletesting.Source")
     assertThat(clazz).isNotNull
 
-    val instance = clazz.newInstance()
+    val instance = clazz.constructors[0].newInstance()
     assertThat(instance).isNotNull
 
     assertThat(clazz).hasDeclaredMethods("helloWorld")
