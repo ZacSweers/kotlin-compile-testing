@@ -4,11 +4,18 @@ Changelog
 **Unreleased**
 --------------
 
+0.10.0
+-----
+
+_2025-10-05_
+
 - Remove support for Kotlin `1.x`. Only Kotlin 2.x is supported now.
   - This includes removal of all legacy 1.x compiler APIs such as `ComponentRegistrar`.
 - Remove support for KSP1. Only KSP2 is supported now.
 - Changed `verbose` to be `false` by default.
 - Build against KSP `2.2.20-2.0.3`.
+
+These changes are in preparation for the upcoming Kotlin `2.3.0`, which will error on builds that detect `ComponentRegistrar` instances on the build classpath.
 
 0.9.0
 -----
