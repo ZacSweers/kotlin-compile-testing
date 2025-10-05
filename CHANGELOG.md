@@ -4,6 +4,9 @@ Changelog
 **Unreleased**
 --------------
 
+- Remove support for Kotlin `1.x`. Only Kotlin 2.x is supported now.
+- Changed `verbose` to be `false` by default.
+
 0.9.0
 -----
 

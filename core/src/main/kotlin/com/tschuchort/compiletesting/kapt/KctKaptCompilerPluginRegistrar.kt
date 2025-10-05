@@ -1,7 +1,6 @@
-package com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting
+package com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.kapt
 
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
-import org.jetbrains.kotlin.cli.common.config.addKotlinSourceRoot
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.cli.jvm.config.JavaSourceRoot
@@ -10,7 +9,6 @@ import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
-import org.jetbrains.kotlin.config.CommonConfigurationKeys.USE_FIR
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.JVMConfigurationKeys
 import org.jetbrains.kotlin.fir.extensions.FirAnalysisHandlerExtension
@@ -28,13 +26,13 @@ import org.jetbrains.kotlin.kapt.util.MessageCollectorBackedKaptLogger
 
 @ExperimentalCompilerApi
 internal class KctKaptCompilerPluginRegistrar(
-    private val processors: List<IncrementalProcessor>,
-    private val kaptOptions: KaptOptions.Builder
+  private val processors: List<IncrementalProcessor>,
+  private val kaptOptions: KaptOptions.Builder
 ) : CompilerPluginRegistrar() {
     override val supportsK2 = true
 
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        if (!configuration.getBoolean(USE_FIR)) return
+        if (!configuration.getBoolean(CommonConfigurationKeys.USE_FIR)) return
 
         if (processors.isEmpty())
             return
@@ -50,15 +48,15 @@ internal class KctKaptCompilerPluginRegistrar(
 
         val messageCollector = configuration.get(CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY)
             ?: PrintingMessageCollector(
-                System.err,
-                MessageRenderer.PLAIN_FULL_PATHS,
-                optionsBuilder.flags.contains(KaptFlag.VERBOSE)
+              System.err,
+              MessageRenderer.PLAIN_FULL_PATHS,
+              optionsBuilder.flags.contains(KaptFlag.VERBOSE)
             )
 
         val logger = MessageCollectorBackedKaptLogger(
-            optionsBuilder.flags.contains(KaptFlag.VERBOSE),
-            optionsBuilder.flags.contains(KaptFlag.INFO_AS_WARNINGS),
-            messageCollector
+          optionsBuilder.flags.contains(KaptFlag.VERBOSE),
+          optionsBuilder.flags.contains(KaptFlag.INFO_AS_WARNINGS),
+          messageCollector
         )
 
         fun abortAnalysis() = FirAnalysisHandlerExtension.Companion.registerExtension(AbortAnalysisHandlerExtension())
@@ -79,18 +77,18 @@ internal class KctKaptCompilerPluginRegistrar(
         val kaptFirAnalysisCompletedHandlerExtension =
             object : FirKaptAnalysisHandlerExtension(logger) {
                 override fun loadProcessors() = LoadedProcessors(
-                    processors = processors,
-                    classLoader = this::class.java.classLoader
+                  processors = processors,
+                  classLoader = this::class.java.classLoader
                 )
             }
 
-        FirAnalysisHandlerExtension.registerExtension(kaptFirAnalysisCompletedHandlerExtension)
+        FirAnalysisHandlerExtension.Companion.registerExtension(kaptFirAnalysisCompletedHandlerExtension)
     }
 
     private fun KaptOptions.Builder.checkOptions(
-        logger: KaptLogger,
-        configuration: CompilerConfiguration,
-        abortAnalysis: () -> Unit
+      logger: KaptLogger,
+      configuration: CompilerConfiguration,
+      abortAnalysis: () -> Unit
     ): Boolean {
         if (classesOutputDir == null) {
             if (configuration.get(JVMConfigurationKeys.OUTPUT_JAR) != null) {
