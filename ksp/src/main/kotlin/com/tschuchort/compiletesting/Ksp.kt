@@ -1,34 +1,15 @@
 /** Adds support for KSP (https://goo.gle/ksp). */
 package com.tschuchort.compiletesting
 
-import com.google.devtools.ksp.AbstractKotlinSymbolProcessingExtension
-import com.google.devtools.ksp.KspOptions
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
-import com.google.devtools.ksp.processing.impl.MessageCollectorBasedKSPLogger
-import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
-import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
-import org.jetbrains.kotlin.cli.jvm.config.JavaSourceRoot
-import org.jetbrains.kotlin.com.intellij.core.CoreApplicationEnvironment
-import org.jetbrains.kotlin.com.intellij.mock.MockProject
-import org.jetbrains.kotlin.com.intellij.openapi.Disposable
-import org.jetbrains.kotlin.com.intellij.psi.PsiTreeChangeAdapter
-import org.jetbrains.kotlin.com.intellij.psi.PsiTreeChangeListener
-import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
-import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.config.languageVersionSettings
-import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
-import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import java.io.File
-import java.util.EnumSet
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
+import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 
 /** Configure the given KSP tool for this compilation. */
 @OptIn(ExperimentalCompilerApi::class)
-fun KotlinCompilation.configureKsp(useKsp2: Boolean = false, body: KspTool.() -> Unit) {
-  if (useKsp2) {
-    useKsp2()
-  }
+fun KotlinCompilation.configureKsp(body: KspTool.() -> Unit) {
+  useKsp2()
   getKspTool().body()
 }
 
@@ -153,117 +134,3 @@ internal val KotlinCompilation.kspClassesDir: File
 @OptIn(ExperimentalCompilerApi::class)
 internal val KotlinCompilation.kspCachesDir: File
   get() = kspWorkingDir.resolve("caches")
-
-/**
- * Custom subclass of [AbstractKotlinSymbolProcessingExtension] where processors are pre-defined
- * instead of being loaded via ServiceLocator.
- */
-private class KspTestExtension(
-  options: KspOptions,
-  processorProviders: List<SymbolProcessorProvider>,
-  logger: KSPLogger,
-) : AbstractKotlinSymbolProcessingExtension(options = options, logger = logger, testMode = false) {
-  private val loadedProviders = processorProviders
-
-  override fun loadProviders(rootDisposable: Disposable): List<SymbolProcessorProvider> = loadedProviders
-}
-
-/** Registers the [KspTestExtension] to load the given list of processors. */
-@OptIn(ExperimentalCompilerApi::class)
-internal class KspCompileTestingComponentRegistrar(private val compilation: KotlinCompilation) :
-  ComponentRegistrar, KspTool {
-  override var symbolProcessorProviders = mutableListOf<SymbolProcessorProvider>()
-  override var processorOptions = mutableMapOf<String, String>()
-  override var incremental: Boolean = false
-  override var incrementalLog: Boolean = false
-  override var allWarningsAsErrors: Boolean = false
-  override var withCompilation: Boolean = false
-  override var loggingLevels: Set<CompilerMessageSeverity> =
-    EnumSet.allOf(CompilerMessageSeverity::class.java)
-
-  override fun registerProjectComponents(
-    project: MockProject,
-    configuration: CompilerConfiguration,
-  ) {
-    if (symbolProcessorProviders.isEmpty()) {
-      return
-    }
-    val options =
-      KspOptions.Builder()
-        .apply {
-          this.projectBaseDir = compilation.kspWorkingDir
-
-          this.processingOptions.putAll(compilation.kspArgs)
-
-          this.incremental = this@KspCompileTestingComponentRegistrar.incremental
-          this.incrementalLog = this@KspCompileTestingComponentRegistrar.incrementalLog
-          this.allWarningsAsErrors = this@KspCompileTestingComponentRegistrar.allWarningsAsErrors
-          this.withCompilation = this@KspCompileTestingComponentRegistrar.withCompilation
-
-          this.cachesDir =
-            compilation.kspCachesDir.also {
-              it.deleteRecursively()
-              it.mkdirs()
-            }
-          this.kspOutputDir =
-            compilation.kspSourcesDir.also {
-              it.deleteRecursively()
-              it.mkdirs()
-            }
-          this.classOutputDir =
-            compilation.kspClassesDir.also {
-              it.deleteRecursively()
-              it.mkdirs()
-            }
-          this.javaOutputDir =
-            compilation.kspJavaSourceDir.also {
-              it.deleteRecursively()
-              it.mkdirs()
-              compilation.registerGeneratedSourcesDir(it)
-            }
-          this.kotlinOutputDir =
-            compilation.kspKotlinSourceDir.also {
-              it.deleteRecursively()
-              it.mkdirs()
-            }
-          this.resourceOutputDir =
-            compilation.kspResources.also {
-              it.deleteRecursively()
-              it.mkdirs()
-            }
-          this.languageVersionSettings = configuration.languageVersionSettings
-          configuration[CLIConfigurationKeys.CONTENT_ROOTS]
-            ?.filterIsInstance<JavaSourceRoot>()
-            ?.forEach { this.javaSourceRoots.add(it.file) }
-        }
-        .build()
-
-    val messageCollector = compilation.createMessageCollectorAccess("ksp")
-    val messageCollectorBasedKSPLogger =
-      MessageCollectorBasedKSPLogger(
-        messageCollector = messageCollector,
-        wrappedMessageCollector = messageCollector,
-        allWarningsAsErrors = allWarningsAsErrors,
-      )
-    val registrar =
-      KspTestExtension(options, symbolProcessorProviders, messageCollectorBasedKSPLogger)
-    AnalysisHandlerExtension.registerExtension(project, registrar)
-    // Dummy extension point; Required by dropPsiCaches().
-    CoreApplicationEnvironment.registerExtensionPoint(
-      project.extensionArea,
-      PsiTreeChangeListener.EP.name,
-      PsiTreeChangeAdapter::class.java,
-    )
-  }
-}
-
-/** Gets the test registrar from the plugin list or adds if it does not exist. */
-@OptIn(ExperimentalCompilerApi::class)
-internal fun KotlinCompilation.getKspRegistrar(): KspCompileTestingComponentRegistrar {
-  componentRegistrars.firstIsInstanceOrNull<KspCompileTestingComponentRegistrar>()?.let {
-    return it
-  }
-  val kspRegistrar = KspCompileTestingComponentRegistrar(this)
-  componentRegistrars += kspRegistrar
-  return kspRegistrar
-}

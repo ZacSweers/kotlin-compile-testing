@@ -375,7 +375,6 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
           IncrementalProcessor(it, DeclaredProcType.NON_INCREMENTAL, kaptLogger)
         },
         kaptOptions,
-        componentRegistrars,
         compilerPluginRegistrars,
         supportsK2,
       )

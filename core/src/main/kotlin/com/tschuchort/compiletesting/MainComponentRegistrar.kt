@@ -16,20 +16,17 @@
 @file:Suppress("DEPRECATION")
 package com.tschuchort.compiletesting
 
-import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.KctKaptCompilerPluginRegistrar
+import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.kapt.KctKaptCompilerPluginRegistrar
 import com.google.auto.service.AutoService
-import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
-import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import org.jetbrains.kotlin.config.CommonConfigurationKeys.USE_FIR
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.kapt.base.KaptOptions
 import org.jetbrains.kotlin.kapt.base.incremental.IncrementalProcessor
 
 @ExperimentalCompilerApi
-@AutoService(ComponentRegistrar::class, CompilerPluginRegistrar::class)
-internal class MainComponentRegistrar : ComponentRegistrar, CompilerPluginRegistrar() {
+@AutoService(CompilerPluginRegistrar::class)
+internal class MainComponentRegistrar : CompilerPluginRegistrar() {
 
   override val supportsK2: Boolean
     get() = getThreadLocalParameters("supportsK2")?.supportsK2 != false
@@ -59,27 +56,6 @@ internal class MainComponentRegistrar : ComponentRegistrar, CompilerPluginRegist
     }
   }
 
-  // Legacy plugins
-  override fun registerProjectComponents(project: MockProject, configuration: CompilerConfiguration) {
-    val parameters = getThreadLocalParameters("registerProjectComponents") ?: return
-
-    /*
-     * The order of registering plugins here matters. If the kapt plugin is registered first, then
-     * it will be executed first and any changes made to the AST by later plugins won't apply to the
-     * generated stub files and thus won't be visible to any annotation processors. So we decided
-     * to register third-party plugins before kapt and hope that it works, although we don't
-     * know for sure if that is the correct way.
-     */
-    parameters.componentRegistrars.forEach { componentRegistrar ->
-      componentRegistrar.registerProjectComponents(project, configuration)
-    }
-
-    if (!configuration.getBoolean(USE_FIR)) {
-      KaptComponentRegistrar(parameters.processors, parameters.kaptOptions)
-        .registerProjectComponents(project, configuration)
-    }
-  }
-
   companion object {
     /*
      * This compiler plugin is instantiated by K2JVMCompiler using
@@ -93,7 +69,6 @@ internal class MainComponentRegistrar : ComponentRegistrar, CompilerPluginRegist
   data class ThreadLocalParameters(
     val processors: List<IncrementalProcessor>,
     val kaptOptions: KaptOptions.Builder,
-    val componentRegistrars: List<ComponentRegistrar>,
     val compilerPluginRegistrar: List<CompilerPluginRegistrar>,
     val supportsK2: Boolean,
   )
