@@ -19,7 +19,6 @@ import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
-import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.kapt.base.KaptOptions
@@ -50,19 +49,6 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
      * Paths to plugins to be made available in the compilation
      */
     var pluginClasspaths: List<File> = emptyList()
-
-    @Deprecated(
-        "Use componentRegistrars instead",
-        ReplaceWith("componentRegistrars"),
-        DeprecationLevel.ERROR
-    )
-    var compilerPlugins: List<ComponentRegistrar> = emptyList()
-
-    /**
-     * Legacy [ComponentRegistrar] plugins that should be added to the compilation.
-     */
-    @Deprecated("Migrate to ComponentPluginRegistrar and use compilerPluginRegistrars instead")
-    var componentRegistrars: List<ComponentRegistrar> = emptyList()
 
     /**
      * [CompilerPluginRegistrars][CompilerPluginRegistrar] that should be added to the compilation.
@@ -173,7 +159,7 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
         /**
          * It's not possible to pass dynamic [CommandLineProcessor] instances directly to the [K2JSCompiler]
          * because the compiler discovers them on the classpath through a service locator, so we need to apply
-         * the same trick as with [ComponentRegistrar]s: We put our own static [CommandLineProcessor] on the
+         * the same trick as with [CompilerPluginRegistrar]s: We put our own static [CommandLineProcessor] on the
          * classpath which in turn calls the user's dynamic [CommandLineProcessor] instances.
          */
         MainCommandLineProcessor.threadLocalParameters.set(
@@ -234,7 +220,6 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
             MainComponentRegistrar.ThreadLocalParameters(
                 listOf(),
                 KaptOptions.Builder(),
-                componentRegistrars,
                 compilerPluginRegistrars,
                 supportsK2
             )
@@ -256,10 +241,9 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
                      be found by the Kotlin compiler's service loader. We add it only when the user has actually given
                      us ComponentRegistrar instances to be loaded by the MainComponentRegistrar because the experimental
                      K2 compiler doesn't support plugins yet. This way, users of K2 can prevent MainComponentRegistrar
-                     from being loaded and crashing K2 by setting both [componentRegistrars] and [commandLineProcessors] to
+                     from being loaded and crashing K2 by setting both [compilerPluginRegistrars] and [commandLineProcessors] to
                      the emptyList. */
                     if (
-                        componentRegistrars.isNotEmpty() ||
                         compilerPluginRegistrars.isNotEmpty() ||
                         commandLineProcessors.isNotEmpty()
                     ) arrayOf(getResourcesPath())
@@ -280,7 +264,7 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
             .asSequence()
             .mapNotNull { url -> urlToResourcePath(url) }
             .find { resourcesPath ->
-                ServiceLoaderLite.findImplementations(ComponentRegistrar::class.java, listOf(resourcesPath.toFile()))
+                ServiceLoaderLite.findImplementations(CompilerPluginRegistrar::class.java, listOf(resourcesPath.toFile()))
                     .any { implementation -> implementation == MainComponentRegistrar::class.java.name }
             }?.toString() ?: throw AssertionError("Could not get path to ComponentRegistrar service from META-INF")
     }
@@ -364,7 +348,7 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
 
     internal fun createMessageCollectorAccess(stepName: String): MessageCollector = createMessageCollector(stepName)
 
-    private val resourceName = "META-INF/services/org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar"
+    private val resourceName = "META-INF/services/org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar"
 }
 
 @ExperimentalCompilerApi
