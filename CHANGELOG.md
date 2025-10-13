@@ -4,6 +4,9 @@ Changelog
 **Unreleased**
 --------------
 
+- **Fix:** Don't set `jvmDefault` automatically (previously defaulted to `JvmDefaultMode.DISABLE`).
+- **Fix:** Use the new, non-deprecated `jvmDefaultStable` CLI option when setting `jvmDefault`.
+
 0.10.0
 -----
 
