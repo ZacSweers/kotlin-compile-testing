@@ -11,6 +11,8 @@ _2025-10-05_
 
 - **Fix:** Don't set `jvmDefault` automatically (previously defaulted to `JvmDefaultMode.DISABLE`).
 - **Fix:** Use the new, non-deprecated `jvmDefaultStable` CLI option when setting `jvmDefault`.
+- Update Okio to `3.16.1`.
+- Build against KSP `2.2.20-2.0.4`.
 
 0.10.0
 ------
