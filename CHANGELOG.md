@@ -4,11 +4,16 @@ Changelog
 **Unreleased**
 --------------
 
+0.10.1
+------
+
+_2025-10-05_
+
 - **Fix:** Don't set `jvmDefault` automatically (previously defaulted to `JvmDefaultMode.DISABLE`).
 - **Fix:** Use the new, non-deprecated `jvmDefaultStable` CLI option when setting `jvmDefault`.
 
 0.10.0
------
+------
 
 _2025-10-05_
 
