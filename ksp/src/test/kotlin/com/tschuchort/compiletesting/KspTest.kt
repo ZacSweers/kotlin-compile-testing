@@ -723,6 +723,129 @@ class KspTest {
     assertThat(result.classLoader.loadClass("foo.bar.AppCodeDummyKt")).isNotNull()
   }
 
+  // Regression test: ensures KSP-generated Java files are visible to Kotlin compiler.
+  // Previously failed with "Unresolved reference" when Kotlin code imported generated Java classes.
+  @Test
+  fun `KSP2 cross-language generation - Kotlin imports generated Java`() {
+    val annotation =
+      kotlin(
+        "TestAnnotation.kt",
+        """
+            package com.example
+            annotation class GenerateProcessor
+        """
+          .trimIndent(),
+      )
+    val targetClass =
+      kotlin(
+        "InputClass.kt",
+        """
+            package com.example
+            @GenerateProcessor
+            class MyInput
+        """
+          .trimIndent(),
+      )
+
+    val result =
+      newCompilation()
+        .apply {
+          sources = listOf(annotation, targetClass)
+          symbolProcessorProviders += SymbolProcessorProvider { env ->
+            object : AbstractTestSymbolProcessor(env.codeGenerator) {
+              override fun process(resolver: Resolver): List<KSAnnotated> {
+                val symbols = resolver.getSymbolsWithAnnotation("com.example.GenerateProcessor").toList()
+
+                if (symbols.isNotEmpty()) {
+                  env.codeGenerator
+                    .createNewFile(
+                      dependencies = Dependencies.ALL_FILES,
+                      packageName = "com.example.generated",
+                      fileName = "MyProcessor",
+                      extensionName = "java",
+                    )
+                    .bufferedWriter()
+                    .use { writer ->
+                      // language=JAVA
+                      writer.write(
+                        """
+                        package com.example.generated;
+
+                        public class MyProcessor {
+                            private final String name;
+
+                            public MyProcessor(String name) {
+                                this.name = name;
+                            }
+
+                            public void process() {
+                                System.out.println("Processing: " + name);
+                            }
+
+                            public String getName() {
+                                return name;
+                            }
+                        }
+                        """
+                          .trimIndent()
+                      )
+                    }
+
+                  env.codeGenerator
+                    .createNewFile(
+                      dependencies = Dependencies.ALL_FILES,
+                      packageName = "com.example.generated",
+                      fileName = "MyExtensions",
+                      extensionName = "kt",
+                    )
+                    .bufferedWriter()
+                    .use { writer ->
+                      // language=KOTLIN
+                      writer.write(
+                        """
+                        package com.example.generated
+
+                        // This import would fail with "Unresolved reference: MyProcessor"
+                        // if Java files are not included in finalSources
+                        import com.example.generated.MyProcessor
+
+                        fun createProcessor(name: String): MyProcessor {
+                            return MyProcessor(name)
+                        }
+
+                        fun MyProcessor.execute() {
+                            process()
+                            println("Executed processor: " + name)
+                        }
+                        """
+                          .trimIndent()
+                      )
+                    }
+                }
+
+                return emptyList()
+              }
+            }
+          }
+        }
+        .compile()
+
+    assertThat(result.exitCode).isEqualTo(ExitCode.OK)
+
+    assertThat(result.classLoader.loadClass("com.example.generated.MyProcessor")).isNotNull()
+    assertThat(result.classLoader.loadClass("com.example.generated.MyExtensionsKt")).isNotNull()
+
+    val processorClass = result.classLoader.loadClass("com.example.generated.MyProcessor")
+    val constructor = processorClass.getConstructor(String::class.java)
+    val instance = constructor.newInstance("test-processor")
+    val getNameMethod = processorClass.getMethod("getName")
+    assertThat(getNameMethod.invoke(instance)).isEqualTo("test-processor")
+
+    val extensionsClass = result.classLoader.loadClass("com.example.generated.MyExtensionsKt")
+    val createProcessorMethod = extensionsClass.getMethod("createProcessor", String::class.java)
+    val createdInstance = createProcessorMethod.invoke(null, "kotlin-created")
+    assertThat(getNameMethod.invoke(createdInstance)).isEqualTo("kotlin-created")
+  }
 
   @Test
   fun `can filter messages by severity`() {
