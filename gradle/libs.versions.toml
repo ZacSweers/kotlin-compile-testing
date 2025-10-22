@@ -7,7 +7,7 @@ ksp = "2.3.0"
 [plugins]
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "5.7.0" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-dokka = { id = "org.jetbrains.dokka", version = "2.0.0" }
+dokka = { id = "org.jetbrains.dokka", version = "2.1.0" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
 
