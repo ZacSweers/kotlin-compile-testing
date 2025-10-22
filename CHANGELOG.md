@@ -4,6 +4,7 @@ Changelog
 **Unreleased**
 --------------
 
+- **Fix**: Feed generated `.java` files from KSP into the subsequent kotlin compilation.
 - Build against KSP `2.3.0`.
 
 0.10.1
