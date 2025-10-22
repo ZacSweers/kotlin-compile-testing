@@ -39,7 +39,7 @@ internal fun File.hasKotlinFileExtension() = hasFileExtension(listOf("kt", "kts"
 
 internal fun File.hasJavaFileExtension() = hasFileExtension(listOf("java"))
 
-internal fun File.hasSourceFileExtension() = hasFileExtension(listOf("kt", "kts", "java"))
+internal fun File.hasSourceFileExtension() = hasFileExtension(listOf("kt", "java"))
 
 internal fun File.hasFileExtension(extensions: List<String>)
     = extensions.any{ it.equals(extension, ignoreCase = true) }
