@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- Build against KSP `2.3.0`.
+
 0.10.1
 ------
 
