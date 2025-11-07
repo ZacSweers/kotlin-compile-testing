@@ -12,6 +12,10 @@ tasks
     compilerOptions { optIn.add("org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi") }
   }
 
+tasks.test {
+  maxParallelForks = Runtime.getRuntime().availableProcessors() * 2
+}
+
 // From https://www.liutikas.net/2025/01/12/Kotlin-Library-Friends.html
 // Create configurations we can use to track friend libraries
 configurations {

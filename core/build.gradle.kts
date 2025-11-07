@@ -51,6 +51,10 @@ dependencies {
     testImplementation(libs.assertJ)
 }
 
+tasks.test {
+  maxParallelForks = Runtime.getRuntime().availableProcessors() * 2
+}
+
 tasks.withType<KotlinCompile>().configureEach {
     val isTest = name.contains("test", ignoreCase = true)
     compilerOptions {
