@@ -37,8 +37,6 @@ dependencies {
     // These dependencies are only needed as a "sample" compiler plugin to test that
     // running compiler plugins passed via the pluginClasspath CLI option works
     testRuntimeOnly(libs.kotlin.scriptingCompiler)
-    testRuntimeOnly(libs.intellij.core)
-    testRuntimeOnly(libs.intellij.util)
 
     api(libs.kotlin.compilerEmbeddable)
     api(libs.kotlin.annotationProcessingEmbeddable)
