@@ -4,6 +4,9 @@ Changelog
 **Unreleased**
 --------------
 
+- Update to Kotlin `2.3.0`.
+- Remove `KEEP_KDOC_COMMENTS_IN_STUBS` kapt option as it was removed upstream.
+
 0.11.0
 ------
 

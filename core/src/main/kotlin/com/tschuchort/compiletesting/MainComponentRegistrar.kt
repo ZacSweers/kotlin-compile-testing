@@ -28,8 +28,9 @@ import org.jetbrains.kotlin.kapt.base.incremental.IncrementalProcessor
 @AutoService(CompilerPluginRegistrar::class)
 internal class MainComponentRegistrar : CompilerPluginRegistrar() {
 
-  override val supportsK2: Boolean
-    get() = getThreadLocalParameters("supportsK2")?.supportsK2 != false
+  override val pluginId: String = "dev.zacsweers.kotlincompiletesting"
+
+  override val supportsK2: Boolean = true
 
   // Handle unset parameters gracefully because this plugin may be accidentally called by other tools that
   // discover it on the classpath (for example the kotlin jupyter kernel).
