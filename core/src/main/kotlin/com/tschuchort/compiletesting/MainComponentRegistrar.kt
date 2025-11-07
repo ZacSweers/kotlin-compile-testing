@@ -71,6 +71,5 @@ internal class MainComponentRegistrar : CompilerPluginRegistrar() {
     val processors: List<IncrementalProcessor>,
     val kaptOptions: KaptOptions.Builder,
     val compilerPluginRegistrar: List<CompilerPluginRegistrar>,
-    val supportsK2: Boolean,
   )
 }

@@ -6,6 +6,7 @@ Changelog
 
 - Update to Kotlin `2.3.0`.
 - Remove `KEEP_KDOC_COMMENTS_IN_STUBS` kapt option as it was removed upstream.
+- Remove `supportsK2` entirely, only K2 is supported going forward.
 
 0.11.0
 ------
