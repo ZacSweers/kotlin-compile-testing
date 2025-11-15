@@ -376,7 +376,6 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
         },
         kaptOptions,
         compilerPluginRegistrars,
-        supportsK2,
       )
     )
 
