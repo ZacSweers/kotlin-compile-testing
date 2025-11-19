@@ -28,6 +28,8 @@ import org.jetbrains.kotlin.kapt.base.incremental.IncrementalProcessor
 @AutoService(CompilerPluginRegistrar::class)
 internal class MainComponentRegistrar : CompilerPluginRegistrar() {
 
+  val pluginId: String = "dev.zacsweers.kotlincompiletesting"
+
   override val supportsK2: Boolean
     get() = getThreadLocalParameters("supportsK2")?.supportsK2 != false
 
