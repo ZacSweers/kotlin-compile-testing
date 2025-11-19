@@ -8,6 +8,13 @@ Changelog
 - Remove `KEEP_KDOC_COMMENTS_IN_STUBS` kapt option as it was removed upstream.
 - Remove `supportsK2` entirely, only K2 is supported going forward.
 
+0.11.1
+------
+
+_2025-11-19_
+
+- Add `pluginId` properties to `CompilerPluginRegistrar` subtypes for forward compatibility with Kotlin `2.3.0`.
+
 0.11.0
 ------
 
