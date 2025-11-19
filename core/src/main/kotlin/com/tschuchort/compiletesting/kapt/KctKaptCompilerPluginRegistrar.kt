@@ -29,6 +29,8 @@ internal class KctKaptCompilerPluginRegistrar(
   private val processors: List<IncrementalProcessor>,
   private val kaptOptions: KaptOptions.Builder
 ) : CompilerPluginRegistrar() {
+    val pluginId: String = "dev.zacsweers.kotlincompiletesting.kapt"
+
     override val supportsK2 = true
 
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
