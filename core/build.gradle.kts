@@ -51,6 +51,8 @@ dependencies {
 
 tasks.test {
   maxParallelForks = Runtime.getRuntime().availableProcessors() * 2
+
+    systemProperty("testRuntimeClasspath", configurations.testRuntimeClasspath.get().asPath)
 }
 
 tasks.withType<KotlinCompile>().configureEach {

@@ -557,6 +557,52 @@ class KotlinCompilationTests {
   }
 
   @Test
+  fun `Java AP runs without inheriting classpath`() {
+    val jAnno =
+      SourceFile.java(
+        "ProcessElem.java",
+        """
+				package com.tschuchort.compiletesting;
+
+				@interface ProcessElem {
+				}
+					""",
+      )
+
+    val jSource =
+      SourceFile.java(
+        "JSource.java",
+        """
+				package com.tschuchort.compiletesting;
+
+				@ProcessElem
+				class JSource {
+				}
+					""",
+      )
+
+    val result =
+      defaultCompilerConfig()
+        .apply {
+          sources = listOf(jAnno, jSource)
+
+          annotationProcessors = listOf(javaTestProc)
+          processingClasspaths += testClasspath
+          inheritClassPath = false
+        }
+        .compile()
+
+    assertThat(result.exitCode).isEqualTo(ExitCode.OK)
+    assertThat(result.messages).contains(JavaTestProcessor.ON_INIT_MSG)
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.WARNING, JavaTestProcessor.ON_INIT_MSG))
+
+    assertThat(ProcessedElemMessage.parseAllIn(result.messages)).anyMatch {
+      it.elementSimpleName == "JSource"
+    }
+  }
+
+  @Test
   fun `Kotlin AP sees Kotlin class`() {
     val kSource =
       SourceFile.kotlin(
@@ -1171,4 +1217,17 @@ class KotlinCompilationTests {
   }
 
   class InheritedClass {}
+
+  private companion object {
+    /** Classpath passed from Gradle via system property, cached for reuse across tests. */
+    private val testClasspath: List<File> by lazy {
+      val classpathProperty =
+        System.getProperty("testRuntimeClasspath")
+          ?: error(
+            "ksp.testRuntimeClasspath system property not set. " +
+                "Make sure to run tests via Gradle."
+          )
+      classpathProperty.split(File.pathSeparator).map(::File)
+    }
+  }
 }
