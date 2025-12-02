@@ -557,6 +557,45 @@ class KotlinCompilationTests {
   }
 
   @Test
+  fun `Java AP runs without inheriting classpath`() {
+    val jSource =
+      SourceFile.java(
+        "JSource.java",
+        """
+				package com.tschuchort.compiletesting;
+
+				@ProcessElem
+				class JSource {
+				}
+					""",
+      )
+
+    val result =
+      defaultCompilerConfig()
+        .apply {
+          sources = listOf(jSource)
+
+          classpaths += TEST_KOTLIN_CLASSES_DIR
+
+          annotationProcessors = listOf(javaTestProc)
+          processingClasspaths += TEST_JAVA_CLASSES_DIR
+          processingClasspaths += TEST_KOTLIN_CLASSES_DIR
+          processingClasspaths += TEST_CLASSPATH
+          inheritClassPath = false
+        }
+        .compile()
+
+    assertThat(result.exitCode).isEqualTo(ExitCode.OK)
+    assertThat(result.messages).contains(JavaTestProcessor.ON_INIT_MSG)
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.WARNING, JavaTestProcessor.ON_INIT_MSG))
+
+    assertThat(ProcessedElemMessage.parseAllIn(result.messages)).anyMatch {
+      it.elementSimpleName == "JSource"
+    }
+  }
+
+  @Test
   fun `Kotlin AP sees Kotlin class`() {
     val kSource =
       SourceFile.kotlin(

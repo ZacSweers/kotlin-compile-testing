@@ -18,6 +18,10 @@ buildConfig {
     sourceSets {
         getByName("test") {
             buildConfigField("String", "KOTLIN_VERSION", "\"${libs.versions.kotlin.get()}\"")
+
+            buildConfigField("TEST_JAVA_CLASSES_DIR", layout.buildDirectory.dir("classes/java/test/").get().asFile)
+            buildConfigField("TEST_KOTLIN_CLASSES_DIR", layout.buildDirectory.dir("classes/kotlin/test/").get().asFile)
+            buildConfigField("TEST_CLASSPATH", configurations.testRuntimeClasspath.map { it.files })
         }
     }
 }
