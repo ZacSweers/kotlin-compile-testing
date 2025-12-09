@@ -4,7 +4,7 @@ kotlinpoet = "2.2.0"
 ksp = "2.3.3"
 
 [plugins]
-buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.5" }
+buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.6" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version = "2.1.0" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
@@ -36,6 +36,6 @@ okio = "com.squareup.okio:okio:3.16.4"
 
 truth = { module = "com.google.truth:truth", version = "1.4.5" }
 junit = "junit:junit:4.13.2"
-mockito = "org.mockito:mockito-core:5.20.0"
+mockito = "org.mockito:mockito-core:5.21.0"
 mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 assertJ = "org.assertj:assertj-core:3.27.6"
