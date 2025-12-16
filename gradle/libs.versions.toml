@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.2.21"
+kotlin = "2.3.0"
 kotlinpoet = "2.2.0"
 ksp = "2.3.3"
 
