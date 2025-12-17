@@ -114,9 +114,6 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
         HostEnvironment.kotlinStdLibCommonJar
     }
 
-    /** Enable support for the new K2 compiler. */
-    var supportsK2 = true
-
     /** Disables compiler scripting support. */
     var disableStandardScript = true
 
@@ -221,7 +218,6 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
                 listOf(),
                 KaptOptions.Builder(),
                 compilerPluginRegistrars,
-                supportsK2
             )
         )
 

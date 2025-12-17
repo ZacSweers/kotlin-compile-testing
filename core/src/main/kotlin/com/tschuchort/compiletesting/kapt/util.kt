@@ -62,7 +62,6 @@ fun KaptOptions.Builder.toPluginOptions(): List<String> {
             KaptCliOption.INFO_AS_WARNINGS_OPTION -> (KaptFlag.INFO_AS_WARNINGS in flags).pluginOption()
             KaptCliOption.STRICT_MODE_OPTION -> (KaptFlag.STRICT in flags).pluginOption()
             KaptCliOption.STRIP_METADATA_OPTION -> (KaptFlag.STRIP_METADATA in flags).pluginOption()
-            KaptCliOption.KEEP_KDOC_COMMENTS_IN_STUBS -> (KaptFlag.KEEP_KDOC_COMMENTS_IN_STUBS in flags).pluginOption()
             KaptCliOption.USE_K2 -> {}
 
             KaptCliOption.SHOW_PROCESSOR_STATS -> (KaptFlag.SHOW_PROCESSOR_STATS in flags).pluginOption()

@@ -6,7 +6,9 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 class FakeCompilerPluginRegistrar(
     override val supportsK2: Boolean = false,
 ) : CompilerPluginRegistrar() {
-    private var isRegistered = false
+  override val pluginId: String = "dev.zacsweers.kotlincompiletesting.fake"
+
+  private var isRegistered = false
 
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
         isRegistered = true
