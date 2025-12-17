@@ -562,23 +562,23 @@ class KotlinCompilationTests {
       SourceFile.java(
         "ProcessElem.java",
         """
-				package com.tschuchort.compiletesting;
+        package com.tschuchort.compiletesting;
 
-				@interface ProcessElem {
-				}
-					""",
+        @interface ProcessElem {
+        }
+          """,
       )
 
     val jSource =
       SourceFile.java(
         "JSource.java",
         """
-				package com.tschuchort.compiletesting;
+        package com.tschuchort.compiletesting;
 
-				@ProcessElem
-				class JSource {
-				}
-					""",
+        @ProcessElem
+        class JSource {
+        }
+          """,
       )
 
     val result =
