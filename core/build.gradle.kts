@@ -27,6 +27,9 @@ tasks.named { it == "kspTestKotlin" }
     dependsOn(tasks.named { it == "generateTestBuildConfig" })
   }
 
+val testAnnotations by configurations.registering
+val testProcessor by configurations.registering
+
 dependencies {
     ksp(libs.autoService.ksp)
 
@@ -41,18 +44,21 @@ dependencies {
     api(libs.kotlin.compilerEmbeddable)
     api(libs.kotlin.annotationProcessingEmbeddable)
 
-    testImplementation(libs.kotlinpoet)
-    testImplementation(libs.javapoet)
+    testImplementation(projects.testProcessor)
     testImplementation(libs.kotlin.junit)
     testImplementation(libs.mockito)
     testImplementation(libs.mockitoKotlin)
     testImplementation(libs.assertJ)
+
+    testAnnotations(projects.testAnnotations)
+    testProcessor(projects.testProcessor)
 }
 
 tasks.test {
   maxParallelForks = Runtime.getRuntime().availableProcessors() * 2
 
-    systemProperty("testRuntimeClasspath", configurations.testRuntimeClasspath.get().asPath)
+    systemProperty("testAnnotationsClasspath", testAnnotations.get().asPath)
+    systemProperty("testProcessorClasspath", testProcessor.get().asPath)
 }
 
 tasks.withType<KotlinCompile>().configureEach {
