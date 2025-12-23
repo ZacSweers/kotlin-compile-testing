@@ -339,6 +339,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
         it.sourcesOutputDir = kaptSourceDir
         it.incrementalDataOutputDir = kaptIncrementalDataDir
         it.classesOutputDir = classesDir
+        it.processingClasspath += processingClasspaths
         if(inheritClassPath) {
           it.processingClasspath += hostClasspaths
         }

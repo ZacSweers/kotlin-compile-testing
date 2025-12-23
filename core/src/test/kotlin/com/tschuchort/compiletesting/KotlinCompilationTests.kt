@@ -1,5 +1,8 @@
 package com.tschuchort.compiletesting
 
+import com.example.processor.JavaTestProcessor
+import com.example.processor.KotlinTestProcessor
+import com.example.processor.ProcessedElemMessage
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argWhere
 import com.nhaarman.mockitokotlin2.atLeastOnce
@@ -500,7 +503,7 @@ class KotlinCompilationTests {
         """
 				package com.tschuchort.compiletesting
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class KSource {
 				}
 					""",
@@ -531,7 +534,7 @@ class KotlinCompilationTests {
         """
 				package com.tschuchort.compiletesting;
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class JSource {
 				}
 					""",
@@ -557,6 +560,77 @@ class KotlinCompilationTests {
   }
 
   @Test
+  fun `Java AP runs without inheriting classpath (with custom classpath)`() {
+    val jSource =
+      SourceFile.java(
+        "JSource.java",
+        """
+        package com.tschuchort.compiletesting;
+
+        @com.example.annotations.ProcessElem
+        class JSource {
+        }
+          """,
+      )
+
+    val result =
+      defaultCompilerConfig()
+        .apply {
+          sources = listOf(jSource)
+
+          annotationProcessors = listOf(javaTestProc)
+          processingClasspaths += testProcessorClasspath
+
+          inheritClassPath = false
+          classpaths += testAnnotationsClasspath
+        }
+        .compile()
+
+    assertThat(result.exitCode).isEqualTo(ExitCode.OK)
+    assertThat(result.messages).contains(JavaTestProcessor.ON_INIT_MSG)
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.WARNING, JavaTestProcessor.ON_INIT_MSG))
+
+    assertThat(ProcessedElemMessage.parseAllIn(result.messages)).anyMatch {
+      it.elementSimpleName == "JSource"
+    }
+  }
+
+  @Test
+  fun `Java AP fails without inheriting classpath (without custom classpath)`() {
+    val jSource =
+      SourceFile.java(
+        "JSource.java",
+        """
+        package com.tschuchort.compiletesting;
+
+        @com.example.annotations.ProcessElem
+        class JSource {
+        }
+          """,
+      )
+
+    val result =
+      defaultCompilerConfig()
+        .apply {
+          sources = listOf(jSource)
+
+          annotationProcessors = listOf(javaTestProc)
+          processingClasspaths += testProcessorClasspath
+
+          inheritClassPath = false
+        }
+        .compile()
+
+    assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
+    assertThat(result.messages)
+      .contains(JavaTestProcessor.ON_INIT_MSG)
+      .contains("package com.example.annotations does not exist")
+    assertThat(result.diagnosticMessages)
+      .contains(DiagnosticMessage(DiagnosticSeverity.WARNING, JavaTestProcessor.ON_INIT_MSG))
+  }
+
+  @Test
   fun `Kotlin AP sees Kotlin class`() {
     val kSource =
       SourceFile.kotlin(
@@ -564,7 +638,7 @@ class KotlinCompilationTests {
         """
 				package com.tschuchort.compiletesting
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class KSource {
 				}
 					""",
@@ -595,7 +669,7 @@ class KotlinCompilationTests {
         """
 				package com.tschuchort.compiletesting;
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class JSource {
 				}
 					""",
@@ -626,7 +700,7 @@ class KotlinCompilationTests {
         """
 				package com.tschuchort.compiletesting;
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class JSource {
 				}
 					""",
@@ -662,7 +736,7 @@ class KotlinCompilationTests {
 				package com.tschuchort.compiletesting;
 				import ${KotlinTestProcessor.GENERATED_PACKAGE}.${KotlinTestProcessor.GENERATED_KOTLIN_CLASS_NAME};
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class JSource {
 					void foo() {
 						Class<?> c = ${KotlinTestProcessor.GENERATED_KOTLIN_CLASS_NAME}.class;
@@ -697,7 +771,7 @@ class KotlinCompilationTests {
 				package com.tschuchort.compiletesting;
 				import ${KotlinTestProcessor.GENERATED_PACKAGE}.${KotlinTestProcessor.GENERATED_JAVA_CLASS_NAME};
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class JSource {
 					void foo() {
 						Class<?> c = ${KotlinTestProcessor.GENERATED_JAVA_CLASS_NAME}.class;
@@ -732,7 +806,7 @@ class KotlinCompilationTests {
 				package com.tschuchort.compiletesting
 				import ${KotlinTestProcessor.GENERATED_PACKAGE}.${KotlinTestProcessor.GENERATED_KOTLIN_CLASS_NAME}
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class KSource {
 					fun foo() {
 						val c = ${KotlinTestProcessor.GENERATED_KOTLIN_CLASS_NAME}::class.java
@@ -767,7 +841,7 @@ class KotlinCompilationTests {
 				package com.tschuchort.compiletesting
 				import ${KotlinTestProcessor.GENERATED_PACKAGE}.${KotlinTestProcessor.GENERATED_JAVA_CLASS_NAME}
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class KSource {
 					fun foo() {
 						val c = ${KotlinTestProcessor.GENERATED_JAVA_CLASS_NAME}::class.java
@@ -832,7 +906,7 @@ class KotlinCompilationTests {
         """
 				package com.tschuchort.compiletesting
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class KSource {
 					fun foo() {}
 				}
@@ -861,7 +935,7 @@ class KotlinCompilationTests {
         """
 				package com.tschuchort.compiletesting
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class KSource {
 					fun foo() {}
 				}
@@ -890,7 +964,7 @@ class KotlinCompilationTests {
         """
 				package com.tschuchort.compiletesting
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class KSource {
 					fun foo() {}
 				}
@@ -918,7 +992,7 @@ class KotlinCompilationTests {
         """
 				package com.tschuchort.compiletesting;
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class JSource {
 					void foo() {
 					}
@@ -999,7 +1073,7 @@ class KotlinCompilationTests {
         """
 				package com.tschuchort.compiletesting;
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class JSource {
 					void foo() {
 					}
@@ -1013,7 +1087,7 @@ class KotlinCompilationTests {
         """
 				package com.tschuchort.compiletesting
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class KSource {
 					fun foo() {}
 				}
@@ -1171,4 +1245,28 @@ class KotlinCompilationTests {
   }
 
   class InheritedClass {}
+
+  private companion object {
+    /** Classpath passed from Gradle via system property, cached for reuse across tests. */
+    private val testAnnotationsClasspath: List<File> by lazy {
+      val classpathProperty =
+        System.getProperty("testAnnotationsClasspath")
+          ?: error(
+            "testAnnotationsClasspath system property not set. " +
+                "Make sure to run tests via Gradle."
+          )
+      classpathProperty.split(File.pathSeparator).map(::File)
+    }
+
+    /** Classpath passed from Gradle via system property, cached for reuse across tests. */
+    private val testProcessorClasspath: List<File> by lazy {
+      val classpathProperty =
+        System.getProperty("testProcessorClasspath")
+          ?: error(
+            "testProcessorClasspath system property not set. " +
+                "Make sure to run tests via Gradle."
+          )
+      classpathProperty.split(File.pathSeparator).map(::File)
+    }
+  }
 }

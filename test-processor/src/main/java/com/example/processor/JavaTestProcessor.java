@@ -1,5 +1,6 @@
-package com.tschuchort.compiletesting;
+package com.example.processor;
 
+import com.example.annotations.ProcessElem;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.kotlinpoet.FileSpec;
 import com.squareup.kotlinpoet.TypeSpec;
