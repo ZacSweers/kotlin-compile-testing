@@ -22,28 +22,12 @@ dependencyResolutionManagement {
     repositories {
         // Repos are declared roughly in order of likely to hit.
 
-        // Snapshots/local go first in order to pre-empty other repos that may contain unscrupulous
-        // snapshots.
-        if (hasProperty("kct.config.enableSnapshots")) {
-            maven("https://oss.sonatype.org/content/repositories/snapshots")
-            maven("https://androidx.dev/snapshots/latest/artifacts/repository")
-        }
-
         if (hasProperty("kct.config.enableMavenLocal")) {
             mavenLocal()
         }
 
         mavenCentral()
-
         google()
-
-        maven("https://www.jetbrains.com/intellij-repository/releases") {
-            name = "Intellij"
-        }
-
-        maven("https://cache-redirector.jetbrains.com/intellij-dependencies") {
-            name = "Intellij"
-        }
     }
 }
 
@@ -58,19 +42,11 @@ pluginManagement {
     repositories {
         // Repos are declared roughly in order of likely to hit.
 
-        // Snapshots/local go first in order to pre-empty other repos that may contain unscrupulous
-        // snapshots.
-        if (hasProperty("kct.config.enableSnapshots")) {
-            maven("https://oss.sonatype.org/content/repositories/snapshots")
-            maven("https://androidx.dev/snapshots/latest/artifacts/repository")
-        }
-
         if (hasProperty("kct.config.enableMavenLocal")) {
             mavenLocal()
         }
 
         mavenCentral()
-
         google()
 
         // Gradle's plugin portal proxies jcenter, which we don't want. To avoid this, we specify
