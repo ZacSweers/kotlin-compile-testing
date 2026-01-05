@@ -4,6 +4,13 @@ Changelog
 **Unreleased**
 --------------
 
+0.12.1
+------
+
+_2026-01-04_
+
+Happy new year!
+
 - **Fix**: Correctly pass processing classpath to kapt.
 - **Fix**: Clear KSP2's `KSPCoreEnvironment` as it leaks memory across multiple runs in tests.
 - **Fix**: Clear KSP2's `KspApplicationManager` as an addition to the above, as an extra defensive measure.
