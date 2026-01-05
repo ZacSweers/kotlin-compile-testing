@@ -71,27 +71,6 @@ allprojects {
             target("*.kts")
             trimTrailingWhitespace()
             endWithNewline()
-            licenseHeaderFile(
-                rootProject.file("spotless/spotless.kt"),
-                "(import|plugins|buildscript|dependencies|pluginManagement|dependencyResolutionManagement)",
-            )
-        }
-        // Apply license formatting separately for kotlin files so we can prevent it from overwriting
-        // copied files
-        format("licenseKotlin") {
-            licenseHeaderFile(rootProject.file("spotless/spotless.kt"), "(package|@file:)")
-            target("src/**/*.kt")
-            targetExclude(
-                "**/DiagnosticMessage.kt",
-                "**/DiagnosticsMessageCollector.kt",
-                "**/KotlinCompilation.kt",
-                "**/MainComponentRegistrar.kt",
-                "**/SynchronizedToolProvider.kt",
-            )
-        }
-        format("licenseJava") {
-            licenseHeaderFile(rootProject.file("spotless/spotless.java"), "package")
-            target("src/**/*.java")
         }
     }
 }
