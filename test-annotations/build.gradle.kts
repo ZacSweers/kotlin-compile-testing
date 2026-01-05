@@ -1,3 +1,1 @@
-plugins {
-    `java-library`
-}
+plugins { `java-library` }

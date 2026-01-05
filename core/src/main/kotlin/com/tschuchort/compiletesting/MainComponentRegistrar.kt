@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 @file:Suppress("DEPRECATION")
+
 package com.tschuchort.compiletesting
 
 import com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.kapt.KctKaptCompilerPluginRegistrar
@@ -32,12 +33,15 @@ internal class MainComponentRegistrar : CompilerPluginRegistrar() {
 
   override val supportsK2: Boolean = true
 
-  // Handle unset parameters gracefully because this plugin may be accidentally called by other tools that
+  // Handle unset parameters gracefully because this plugin may be accidentally called by other
+  // tools that
   // discover it on the classpath (for example the kotlin jupyter kernel).
   private fun getThreadLocalParameters(caller: String): ThreadLocalParameters? {
     val params = threadLocalParameters.get()
     if (params == null) {
-      System.err.println("WARNING: ${MainComponentRegistrar::class.simpleName}::$caller accessed before thread local parameters have been set")
+      System.err.println(
+        "WARNING: ${MainComponentRegistrar::class.simpleName}::$caller accessed before thread local parameters have been set"
+      )
     }
 
     return params
@@ -47,9 +51,7 @@ internal class MainComponentRegistrar : CompilerPluginRegistrar() {
     val parameters = getThreadLocalParameters("registerExtensions") ?: return
 
     parameters.compilerPluginRegistrar.forEach { pluginRegistrar ->
-      with(pluginRegistrar) {
-        registerExtensions(configuration)
-      }
+      with(pluginRegistrar) { registerExtensions(configuration) }
     }
 
     with(KctKaptCompilerPluginRegistrar(parameters.processors, parameters.kaptOptions)) {

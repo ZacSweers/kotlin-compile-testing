@@ -15,6 +15,7 @@ sealed interface CompilationResult {
   val diagnosticMessages: List<DiagnosticMessage>
   /** The directory where compiled files will be output to. */
   val outputDirectory: File
+
   /** Messages filtered by the given severities */
   fun messagesWithSeverity(vararg severities: DiagnosticSeverity): String =
     diagnosticMessages.filter { it.severity in severities }.joinToString("\n")
@@ -51,7 +52,7 @@ class JvmCompilationResult(
       // Include the original classpaths and the output directory to be able to load classes from
       // dependencies.
       compilation.classpaths.plus(outputDirectory).map { it.toURI().toURL() }.toTypedArray(),
-      this::class.java.classLoader
+      this::class.java.classLoader,
     )
 
   /** Compiled classes and resources output by the compilation. */

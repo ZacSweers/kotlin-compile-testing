@@ -3,21 +3,19 @@ package com.tschuchort.compiletesting
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 
-class FakeCompilerPluginRegistrar(
-    override val supportsK2: Boolean = false,
-) : CompilerPluginRegistrar() {
+class FakeCompilerPluginRegistrar(override val supportsK2: Boolean = false) :
+  CompilerPluginRegistrar() {
   override val pluginId: String = "dev.zacsweers.kotlincompiletesting.fake"
 
   private var isRegistered = false
 
-    override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
-        isRegistered = true
-    }
+  override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
+    isRegistered = true
+  }
 
-    fun assertRegistered() {
-        if(!isRegistered) {
-            throw AssertionError("FakeCompilerPluginRegistrar was not registered")
-        }
+  fun assertRegistered() {
+    if (!isRegistered) {
+      throw AssertionError("FakeCompilerPluginRegistrar was not registered")
     }
-
+  }
 }

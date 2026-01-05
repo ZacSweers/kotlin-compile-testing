@@ -17,27 +17,27 @@ import okio.Buffer
  *
  * Used for interfacing with javac ([JavaCompiler]).
  */
-internal class FileJavaFileObject(val sourceFile: File, val charset: Charset = Charset.defaultCharset())
-    : SimpleJavaFileObject(sourceFile.toURI(),
-    deduceKind(sourceFile.toURI())
-) {
+internal class FileJavaFileObject(
+  val sourceFile: File,
+  val charset: Charset = Charset.defaultCharset(),
+) : SimpleJavaFileObject(sourceFile.toURI(), deduceKind(sourceFile.toURI())) {
 
-    init {
-        require(sourceFile.isFile)
-        require(sourceFile.canRead())
-    }
+  init {
+    require(sourceFile.isFile)
+    require(sourceFile.canRead())
+  }
 
-    companion object {
-        private fun deduceKind(uri: URI): JavaFileObject.Kind
-            = JavaFileObject.Kind.values().firstOrNull {
-                uri.path.endsWith(it.extension, ignoreCase = true)
-            } ?: JavaFileObject.Kind.OTHER
-    }
+  companion object {
+    private fun deduceKind(uri: URI): JavaFileObject.Kind =
+      JavaFileObject.Kind.values().firstOrNull {
+        uri.path.endsWith(it.extension, ignoreCase = true)
+      } ?: JavaFileObject.Kind.OTHER
+  }
 
-    override fun openInputStream(): InputStream = sourceFile.inputStream()
+  override fun openInputStream(): InputStream = sourceFile.inputStream()
 
-    override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence
-            = sourceFile.readText(charset)
+  override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence =
+    sourceFile.readText(charset)
 }
 
 /**
@@ -45,71 +45,71 @@ internal class FileJavaFileObject(val sourceFile: File, val charset: Charset = C
  *
  * Used for interfacing with javac ([JavaCompiler]).
  */
-internal class StringJavaFileObject(className: String, private val contents: String)
-    : SimpleJavaFileObject(
+internal class StringJavaFileObject(className: String, private val contents: String) :
+  SimpleJavaFileObject(
     URI.create("string:///" + className.replace('.', '/') + JavaFileObject.Kind.SOURCE.extension),
-    JavaFileObject.Kind.SOURCE
-){
-    private var _lastModified = System.currentTimeMillis()
+    JavaFileObject.Kind.SOURCE,
+  ) {
+  private var _lastModified = System.currentTimeMillis()
 
-    override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence = contents
+  override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence = contents
 
-    override fun openInputStream(): InputStream
-            = ByteArrayInputStream(contents.toByteArray(Charset.defaultCharset()))
+  override fun openInputStream(): InputStream =
+    ByteArrayInputStream(contents.toByteArray(Charset.defaultCharset()))
 
-    override fun openReader(ignoreEncodingErrors: Boolean): Reader = StringReader(contents)
+  override fun openReader(ignoreEncodingErrors: Boolean): Reader = StringReader(contents)
 
-    override fun getLastModified(): Long = _lastModified
+  override fun getLastModified(): Long = _lastModified
 }
 
 /**
- * Gets the version string of a javac executable that can be started using the
- * given [javacCommand] via [Runtime.exec].
+ * Gets the version string of a javac executable that can be started using the given [javacCommand]
+ * via [Runtime.exec].
  */
 internal fun getJavacVersionString(javacCommand: String): String {
-    val javacProc = ProcessBuilder(listOf(javacCommand, "-version"))
-        .redirectErrorStream(true)
-        .start()
+  val javacProc = ProcessBuilder(listOf(javacCommand, "-version")).redirectErrorStream(true).start()
 
-    val buffer = Buffer()
+  val buffer = Buffer()
 
-    javacProc.inputStream.copyTo(buffer.outputStream())
-    javacProc.waitFor()
+  javacProc.inputStream.copyTo(buffer.outputStream())
+  javacProc.waitFor()
 
-    val output = buffer.readUtf8()
+  val output = buffer.readUtf8()
 
-    return parseVersionString(output) ?: throw IllegalStateException(
-        "Command '$javacCommand -version' did not print expected output. " +
-                "Output was: '$output'"
+  return parseVersionString(output)
+    ?: throw IllegalStateException(
+      "Command '$javacCommand -version' did not print expected output. " + "Output was: '$output'"
     )
 }
 
 internal fun parseVersionString(output: String) =
-    Regex("javac (.*)?[\\s\\S]*").find(output)?.destructured?.component1()
+  Regex("javac (.*)?[\\s\\S]*").find(output)?.destructured?.component1()
 
 internal fun isJavac9OrLater(javacVersionString: String): Boolean {
-    try {
-        val (majorv, minorv, patchv, otherv) = Regex("([0-9]*)(?:\\.([0-9]*))?(?:\\.([0-9]*))?(.*)")
-            .matchEntire(javacVersionString)?.destructured
-            ?: throw IllegalArgumentException("Could not match version regex")
+  try {
+    val (majorv, minorv, patchv, otherv) =
+      Regex("([0-9]*)(?:\\.([0-9]*))?(?:\\.([0-9]*))?(.*)")
+        .matchEntire(javacVersionString)
+        ?.destructured ?: throw IllegalArgumentException("Could not match version regex")
 
-        check(majorv.isNotBlank()) { "Major version can not be blank" }
+    check(majorv.isNotBlank()) { "Major version can not be blank" }
 
-        if (majorv.toInt() == 1)
-            check(minorv.isNotBlank()) { "Minor version can not be blank if major version is 1" }
+    if (majorv.toInt() == 1)
+      check(minorv.isNotBlank()) { "Minor version can not be blank if major version is 1" }
 
-        return (majorv.toInt() == 1 && minorv.toInt() >= 9) // old versioning scheme: 1.8.x
-                || (majorv.toInt() >= 9) // new versioning scheme: 10.x.x
-    }
-    catch (t: Throwable) {
-        throw IllegalArgumentException("Could not parse javac version string: '$javacVersionString'", t)
-    }
+    return (majorv.toInt() == 1 && minorv.toInt() >= 9) // old versioning scheme: 1.8.x
+    || (majorv.toInt() >= 9) // new versioning scheme: 10.x.x
+  } catch (t: Throwable) {
+    throw IllegalArgumentException("Could not parse javac version string: '$javacVersionString'", t)
+  }
 }
 
 /** Finds the tools.jar given a path to a JDK 8 or earlier */
 internal fun findToolsJarFromJdk(jdkHome: File): File {
-    return jdkHome.resolve("../lib/tools.jar").existsOrNull()
-        ?: jdkHome.resolve("lib/tools.jar").existsOrNull()
-        ?: jdkHome.resolve("tools.jar").existsOrNull()
-        ?: throw IllegalStateException("Can not find tools.jar from JDK with path ${jdkHome.absolutePath}")
+  return jdkHome.resolve("../lib/tools.jar").existsOrNull()
+    ?: jdkHome.resolve("lib/tools.jar").existsOrNull()
+    ?: jdkHome.resolve("tools.jar").existsOrNull()
+    ?: throw IllegalStateException(
+      "Can not find tools.jar from JDK with path ${jdkHome.absolutePath}"
+    )
 }

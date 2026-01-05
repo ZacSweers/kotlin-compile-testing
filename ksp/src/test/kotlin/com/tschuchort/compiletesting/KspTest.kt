@@ -34,7 +34,7 @@ class KspTest {
       kotlin(
         "foo.bar.Dummy.kt",
         """
-            class Dummy {}
+        class Dummy {}
         """
           .trimIndent(),
       )
@@ -43,7 +43,7 @@ class KspTest {
       java(
         "foo.bar.DummyJava.java",
         """
-            class DummyJava {}
+        class DummyJava {}
         """
           .trimIndent(),
       )
@@ -119,8 +119,8 @@ class KspTest {
       kotlin(
         "TestAnnotation.kt",
         """
-            package foo.bar
-            annotation class TestAnnotation
+        package foo.bar
+        annotation class TestAnnotation
         """
           .trimIndent(),
       )
@@ -128,15 +128,15 @@ class KspTest {
       kotlin(
         "AppCode.kt",
         """
-            package foo.bar
-            import foo.bar.generated.AppCode_Gen
-            @TestAnnotation
-            class AppCode {
-                init {
-                    // access generated code
-                    AppCode_Gen()
-                }
+        package foo.bar
+        import foo.bar.generated.AppCode_Gen
+        @TestAnnotation
+        class AppCode {
+            init {
+                // access generated code
+                AppCode_Gen()
             }
+        }
         """
           .trimIndent(),
       )
@@ -188,11 +188,11 @@ class KspTest {
       kotlin(
         "foo.bar.Dummy.kt",
         """
-            package foo.bar
-            import generated.A
-            import generated.B
-            import generated.C
-            class Dummy(val a:A, val b:B, val c:C)
+        package foo.bar
+        import generated.A
+        import generated.B
+        import generated.C
+        class Dummy(val a:A, val b:B, val c:C)
         """
           .trimIndent(),
       )
@@ -308,7 +308,7 @@ class KspTest {
       java(
         "JavaSubject.java",
         """
-            import com.tschuchort.compiletesting.InheritedClasspathClass;            
+            import com.tschuchort.compiletesting.InheritedClasspathClass;
 
             @${AutoService::class.qualifiedName}(Runnable.class)
             class JavaSubject {
@@ -359,15 +359,16 @@ class KspTest {
   // This test ensures that we can access files on the same source compilation as the test itself
   @Test
   fun inheritedSourceClasspath() {
-    val source = kotlin(
-      "Example.kt",
-      """
+    val source =
+      kotlin(
+        "Example.kt",
+        """
         package test
-        
+
         import com.tschuchort.compiletesting.ClasspathTestAnnotation
         import com.tschuchort.compiletesting.AnnotationEnumValue
         import com.tschuchort.compiletesting.AnotherAnnotation
-        
+
         @ClasspathTestAnnotation(
           enumValue = AnnotationEnumValue.ONE,
           enumValueArray = [AnnotationEnumValue.ONE, AnnotationEnumValue.TWO],
@@ -375,8 +376,8 @@ class KspTest {
           anotherAnnotationArray = [AnotherAnnotation("Hello")]
         )
         class Example
-      """
-    )
+      """,
+      )
 
     val compilation =
       newCompilation().apply {
@@ -389,14 +390,12 @@ class KspTest {
             .forEach {
               val annotation = it.annotations.first().toAnnotationSpec()
               FileSpec.get(
-                it.packageName.asString(), TypeSpec.classBuilder("Gen_${it.simpleName.asString()}")
-                  .addAnnotation(annotation)
-                  .build()
-              )
-                .writeTo(
-                  codeGenerator,
-                  aggregating = false
+                  it.packageName.asString(),
+                  TypeSpec.classBuilder("Gen_${it.simpleName.asString()}")
+                    .addAnnotation(annotation)
+                    .build(),
                 )
+                .writeTo(codeGenerator, aggregating = false)
             }
         }
       }
@@ -443,8 +442,8 @@ class KspTest {
       kotlin(
         "TestAnnotation.kt",
         """
-            package foo.bar
-            annotation class TestAnnotation
+        package foo.bar
+        annotation class TestAnnotation
         """
           .trimIndent(),
       )
@@ -452,9 +451,9 @@ class KspTest {
       kotlin(
         "AppCode.kt",
         """
-            package foo.bar
-            @TestAnnotation
-            class AppCode
+        package foo.bar
+        @TestAnnotation
+        class AppCode
         """
           .trimIndent(),
       )
@@ -493,8 +492,8 @@ class KspTest {
       kotlin(
         "TestAnnotation.kt",
         """
-            package foo.bar
-            annotation class TestAnnotation
+        package foo.bar
+        annotation class TestAnnotation
         """
           .trimIndent(),
       )
@@ -502,9 +501,9 @@ class KspTest {
       kotlin(
         "AppCode.kt",
         """
-            package foo.bar
-            @TestAnnotation
-            class AppCode
+        package foo.bar
+        @TestAnnotation
+        class AppCode
         """
           .trimIndent(),
       )
@@ -541,8 +540,8 @@ class KspTest {
       kotlin(
         "TestAnnotation.kt",
         """
-            package foo.bar
-            annotation class TestAnnotation
+        package foo.bar
+        annotation class TestAnnotation
         """
           .trimIndent(),
       )
@@ -550,9 +549,9 @@ class KspTest {
       kotlin(
         "AppCode.kt",
         """
-            package foo.bar
-            @TestAnnotation
-            class AppCode
+        package foo.bar
+        @TestAnnotation
+        class AppCode
         """
           .trimIndent(),
       )
@@ -578,7 +577,9 @@ class KspTest {
     assertThat(result.messages).contains("This is a failure")
     assertThat(result.diagnosticMessages)
       // use contains on message as error includes stacktrace
-      .usingElementComparator { a, b -> if (a.severity == b.severity && a.message.contains(b.message)) 0 else -1 }
+      .usingElementComparator { a, b ->
+        if (a.severity == b.severity && a.message.contains(b.message)) 0 else -1
+      }
       .contains(DiagnosticMessage(DiagnosticSeverity.ERROR, "This is a failure"))
   }
 
@@ -588,8 +589,8 @@ class KspTest {
       kotlin(
         "TestAnnotation.kt",
         """
-            package foo.bar
-            annotation class TestAnnotation
+        package foo.bar
+        annotation class TestAnnotation
         """
           .trimIndent(),
       )
@@ -597,9 +598,9 @@ class KspTest {
       kotlin(
         "AppCode.kt",
         """
-            package foo.bar
-            @TestAnnotation
-            class AppCode
+        package foo.bar
+        @TestAnnotation
+        class AppCode
         """
           .trimIndent(),
       )
@@ -623,13 +624,25 @@ class KspTest {
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     assertThat(result.messages).contains("This is a log message with ellipsis $ellipsis")
     assertThat(result.diagnosticMessages)
-      .contains(DiagnosticMessage(DiagnosticSeverity.LOGGING, "This is a log message with ellipsis $ellipsis"))
+      .contains(
+        DiagnosticMessage(
+          DiagnosticSeverity.LOGGING,
+          "This is a log message with ellipsis $ellipsis",
+        )
+      )
     assertThat(result.messages).contains("This is an info message with unicode \uD83D\uDCAB")
     assertThat(result.diagnosticMessages)
-      .contains(DiagnosticMessage(DiagnosticSeverity.INFO, "This is an info message with unicode \uD83D\uDCAB"))
+      .contains(
+        DiagnosticMessage(
+          DiagnosticSeverity.INFO,
+          "This is an info message with unicode \uD83D\uDCAB",
+        )
+      )
     assertThat(result.messages).contains("This is an warn message with emoji 🔥")
     assertThat(result.diagnosticMessages)
-      .contains(DiagnosticMessage(DiagnosticSeverity.WARNING, "This is an warn message with emoji 🔥"))
+      .contains(
+        DiagnosticMessage(DiagnosticSeverity.WARNING, "This is an warn message with emoji 🔥")
+      )
   }
 
   // This test exercises both using withCompilation (for in-process compilation of generated
@@ -641,8 +654,8 @@ class KspTest {
       kotlin(
         "TestAnnotation.kt",
         """
-            package foo.bar
-            annotation class TestAnnotation
+        package foo.bar
+        annotation class TestAnnotation
         """
           .trimIndent(),
       )
@@ -650,9 +663,9 @@ class KspTest {
       kotlin(
         "AppCode.kt",
         """
-            package foo.bar
-            @TestAnnotation
-            class AppCode
+        package foo.bar
+        @TestAnnotation
+        class AppCode
         """
           .trimIndent(),
       )
@@ -681,9 +694,9 @@ class KspTest {
                       it.write(
                         """
                                         package foo.bar;
-                                        
+
                                         class ${simpleName}Java {
-                                        
+
                                         }
                                         """
                           .trimIndent()
@@ -702,9 +715,9 @@ class KspTest {
                       it.write(
                         """
                                         package foo.bar
-                                        
+
                                         class ${simpleName}Kt {
-                                        
+
                                         }
                                         """
                           .trimIndent()
@@ -731,8 +744,8 @@ class KspTest {
       kotlin(
         "TestAnnotation.kt",
         """
-            package com.example
-            annotation class GenerateProcessor
+        package com.example
+        annotation class GenerateProcessor
         """
           .trimIndent(),
       )
@@ -740,9 +753,9 @@ class KspTest {
       kotlin(
         "InputClass.kt",
         """
-            package com.example
-            @GenerateProcessor
-            class MyInput
+        package com.example
+        @GenerateProcessor
+        class MyInput
         """
           .trimIndent(),
       )
@@ -754,7 +767,8 @@ class KspTest {
           symbolProcessorProviders += SymbolProcessorProvider { env ->
             object : AbstractTestSymbolProcessor(env.codeGenerator) {
               override fun process(resolver: Resolver): List<KSAnnotated> {
-                val symbols = resolver.getSymbolsWithAnnotation("com.example.GenerateProcessor").toList()
+                val symbols =
+                  resolver.getSymbolsWithAnnotation("com.example.GenerateProcessor").toList()
 
                 if (symbols.isNotEmpty()) {
                   env.codeGenerator
@@ -853,8 +867,8 @@ class KspTest {
       kotlin(
         "TestAnnotation.kt",
         """
-            package foo.bar
-            annotation class TestAnnotation
+        package foo.bar
+        annotation class TestAnnotation
         """
           .trimIndent(),
       )
@@ -862,9 +876,9 @@ class KspTest {
       kotlin(
         "AppCode.kt",
         """
-            package foo.bar
-            @TestAnnotation
-            class AppCode
+        package foo.bar
+        @TestAnnotation
+        class AppCode
         """
           .trimIndent(),
       )
@@ -885,9 +899,12 @@ class KspTest {
           }
         }
         .compile()
-    assertThat(result.messagesWithSeverity(DiagnosticSeverity.LOGGING)).contains("This is a log message")
-    assertThat(result.messagesWithSeverity(DiagnosticSeverity.INFO)).contains("This is an info message")
-    assertThat(result.messagesWithSeverity(DiagnosticSeverity.WARNING)).contains("This is an warn message")
+    assertThat(result.messagesWithSeverity(DiagnosticSeverity.LOGGING))
+      .contains("This is a log message")
+    assertThat(result.messagesWithSeverity(DiagnosticSeverity.INFO))
+      .contains("This is an info message")
+    assertThat(result.messagesWithSeverity(DiagnosticSeverity.WARNING))
+      .contains("This is an warn message")
   }
 
   @Test
@@ -899,7 +916,7 @@ class KspTest {
         """
             package foo.bar
             annotation class TestAnnotation
-        """
+        """,
       )
     val c1 =
       kotlin(
@@ -908,7 +925,7 @@ class KspTest {
             package foo.bar
             @TestAnnotation
             class C1
-        """
+        """,
       )
     val c2 =
       kotlin(
@@ -917,20 +934,23 @@ class KspTest {
             package foo.bar
             @TestAnnotation
             class C2
-        """
+        """,
       )
     val processor = simpleProcessor { resolver, codeGenerator ->
       for (annotated in resolver.getSymbolsWithAnnotation("foo.bar.TestAnnotation")) {
         annotated as KSClassDeclaration
-        codeGenerator.createNewFile(
-          dependencies = Dependencies(false, annotated.containingFile!!),
-          packageName = annotated.packageName.asString(),
-          fileName = "Generated${annotated.simpleName.asString()}",
-        ).close()
+        codeGenerator
+          .createNewFile(
+            dependencies = Dependencies(false, annotated.containingFile!!),
+            packageName = annotated.packageName.asString(),
+            fileName = "Generated${annotated.simpleName.asString()}",
+          )
+          .close()
       }
     }
 
-    val result1 = newCompilation()
+    val result1 =
+      newCompilation()
         .apply {
           workingDir = tempDir
           kspIncremental = true
@@ -940,9 +960,11 @@ class KspTest {
         .compile()
 
     assertThat(result1.exitCode).isEqualTo(ExitCode.OK)
-    assertThat(result1.sourcesGeneratedBySymbolProcessor.map { it.name }.toList()).contains("GeneratedC1.kt")
+    assertThat(result1.sourcesGeneratedBySymbolProcessor.map { it.name }.toList())
+      .contains("GeneratedC1.kt")
 
-    val result2 = newCompilation()
+    val result2 =
+      newCompilation()
         .apply {
           workingDir = tempDir
           kspIncremental = true
@@ -952,7 +974,9 @@ class KspTest {
         .compile()
 
     assertThat(result2.exitCode).isEqualTo(ExitCode.OK)
-    assertThat(result2.sourcesGeneratedBySymbolProcessor.map { it.name }.toList()).contains("GeneratedC2.kt")
-    assertThat(result2.sourcesGeneratedBySymbolProcessor.map { it.name }.toList()).doesNotContain("GeneratedC1.kt")
+    assertThat(result2.sourcesGeneratedBySymbolProcessor.map { it.name }.toList())
+      .contains("GeneratedC2.kt")
+    assertThat(result2.sourcesGeneratedBySymbolProcessor.map { it.name }.toList())
+      .doesNotContain("GeneratedC1.kt")
   }
 }
