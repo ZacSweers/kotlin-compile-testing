@@ -2,17 +2,97 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.diffplug.gradle.spotless.SpotlessExtension
+import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
+import com.diffplug.spotless.LineEnding
 
 plugins {
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.dokka)
     alias(libs.plugins.mavenPublish) apply false
+    alias(libs.plugins.spotless)
 }
 
 dokka {
     dokkaPublications.html {
         outputDirectory.set(rootDir.resolve("docs/api/0.x"))
         includes.from(project.layout.projectDirectory.file("README.md"))
+    }
+}
+
+val ktfmtVersion = libs.versions.ktfmt.get()
+
+spotless { predeclareDeps() }
+
+configure<SpotlessExtensionPredeclare> {
+    kotlin { ktfmt(ktfmtVersion).googleStyle().configure { it.setRemoveUnusedImports(true) } }
+    kotlinGradle { ktfmt(ktfmtVersion).googleStyle().configure { it.setRemoveUnusedImports(true) } }
+    java {
+        googleJavaFormat(libs.versions.gjf.get())
+            .reorderImports(true)
+            .reflowLongStrings(true)
+            .reorderImports(true)
+    }
+}
+
+// Configure spotless in subprojects
+allprojects {
+    apply(plugin = "com.diffplug.spotless")
+    configure<SpotlessExtension> {
+        setLineEndings(LineEnding.GIT_ATTRIBUTES_FAST_ALLSAME)
+        format("misc") {
+            target("*.gradle", "*.md", ".gitignore")
+            trimTrailingWhitespace()
+            leadingTabsToSpaces(2)
+            endWithNewline()
+        }
+        java {
+            googleJavaFormat(libs.versions.gjf.get())
+                .reorderImports(true)
+                .reflowLongStrings(true)
+                .reorderImports(true)
+            target("src/**/*.java")
+            trimTrailingWhitespace()
+            endWithNewline()
+            targetExclude("**/spotless.java")
+            targetExclude("**/src/test/data/**")
+            targetExclude("**/*Generated.java")
+        }
+        kotlin {
+            ktfmt(ktfmtVersion).googleStyle().configure { it.setRemoveUnusedImports(true) }
+            target("src/**/*.kt")
+            trimTrailingWhitespace()
+            endWithNewline()
+            targetExclude("**/spotless.kt")
+            targetExclude("**/src/test/data/**")
+        }
+        kotlinGradle {
+            ktfmt(ktfmtVersion).googleStyle().configure { it.setRemoveUnusedImports(true) }
+            target("*.kts")
+            trimTrailingWhitespace()
+            endWithNewline()
+            licenseHeaderFile(
+                rootProject.file("spotless/spotless.kt"),
+                "(import|plugins|buildscript|dependencies|pluginManagement|dependencyResolutionManagement)",
+            )
+        }
+        // Apply license formatting separately for kotlin files so we can prevent it from overwriting
+        // copied files
+        format("licenseKotlin") {
+            licenseHeaderFile(rootProject.file("spotless/spotless.kt"), "(package|@file:)")
+            target("src/**/*.kt")
+            targetExclude(
+                "**/DiagnosticMessage.kt",
+                "**/DiagnosticsMessageCollector.kt",
+                "**/KotlinCompilation.kt",
+                "**/MainComponentRegistrar.kt",
+                "**/SynchronizedToolProvider.kt",
+            )
+        }
+        format("licenseJava") {
+            licenseHeaderFile(rootProject.file("spotless/spotless.java"), "package")
+            target("src/**/*.java")
+        }
     }
 }
 
