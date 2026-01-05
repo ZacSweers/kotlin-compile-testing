@@ -1,5 +1,6 @@
 package com.tschuchort.compiletesting
 
+import com.example.annotations.ProcessElem
 import java.net.URI
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
@@ -50,7 +51,7 @@ class CompilerPluginsTest {
         """
 				package com.tschuchort.compiletesting;
 
-				@ProcessElem
+				@com.example.annotations.ProcessElem
 				class JSource {
 					fun foo() { }
 				}

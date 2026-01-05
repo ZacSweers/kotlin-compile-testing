@@ -1,5 +1,6 @@
-package com.tschuchort.compiletesting
+package com.example.processor
 
+import com.example.annotations.ProcessElem
 import com.squareup.javapoet.JavaFile
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -11,8 +12,6 @@ import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
 import com.squareup.javapoet.TypeSpec as JavaTypeSpec
-
-annotation class ProcessElem
 
 data class ProcessedElemMessage(val elementSimpleName: String) {
 	fun print() = MSG_PREFIX + elementSimpleName + MSG_SUFFIX
