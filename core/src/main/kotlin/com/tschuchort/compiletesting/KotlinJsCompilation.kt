@@ -37,39 +37,36 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
   var moduleName: String? = null
 
   /**
-   * Path to the kotlin-stdlib-js.jar
-   * If none is given, it will be searched for in the host
-   * process' classpaths
+   * Path to the kotlin-stdlib-js.jar If none is given, it will be searched for in the host process'
+   * classpaths
    */
-  var kotlinStdLibJsJar: File? by default {
-    HostEnvironment.kotlinStdLibJsJar
-  }
+  var kotlinStdLibJsJar: File? by default { HostEnvironment.kotlinStdLibJsJar }
 
-  /**
-   * Generate TypeScript declarations .d.ts file alongside JS file. Available in IR backend only
-   */
+  /** Generate TypeScript declarations .d.ts file alongside JS file. Available in IR backend only */
   var generateDts: Boolean = false
 
   // *.class files, Jars and resources (non-temporary) that are created by the
   // compilation will land here
-  val outputDir get() = workingDir.resolve("output")
+  val outputDir
+    get() = workingDir.resolve("output")
 
   // setup common arguments for the two kotlinc calls
-  private fun jsArgs() = commonArguments(K2JSCompilerArguments()) { args ->
-    args.moduleKind = "commonjs"
-    args.outputDir = outputDir.absolutePath
-    args.sourceMapBaseDirs = jsClasspath().joinToString(separator = File.pathSeparator)
-    args.libraries = listOfNotNull(kotlinStdLibJsJar).joinToString(separator = ":")
+  private fun jsArgs() =
+    commonArguments(K2JSCompilerArguments()) { args ->
+      args.moduleKind = "commonjs"
+      args.outputDir = outputDir.absolutePath
+      args.sourceMapBaseDirs = jsClasspath().joinToString(separator = File.pathSeparator)
+      args.libraries = listOfNotNull(kotlinStdLibJsJar).joinToString(separator = ":")
 
-    args.irProduceKlibDir = irProduceKlibDir
-    args.irProduceKlibFile = irProduceKlibFile
-    args.irProduceJs = irProduceJs
-    args.irDce = irDce
-    args.irDcePrintReachabilityInfo = irDcePrintReachabilityInfo
-    args.moduleName = moduleName
-    args.irModuleName = irModuleName
-    args.generateDts = generateDts
-  }
+      args.irProduceKlibDir = irProduceKlibDir
+      args.irProduceKlibFile = irProduceKlibFile
+      args.irProduceJs = irProduceJs
+      args.irDce = irDce
+      args.irDcePrintReachabilityInfo = irDcePrintReachabilityInfo
+      args.moduleName = moduleName
+      args.irModuleName = irModuleName
+      args.generateDts = generateDts
+    }
 
   /** Runs the compilation task */
   fun compile(): JsCompilationResult {
@@ -88,7 +85,6 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
       }
     }
 
-
     /* Work around for warning that sometimes happens:
     "Failed to initialize native filesystem for Windows
     java.lang.RuntimeException: Could not find installation home path.
@@ -104,19 +100,21 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
   private fun makeResult(exitCode: KotlinCompilation.ExitCode): JsCompilationResult {
     val messages = internalMessageBuffer.readUtf8()
 
-    if (exitCode != KotlinCompilation.ExitCode.OK)
-      searchSystemOutForKnownErrors(messages)
+    if (exitCode != KotlinCompilation.ExitCode.OK) searchSystemOutForKnownErrors(messages)
 
     return JsCompilationResult(exitCode, messages, diagnostics, this)
   }
 
-  private fun jsClasspath() = mutableListOf<File>().apply {
-    addAll(classpaths)
-    addAll(listOfNotNull(kotlinStdLibCommonJar, kotlinStdLibJsJar))
+  private fun jsClasspath() =
+    mutableListOf<File>()
+      .apply {
+        addAll(classpaths)
+        addAll(listOfNotNull(kotlinStdLibCommonJar, kotlinStdLibJsJar))
 
-    if (inheritClassPath) {
-      addAll(hostClasspaths)
-      log("Inheriting classpaths:  " + hostClasspaths.joinToString(File.pathSeparator))
-    }
-  }.distinct()
+        if (inheritClassPath) {
+          addAll(hostClasspaths)
+          log("Inheriting classpaths:  " + hostClasspaths.joinToString(File.pathSeparator))
+        }
+      }
+      .distinct()
 }

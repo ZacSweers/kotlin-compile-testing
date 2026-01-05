@@ -25,7 +25,7 @@ fun `test my annotation processor`() {
         class KClass {
             fun foo() {
                 // Classes from the test environment are visible to the compiled sources
-                val testEnvClass = TestEnvClass() 
+                val testEnvClass = TestEnvClass()
             }
         }
     """
@@ -36,9 +36,9 @@ fun `test my annotation processor`() {
         public class JClass {
             public void bar() {
                 // compiled Kotlin classes are visible to Java sources
-                KClass kClass = new KClass(); 
+                KClass kClass = new KClass();
             }
-	    }
+      }
     """
   )
 }
@@ -48,14 +48,14 @@ Configure compilation
 ```Kotlin
     val result = KotlinCompilation().apply {
         sources = listOf(kotlinSource, javaSource)
-        
+
         // pass your own instance of an annotation processor
-        annotationProcessors = listOf(MyAnnotationProcessor()) 
+        annotationProcessors = listOf(MyAnnotationProcessor())
 
         // pass your own instance of a compiler plugin
         compilerPlugins = listOf(MyComponentRegistrar())
-	commandLineProcessors = listOf(MyCommandlineProcessor())
-        
+  commandLineProcessors = listOf(MyCommandlineProcessor())
+
         inheritClassPath = true
         messageOutputStream = System.out // see diagnostics in real time
     }.compile()
@@ -63,10 +63,10 @@ Configure compilation
 
 Assert results
 ```Kotlin
-assertThat(result.exitCode).isEqualTo(ExitCode.OK)	
+assertThat(result.exitCode).isEqualTo(ExitCode.OK)
 
 // Test diagnostic output of compiler
-assertThat(result.messages).contains("My annotation processor was called") 
+assertThat(result.messages).contains("My annotation processor was called")
 
 // Load compiled classes and inspect generated code through reflection
 val kClazz = result.classLoader.loadClass("KClass")
@@ -75,7 +75,7 @@ assertThat(kClazz).hasDeclaredMethods("foo")
 
 ## Features
 - Mixed-source sets: Compile Kotlin and Java source files in a single run
-- Annotation processing: 
+- Annotation processing:
     - Run annotation processors on Kotlin and Java sources
     - Generate Kotlin and Java sources
     - Both Kotlin and Java sources have access to the generated sources
@@ -95,17 +95,17 @@ Add dependency to your module's `build.gradle` file:
 ```Groovy
 dependencies {
         // ...
-	testImplementation("dev.zacsweers.kctfork:core:<version>>")
+  testImplementation("dev.zacsweers.kctfork:core:<version>>")
 }
 ```
 
 ## Compatibility
 
-Kotlin-Compile-Testing is compatible with all _local_ compiler versions. It does not matter what compiler you use to compile your project. 
+Kotlin-Compile-Testing is compatible with all _local_ compiler versions. It does not matter what compiler you use to compile your project.
 
 However, if your project or any of its dependencies depend directly on compiler artifacts such as `kotlin-compiler-embeddable` or `kotlin-annotation-processing-embeddable` then they have to be the same version as the one used by Kotlin-Compile-Testing or there will be a transitive dependency conflict.
 
-Because the internal APIs of the Kotlin compiler often change between versions, we can only support one `kotlin-compiler-embeddable` version at a time. 
+Because the internal APIs of the Kotlin compiler often change between versions, we can only support one `kotlin-compiler-embeddable` version at a time.
 
 ## Kotlin Symbol Processing API Support
 [Kotlin Symbol Processing (KSP)](https://goo.gle/ksp) is a new annotation processing pipeline that builds on top of the
@@ -187,4 +187,4 @@ Copyright (C) 2021 Thilo Schuchort
 
 Licensed under the Mozilla Public License 2.0
 
-For custom license agreements contact me directly 
+For custom license agreements contact me directly

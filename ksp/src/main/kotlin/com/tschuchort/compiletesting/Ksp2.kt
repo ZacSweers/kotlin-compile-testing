@@ -8,13 +8,11 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import java.io.File
 import java.io.PrintStream
 import java.util.EnumSet
-import ksp.com.intellij.openapi.application.ApplicationManager
-import ksp.com.intellij.openapi.util.Disposer
+import ksp.com.intellij.openapi.application.ApplicationManager as ShadedKspApplicationManager
+import ksp.com.intellij.openapi.util.Disposer as ShadedKspDisposer
 import ksp.com.intellij.openapi.util.Disposer.dispose
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
-import ksp.com.intellij.openapi.application.ApplicationManager as ShadedKspApplicationManager
-import ksp.com.intellij.openapi.util.Disposer as ShadedKspDisposer
 
 @ExperimentalCompilerApi
 class Ksp2PrecursorTool : PrecursorTool, KspTool {
@@ -61,42 +59,62 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
 
           // TODO adopt new roots model
           moduleName = compilation.moduleName ?: "main"
-          sourceRoots = sources.filter { it.extension == "kt" }.mapNotNull { it.parentFile.absoluteFile }.distinct()
-          javaSourceRoots = sources.filter { it.extension == "java" }.mapNotNull { it.parentFile.absoluteFile }.distinct()
+          sourceRoots =
+            sources
+              .filter { it.extension == "kt" }
+              .mapNotNull { it.parentFile.absoluteFile }
+              .distinct()
+          javaSourceRoots =
+            sources
+              .filter { it.extension == "java" }
+              .mapNotNull { it.parentFile.absoluteFile }
+              .distinct()
           libraries = compilation.classpaths + compilation.commonClasspaths()
 
           cachesDir =
-            compilation.kspCachesDir.also {
-              it.deleteRecursively()
-              it.mkdirs()
-            }.absoluteFile
+            compilation.kspCachesDir
+              .also {
+                it.deleteRecursively()
+                it.mkdirs()
+              }
+              .absoluteFile
           outputBaseDir =
-            compilation.kspSourcesDir.also {
-              it.deleteRecursively()
-              it.mkdirs()
-            }.absoluteFile
+            compilation.kspSourcesDir
+              .also {
+                it.deleteRecursively()
+                it.mkdirs()
+              }
+              .absoluteFile
           classOutputDir =
-            compilation.kspClassesDir.also {
-              it.deleteRecursively()
-              it.mkdirs()
-            }.absoluteFile
+            compilation.kspClassesDir
+              .also {
+                it.deleteRecursively()
+                it.mkdirs()
+              }
+              .absoluteFile
           javaOutputDir =
-            compilation.kspJavaSourceDir.also {
-              it.deleteRecursively()
-              it.mkdirs()
-              compilation.registerGeneratedSourcesDir(it)
-            }.absoluteFile
+            compilation.kspJavaSourceDir
+              .also {
+                it.deleteRecursively()
+                it.mkdirs()
+                compilation.registerGeneratedSourcesDir(it)
+              }
+              .absoluteFile
           kotlinOutputDir =
-            compilation.kspKotlinSourceDir.also {
-              it.deleteRecursively()
-              it.mkdirs()
-              compilation.registerGeneratedSourcesDir(it)
-            }.absoluteFile
+            compilation.kspKotlinSourceDir
+              .also {
+                it.deleteRecursively()
+                it.mkdirs()
+                compilation.registerGeneratedSourcesDir(it)
+              }
+              .absoluteFile
           resourceOutputDir =
-            compilation.kspResources.also {
-              it.deleteRecursively()
-              it.mkdirs()
-            }.absoluteFile
+            compilation.kspResources
+              .also {
+                it.deleteRecursively()
+                it.mkdirs()
+              }
+              .absoluteFile
 
           onBuilder?.invoke(this)
         }

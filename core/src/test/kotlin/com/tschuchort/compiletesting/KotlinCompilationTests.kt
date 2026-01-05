@@ -105,7 +105,7 @@ class KotlinCompilationTests {
             listOf(
               SourceFile.kotlin(
                 "com/foo/bar/kSource.kt",
-                """ 
+                """
 					package com.foo.bar
 					class KSource""",
               )
@@ -125,7 +125,7 @@ class KotlinCompilationTests {
         """
             import javax.lang.model.SourceVersion
             import java.io.File
-            
+
             fun main(addKotlincArgs: Array<String>) {
             	File("")
             }
@@ -146,7 +146,7 @@ class KotlinCompilationTests {
         """
             import javax.lang.model.SourceVersion
             import java.io.File
-            
+
             fun main(addKotlincArgs: Array<String>) {
             	File("")
             }
@@ -189,7 +189,7 @@ class KotlinCompilationTests {
         """
             import javax.lang.model.SourceVersion;
             import java.io.File;
-            
+
             class JSource {
             	File foo() {
             		return new File("");
@@ -212,7 +212,7 @@ class KotlinCompilationTests {
         """
 		    import javax.lang.model.SourceVersion;
 		    import java.io.File;
-		    
+
 		    class JSource {
 		    	File foo() {
 		    		return new File("");
@@ -1019,8 +1019,8 @@ class KotlinCompilationTests {
       SourceFile.kotlin(
         "KSource.kt",
         """
-        	package com.tschuchort.compiletesting;
-        	class KSource()
+        package com.tschuchort.compiletesting;
+        class KSource()
         """
           .trimIndent(),
       )
@@ -1114,14 +1114,17 @@ class KotlinCompilationTests {
       SourceFile.java(
         "JSource.java",
         """
-        	class JSource {}
+        class JSource {}
         """
           .trimIndent(),
       )
-    val result = defaultCompilerConfig().apply {
-      sources = listOf(source)
-      verbose = true
-    }.compile()
+    val result =
+      defaultCompilerConfig()
+        .apply {
+          sources = listOf(source)
+          verbose = true
+        }
+        .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     assertThat(result.messages)
       .contains("jdkHome is not specified. Using system java compiler of the host process.")
@@ -1253,7 +1256,7 @@ class KotlinCompilationTests {
         System.getProperty("testAnnotationsClasspath")
           ?: error(
             "testAnnotationsClasspath system property not set. " +
-                "Make sure to run tests via Gradle."
+              "Make sure to run tests via Gradle."
           )
       classpathProperty.split(File.pathSeparator).map(::File)
     }
@@ -1264,7 +1267,7 @@ class KotlinCompilationTests {
         System.getProperty("testProcessorClasspath")
           ?: error(
             "testProcessorClasspath system property not set. " +
-                "Make sure to run tests via Gradle."
+              "Make sure to run tests via Gradle."
           )
       classpathProperty.split(File.pathSeparator).map(::File)
     }

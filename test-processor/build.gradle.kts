@@ -1,10 +1,8 @@
-plugins {
-    kotlin("jvm")
-}
+plugins { kotlin("jvm") }
 
 dependencies {
-    api(projects.testAnnotations)
+  api(projects.testAnnotations)
 
-    implementation(libs.kotlinpoet)
-    implementation(libs.javapoet)
+  implementation(libs.kotlinpoet)
+  implementation(libs.javapoet)
 }

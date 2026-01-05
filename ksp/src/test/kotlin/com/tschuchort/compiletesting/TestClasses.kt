@@ -1,7 +1,9 @@
 package com.tschuchort.compiletesting
 
 enum class AnnotationEnumValue {
-  ONE, TWO, THREE
+  ONE,
+  TWO,
+  THREE,
 }
 
 annotation class AnotherAnnotation(val input: String)

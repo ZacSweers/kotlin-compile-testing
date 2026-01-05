@@ -12,28 +12,29 @@ tasks
     compilerOptions { optIn.add("org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi") }
   }
 
-tasks.test {
-  maxParallelForks = Runtime.getRuntime().availableProcessors() * 2
-}
+tasks.test { maxParallelForks = Runtime.getRuntime().availableProcessors() * 2 }
 
 // From https://www.liutikas.net/2025/01/12/Kotlin-Library-Friends.html
 // Create configurations we can use to track friend libraries
 configurations {
-  val friendsApi = register("friendsApi") {
-    isCanBeResolved = true
-    isCanBeConsumed = false
-    isTransitive = true
-  }
-  val friendsImplementation = register("friendsImplementation") {
-    isCanBeResolved = true
-    isCanBeConsumed = false
-    isTransitive = false
-  }
-  val friendsTestImplementation = register("friendsTestImplementation") {
-    isCanBeResolved = true
-    isCanBeConsumed = false
-    isTransitive = false
-  }
+  val friendsApi =
+    register("friendsApi") {
+      isCanBeResolved = true
+      isCanBeConsumed = false
+      isTransitive = true
+    }
+  val friendsImplementation =
+    register("friendsImplementation") {
+      isCanBeResolved = true
+      isCanBeConsumed = false
+      isTransitive = false
+    }
+  val friendsTestImplementation =
+    register("friendsTestImplementation") {
+      isCanBeResolved = true
+      isCanBeConsumed = false
+      isTransitive = false
+    }
   configurations.configureEach {
     if (name == "implementation") {
       extendsFrom(friendsApi.get(), friendsImplementation.get())
@@ -50,13 +51,13 @@ configurations {
 // Make these libraries friends :)
 tasks.withType<KotlinCompile>().configureEach {
   configurations.findByName("friendsApi")?.let {
-    friendPaths.from(it.incoming.artifactView { }.files)
+    friendPaths.from(it.incoming.artifactView {}.files)
   }
   configurations.findByName("friendsImplementation")?.let {
-    friendPaths.from(it.incoming.artifactView { }.files)
+    friendPaths.from(it.incoming.artifactView {}.files)
   }
   configurations.findByName("friendsTestImplementation")?.let {
-    friendPaths.from(it.incoming.artifactView { }.files)
+    friendPaths.from(it.incoming.artifactView {}.files)
   }
 }
 
@@ -69,9 +70,7 @@ dependencies {
   implementation(libs.ksp.aaEmbeddable)
 
   testImplementation(libs.kotlinpoet.ksp)
-  testImplementation(libs.autoService) {
-    because("To test accessing inherited classpath symbols")
-  }
+  testImplementation(libs.autoService) { because("To test accessing inherited classpath symbols") }
   testImplementation(libs.kotlin.junit)
   testImplementation(libs.mockito)
   testImplementation(libs.mockitoKotlin)

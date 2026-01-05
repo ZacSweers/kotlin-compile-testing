@@ -18,21 +18,17 @@ package com.tschuchort.compiletesting
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 
 public enum class DiagnosticSeverity {
-    ERROR,
-    WARNING,
-    INFO,
-    LOGGING,
+  ERROR,
+  WARNING,
+  INFO,
+  LOGGING,
 }
 
-/**
- * Holder for diagnostics messages
- */
-public data class DiagnosticMessage(
-    val severity: DiagnosticSeverity,
-    val message: String,
-)
+/** Holder for diagnostics messages */
+public data class DiagnosticMessage(val severity: DiagnosticSeverity, val message: String)
 
-internal fun CompilerMessageSeverity.toSeverity() = when (this) {
+internal fun CompilerMessageSeverity.toSeverity() =
+  when (this) {
     CompilerMessageSeverity.EXCEPTION,
     CompilerMessageSeverity.ERROR -> DiagnosticSeverity.ERROR
     CompilerMessageSeverity.FIXED_WARNING,
@@ -41,4 +37,4 @@ internal fun CompilerMessageSeverity.toSeverity() = when (this) {
     CompilerMessageSeverity.INFO -> DiagnosticSeverity.INFO
     CompilerMessageSeverity.LOGGING,
     CompilerMessageSeverity.OUTPUT -> DiagnosticSeverity.LOGGING
-}
+  }

@@ -29,7 +29,6 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.JVMAssertionsMode
-import org.jetbrains.kotlin.config.JvmDefaultMode
 import org.jetbrains.kotlin.config.JvmTarget
 import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.kapt.KaptCompilerPluginRegistrar
@@ -255,7 +254,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
     OK,
     INTERNAL_ERROR,
     COMPILATION_ERROR,
-    SCRIPT_EXECUTION_ERROR
+    SCRIPT_EXECUTION_ERROR,
   }
 
   private fun useKapt4(): Boolean {
@@ -340,7 +339,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
         it.incrementalDataOutputDir = kaptIncrementalDataDir
         it.classesOutputDir = classesDir
         it.processingClasspath += processingClasspaths
-        if(inheritClassPath) {
+        if (inheritClassPath) {
           it.processingClasspath += hostClasspaths
         }
         it.processingOptions.apply {
