@@ -4,6 +4,9 @@ Changelog
 **Unreleased**
 --------------
 
+- Clear KSP2's `KSPCoreEnvironment` as it leaks memory across multiple runs in tests.
+- Clear KSP2's `KspApplicationManager` as an addition to the above, as an extra defensive measure.
+
 0.12.0
 ------
 
