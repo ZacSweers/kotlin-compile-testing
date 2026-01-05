@@ -1,14 +1,20 @@
 /* Adds support for KSP (https://goo.gle/ksp). */
 package com.tschuchort.compiletesting
 
+import com.google.devtools.ksp.impl.KSPCoreEnvironment
 import com.google.devtools.ksp.impl.KotlinSymbolProcessing
 import com.google.devtools.ksp.processing.KSPJvmConfig
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import java.io.File
 import java.io.PrintStream
 import java.util.EnumSet
+import ksp.com.intellij.openapi.application.ApplicationManager
+import ksp.com.intellij.openapi.util.Disposer
+import ksp.com.intellij.openapi.util.Disposer.dispose
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
+import ksp.com.intellij.openapi.application.ApplicationManager as ShadedKspApplicationManager
+import ksp.com.intellij.openapi.util.Disposer as ShadedKspDisposer
 
 @ExperimentalCompilerApi
 class Ksp2PrecursorTool : PrecursorTool, KspTool {
@@ -111,7 +117,21 @@ class Ksp2PrecursorTool : PrecursorTool, KspTool {
       }
     } finally {
       logger.reportAll()
+      clearKspLeaks()
     }
+  }
+
+  /**
+   * KSP leaks its core environment because its CLI appears to be intended for single-shot use and
+   * stores stuff in ThreadLocals.
+   *
+   * The Gradle plugin doesn't seem to run into this because it runs all the tasks in an isolated
+   * classloader that dies between task runs.
+   */
+  private fun clearKspLeaks() {
+    KSPCoreEnvironment.instance_prop.remove()
+    // Doesn't _seem_ necessary but just in case, since it does appear to spin this up
+    ShadedKspApplicationManager.getApplication()?.let(ShadedKspDisposer::dispose)
   }
 }
 
