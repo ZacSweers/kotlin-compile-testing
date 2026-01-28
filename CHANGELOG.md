@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- Update to KSP `2.3.5` and remove the memory leak patch as it's now fixed upstream.
+
 0.12.1
 ------
 
