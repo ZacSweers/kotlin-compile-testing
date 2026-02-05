@@ -1,5 +1,5 @@
 [versions]
-gjf = "1.33.0"
+gjf = "1.34.1"
 kotlin = "2.3.0"
 kotlinpoet = "2.2.0"
 ksp = "2.3.5"
