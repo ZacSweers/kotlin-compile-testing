@@ -26,6 +26,7 @@ dependencyResolutionManagement {
 
     mavenCentral()
     google()
+    maven("https://redirector.kotlinlang.org/maven/bootstrap")
   }
 }
 
@@ -44,6 +45,7 @@ pluginManagement {
 
     mavenCentral()
     google()
+    maven("https://redirector.kotlinlang.org/maven/bootstrap")
 
     // Gradle's plugin portal proxies jcenter, which we don't want. To avoid this, we specify
     // exactly which dependencies to pull from here.
