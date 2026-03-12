@@ -39,7 +39,7 @@ ksp-commonDeps = { module = "com.google.devtools.ksp:symbol-processing-common-de
 ktfmt = { module = "com.facebook:ktfmt", version.ref = "ktfmt" }
 gjf = { module = "com.google.googlejavaformat:google-java-format", version.ref = "gjf" }
 
-okio = "com.squareup.okio:okio:3.16.4"
+okio = "com.squareup.okio:okio:3.17.0"
 
 truth = { module = "com.google.truth:truth", version = "1.4.5" }
 junit = "junit:junit:4.13.2"
