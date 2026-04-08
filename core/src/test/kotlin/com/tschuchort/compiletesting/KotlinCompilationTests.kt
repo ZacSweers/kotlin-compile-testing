@@ -1249,14 +1249,19 @@ class KotlinCompilationTests {
 
   @Test
   fun `result should contain diagnostics`() {
-    val source = """
-        class
-    """.trimIndent()
+    val source =
+      """
+      class
+      """
+        .trimIndent()
 
-    val result = defaultCompilerConfig().apply {
-      sources = listOf(SourceFile.kotlin("main.kt", source))
-      verbose = false
-    }.compile()
+    val result =
+      defaultCompilerConfig()
+        .apply {
+          sources = listOf(SourceFile.kotlin("main.kt", source))
+          verbose = false
+        }
+        .compile()
 
     assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
     assertThat(result.diagnosticMessages).isNotEmpty
