@@ -1247,6 +1247,26 @@ class KotlinCompilationTests {
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
   }
 
+  @Test
+  fun `result should contain diagnostics`() {
+    val source =
+      """
+      class
+      """
+        .trimIndent()
+
+    val result =
+      defaultCompilerConfig()
+        .apply {
+          sources = listOf(SourceFile.kotlin("main.kt", source))
+          verbose = false
+        }
+        .compile()
+
+    assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
+    assertThat(result.diagnosticMessages).isNotEmpty
+  }
+
   class InheritedClass {}
 
   private companion object {

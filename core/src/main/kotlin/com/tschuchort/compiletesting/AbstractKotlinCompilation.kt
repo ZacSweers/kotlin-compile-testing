@@ -256,8 +256,7 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
             else emptyArray()
       }
 
-    val compilerMessageCollector =
-      PrintingMessageCollector(internalMessageStream, MessageRenderer.GRADLE_STYLE, verbose)
+    val compilerMessageCollector = createMessageCollector("kotlin")
 
     return convertKotlinExitCode(compiler.exec(compilerMessageCollector, Services.EMPTY, args))
   }
