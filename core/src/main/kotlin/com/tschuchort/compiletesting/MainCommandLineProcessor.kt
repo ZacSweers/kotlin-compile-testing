@@ -64,20 +64,19 @@ internal class MainCommandLineProcessor : CommandLineProcessor {
         }
         .toMap()
 
-    val pluginOptions =
-      cliProcessorsByPluginId.flatMap { (processorPluginId, cliProcessors) ->
-        cliProcessors.flatMap { cliProcessor ->
-          cliProcessor.pluginOptions.map { option ->
-            CliOption(
-              encodeForeignOptionName(processorPluginId, option.optionName),
-              option.valueDescription,
-              option.description,
-              option.required,
-              option.allowMultipleOccurrences,
-            )
-          }
+    val pluginOptions = cliProcessorsByPluginId.flatMap { (processorPluginId, cliProcessors) ->
+      cliProcessors.flatMap { cliProcessor ->
+        cliProcessor.pluginOptions.map { option ->
+          CliOption(
+            encodeForeignOptionName(processorPluginId, option.optionName),
+            option.valueDescription,
+            option.description,
+            option.required,
+            option.allowMultipleOccurrences,
+          )
         }
       }
+    }
   }
 
   override fun processOption(

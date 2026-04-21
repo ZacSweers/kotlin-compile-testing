@@ -37,11 +37,10 @@ internal object HostEnvironment {
 
   /** Tries to find a file matching the given [regex] in the host process' classpath */
   private fun findInClasspath(regex: Regex): File? {
-    val jarFile =
-      classpath.firstOrNull { classpath ->
-        classpath.name.matches(regex)
-        // TODO("check that jar file actually contains the right classes")
-      }
+    val jarFile = classpath.firstOrNull { classpath ->
+      classpath.name.matches(regex)
+      // TODO("check that jar file actually contains the right classes")
+    }
     return jarFile
   }
 

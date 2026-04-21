@@ -37,8 +37,9 @@ internal fun File.hasJavaFileExtension() = hasFileExtension(listOf("java"))
 
 internal fun File.hasSourceFileExtension() = hasFileExtension(listOf("kt", "java"))
 
-internal fun File.hasFileExtension(extensions: List<String>) =
-  extensions.any { it.equals(extension, ignoreCase = true) }
+internal fun File.hasFileExtension(extensions: List<String>) = extensions.any {
+  it.equals(extension, ignoreCase = true)
+}
 
 internal fun URLClassLoader.addUrl(url: URL) {
   val addUrlMethod = URLClassLoader::class.java.getDeclaredMethod("addURL", URL::class.java)
