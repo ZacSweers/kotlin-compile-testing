@@ -2,8 +2,8 @@
 gjf = "1.35.0"
 kotlin = "2.4.0-Beta1"
 kotlinpoet = "2.3.0"
-ksp = "2.3.6"
-ktfmt = "0.61"
+ksp = "2.3.7"
+ktfmt = "0.62"
 
 [plugins]
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.9" }

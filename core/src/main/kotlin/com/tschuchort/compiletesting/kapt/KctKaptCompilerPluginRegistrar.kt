@@ -44,14 +44,13 @@ internal class KctKaptCompilerPluginRegistrar(
 
     val contentRoots = configuration[CLIConfigurationKeys.CONTENT_ROOTS] ?: emptyList()
 
-    val optionsBuilder =
-      kaptOptions.apply {
-        //            projectBaseDir = project.basePath?.let(::File)
-        compileClasspath.addAll(contentRoots.filterIsInstance<JvmClasspathRoot>().map { it.file })
-        javaSourceRoots.addAll(contentRoots.filterIsInstance<JavaSourceRoot>().map { it.file })
-        classesOutputDir =
-          classesOutputDir ?: configuration.get(JVMConfigurationKeys.OUTPUT_DIRECTORY)
-      }
+    val optionsBuilder = kaptOptions.apply {
+      //            projectBaseDir = project.basePath?.let(::File)
+      compileClasspath.addAll(contentRoots.filterIsInstance<JvmClasspathRoot>().map { it.file })
+      javaSourceRoots.addAll(contentRoots.filterIsInstance<JavaSourceRoot>().map { it.file })
+      classesOutputDir =
+        classesOutputDir ?: configuration.get(JVMConfigurationKeys.OUTPUT_DIRECTORY)
+    }
 
     val messageCollector =
       configuration[CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY]
