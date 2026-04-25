@@ -240,21 +240,20 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
             emptyList()
           }
       args.pluginClasspaths +=
-          /**
-           * The resources path contains the MainComponentRegistrar and MainCommandLineProcessor
-           * which will be found by the Kotlin compiler's service loader. We add it only when the
-           * user has actually given us ComponentRegistrar instances to be loaded by the
-           * MainComponentRegistrar because the experimental K2 compiler doesn't support plugins
-           * yet. This way, users of K2 can prevent MainComponentRegistrar from being loaded and
-           * crashing K2 by setting both [compilerPluginRegistrars] and [commandLineProcessors] to
-           * the emptyList.
-           */
-          if (compilerPluginRegistrars.isNotEmpty() || commandLineProcessors.isNotEmpty()) {
-            arrayOf(getResourcesPath())
-          } else {
-            emptyArray()
-          }
-      }
+        /**
+         * The resources path contains the MainComponentRegistrar and MainCommandLineProcessor which
+         * will be found by the Kotlin compiler's service loader. We add it only when the user has
+         * actually given us ComponentRegistrar instances to be loaded by the MainComponentRegistrar
+         * because the experimental K2 compiler doesn't support plugins yet. This way, users of K2
+         * can prevent MainComponentRegistrar from being loaded and crashing K2 by setting both
+         * [compilerPluginRegistrars] and [commandLineProcessors] to the emptyList.
+         */
+        if (compilerPluginRegistrars.isNotEmpty() || commandLineProcessors.isNotEmpty()) {
+          arrayOf(getResourcesPath())
+        } else {
+          emptyArray()
+        }
+    }
 
     val compilerMessageCollector = createMessageCollector("kotlin")
 
