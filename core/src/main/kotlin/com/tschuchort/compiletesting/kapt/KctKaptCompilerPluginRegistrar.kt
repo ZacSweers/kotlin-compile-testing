@@ -1,5 +1,7 @@
 package com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.kapt
 
+import java.io.File
+import javax.annotation.processing.Processor
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
@@ -19,6 +21,8 @@ import org.jetbrains.kotlin.kapt.base.Kapt
 import org.jetbrains.kotlin.kapt.base.KaptFlag
 import org.jetbrains.kotlin.kapt.base.KaptOptions
 import org.jetbrains.kotlin.kapt.base.LoadedProcessors
+import org.jetbrains.kotlin.kapt.base.ProcessorLoader
+import org.jetbrains.kotlin.kapt.base.ProcessorLoaderImpl
 import org.jetbrains.kotlin.kapt.base.incremental.IncrementalProcessor
 import org.jetbrains.kotlin.kapt.base.logString
 import org.jetbrains.kotlin.kapt.base.util.KaptLogger
@@ -49,7 +53,7 @@ internal class KctKaptCompilerPluginRegistrar(
     }
 
     val messageCollector =
-      configuration.get(CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY)
+      configuration[CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY]
         ?: PrintingMessageCollector(
           System.err,
           MessageRenderer.PLAIN_FULL_PATHS,
@@ -81,8 +85,16 @@ internal class KctKaptCompilerPluginRegistrar(
 
     val kaptFirAnalysisCompletedHandlerExtension =
       object : FirKaptAnalysisHandlerExtension(logger) {
-        override fun loadProcessors() =
-          LoadedProcessors(processors = processors, classLoader = this::class.java.classLoader)
+        override fun createProcessorLoader(): ProcessorLoader {
+          return object : ProcessorLoaderImpl(options, logger) {
+            override fun doLoadProcessors(
+              classpath: LinkedHashSet<File>,
+              classLoader: ClassLoader,
+            ): List<Processor> {
+              return LoadedProcessors(processors = processors, classLoader = classLoader).processors
+            }
+          }
+        }
       }
 
     FirAnalysisHandlerExtension.Companion.registerExtension(

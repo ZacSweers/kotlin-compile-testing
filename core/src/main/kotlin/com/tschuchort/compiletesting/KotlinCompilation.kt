@@ -303,8 +303,6 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
       args.inheritMultifileParts = inheritMultifileParts
       args.useTypeTable = useTypeTable
 
-      if (javacArguments.isNotEmpty()) args.javacArguments = javacArguments.toTypedArray()
-
       if (supportCompatqualCheckerFrameworkAnnotations != null)
         args.supportCompatqualCheckerFrameworkAnnotations =
           supportCompatqualCheckerFrameworkAnnotations
@@ -397,7 +395,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
     val k2JvmArgs =
       commonK2JVMArgs().also {
         it.freeArgs = sourcePaths
-        it.pluginClasspaths = (it.pluginClasspaths ?: emptyArray()) + arrayOf(getResourcesPath())
+        it.pluginClasspaths += arrayOf(getResourcesPath())
         if (kotlinSources.isEmpty()) {
           it.allowNoSourceFiles = true
         }

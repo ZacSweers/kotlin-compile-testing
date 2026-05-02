@@ -1,6 +1,6 @@
 [versions]
 gjf = "1.35.0"
-kotlin = "2.3.21"
+kotlin = "2.4.0-Beta2"
 kotlinpoet = "2.3.0"
 ksp = "2.3.7"
 ktfmt = "0.62"
