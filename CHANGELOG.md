@@ -4,7 +4,16 @@ Changelog
 **Unreleased**
 --------------
 
-- Update to KSP `2.3.5` and remove the memory leak patch as it's now fixed upstream.
+0.13.0
+------
+
+_2026-06-03_
+
+- Update to Kotlin `2.4.0`.
+- Update to KSP `2.3.9` and remove the memory leak patch as it's now fixed upstream.
+- Fix missing diagnostics in compilation result
+
+Special thanks to [@SubhrajyotiSen](https://github.com/SubhrajyotiSen) for contributing to this release!
 
 0.12.1
 ------

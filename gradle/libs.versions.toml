@@ -2,7 +2,7 @@
 gjf = "1.35.0"
 kotlin = "2.4.0"
 kotlinpoet = "2.3.0"
-ksp = "2.3.8"
+ksp = "2.3.9"
 ktfmt = "0.62"
 
 [plugins]
