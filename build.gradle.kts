@@ -1,5 +1,4 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
-import com.diffplug.gradle.spotless.SpotlessExtensionPredeclare
 import com.diffplug.spotless.LineEnding
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.jetbrains.dokka.gradle.DokkaExtension
@@ -22,9 +21,7 @@ dokka {
 
 val ktfmtVersion = libs.versions.ktfmt.get()
 
-spotless { predeclareDeps() }
-
-configure<SpotlessExtensionPredeclare> {
+spotlessPredeclare {
   kotlin { ktfmt(ktfmtVersion).googleStyle().configure { it.setRemoveUnusedImports(true) } }
   kotlinGradle { ktfmt(ktfmtVersion).googleStyle().configure { it.setRemoveUnusedImports(true) } }
   java {
