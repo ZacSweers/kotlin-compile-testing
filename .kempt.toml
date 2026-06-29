@@ -1,0 +1,27 @@
+# kempt configuration: https://github.com/ZacSweers/kempt
+
+[ktfmt]
+version = "0.64"
+
+[gjf]
+version = "1.35.0"
+
+[paths]
+exclude = [
+  "**/build/**",
+  "**/target/**",
+  "**/src/test/data/**",
+  "**/*Generated.java",
+]
+
+[ktfmt.paths]
+include = [
+  "**/*.kt",
+  "**/*.kts",
+]
+
+[gjf.paths]
+include = ["**/src/**/*.java"]
+
+[hook]
+mode = "format"
