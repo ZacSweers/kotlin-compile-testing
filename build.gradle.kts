@@ -1,5 +1,3 @@
-import com.diffplug.gradle.spotless.SpotlessExtension
-import com.diffplug.spotless.LineEnding
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -9,66 +7,12 @@ plugins {
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.dokka)
   alias(libs.plugins.mavenPublish) apply false
-  alias(libs.plugins.spotless)
 }
 
 dokka {
   dokkaPublications.html {
     outputDirectory.set(rootDir.resolve("docs/api/0.x"))
     includes.from(project.layout.projectDirectory.file("README.md"))
-  }
-}
-
-val ktfmtVersion = libs.versions.ktfmt.get()
-
-spotlessPredeclare {
-  kotlin { ktfmt(ktfmtVersion).googleStyle().configure { it.setRemoveUnusedImports(true) } }
-  kotlinGradle { ktfmt(ktfmtVersion).googleStyle().configure { it.setRemoveUnusedImports(true) } }
-  java {
-    googleJavaFormat(libs.versions.gjf.get())
-      .reorderImports(true)
-      .reflowLongStrings(true)
-      .reorderImports(true)
-  }
-}
-
-// Configure spotless in subprojects
-allprojects {
-  apply(plugin = "com.diffplug.spotless")
-  configure<SpotlessExtension> {
-    setLineEndings(LineEnding.GIT_ATTRIBUTES_FAST_ALLSAME)
-    format("misc") {
-      target("*.gradle", "*.md", ".gitignore")
-      trimTrailingWhitespace()
-      leadingTabsToSpaces(2)
-      endWithNewline()
-    }
-    java {
-      googleJavaFormat(libs.versions.gjf.get())
-        .reorderImports(true)
-        .reflowLongStrings(true)
-        .reorderImports(true)
-      target("src/**/*.java")
-      trimTrailingWhitespace()
-      endWithNewline()
-      targetExclude("**/spotless.java")
-      targetExclude("**/src/test/data/**")
-      targetExclude("**/*Generated.java")
-    }
-    kotlin {
-      ktfmt(ktfmtVersion).googleStyle().configure { it.setRemoveUnusedImports(true) }
-      target("src/**/*.kt")
-      trimTrailingWhitespace()
-      endWithNewline()
-      targetExclude("**/spotless.kt")
-      targetExclude("**/src/test/data/**")
-    }
-    kotlinGradle {
-      ktfmt(ktfmtVersion).googleStyle().configure { it.setRemoveUnusedImports(true) }
-      target("*.kts")
-      trimTrailingWhitespace()
-      endWithNewline()
-    }
   }
 }
 

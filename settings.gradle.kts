@@ -52,7 +52,6 @@ pluginManagement {
       filter {
         includeModule("com.gradle", "gradle-enterprise-gradle-plugin")
         includeModule("com.gradle.enterprise", "com.gradle.enterprise.gradle.plugin")
-        includeModule("com.diffplug.spotless", "com.diffplug.spotless.gradle.plugin")
         includeModule("org.gradle.kotlin.kotlin-dsl", "org.gradle.kotlin.kotlin-dsl.gradle.plugin")
         includeModule("org.gradle.kotlin", "gradle-kotlin-dsl-plugins")
         includeModule(
