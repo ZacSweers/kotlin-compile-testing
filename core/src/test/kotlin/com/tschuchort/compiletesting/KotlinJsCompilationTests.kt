@@ -112,7 +112,8 @@ fun main(addKotlincArgs: Array<String>) {
       defaultJsCompilerConfig()
         .apply {
           sources = listOf(SourceFile.kotlin("kSource.kt", "class KSource"))
-          pluginClasspaths = listOf(classpathOf("kotlin-scripting-compiler-${KOTLIN_VERSION}"))
+          pluginClasspaths =
+            listOf(classpathOf("kotlin-scripting-compiler-embeddable-${KOTLIN_VERSION}"))
         }
         .compile()
 

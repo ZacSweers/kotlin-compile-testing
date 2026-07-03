@@ -873,15 +873,15 @@ class KotlinCompilationTests {
       defaultCompilerConfig()
         .apply {
           sources = listOf(SourceFile.kotlin("kSource.kt", "class KSource"))
-          pluginClasspaths = listOf(classpathOf("kotlin-scripting-compiler-${KOTLIN_VERSION}"))
+          pluginClasspaths =
+            listOf(classpathOf("kotlin-scripting-compiler-embeddable-${KOTLIN_VERSION}"))
+          verbose = true
         }
         .compile()
 
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     assertThat(result.messages)
-      .contains(
-        "provided plugin org.jetbrains.kotlin.scripting.compiler.plugin.ScriptingCompilerConfigurationComponentRegistrar"
-      )
+      .contains("org.jetbrains.kotlin.scripting.compiler.plugin.ScriptingK2CompilerPluginRegistrar")
   }
 
   @Test
