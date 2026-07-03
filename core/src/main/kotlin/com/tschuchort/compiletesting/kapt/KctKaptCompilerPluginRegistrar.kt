@@ -3,8 +3,6 @@ package com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.kapt
 import java.io.File
 import javax.annotation.processing.Processor
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
-import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
-import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.cli.jvm.config.JavaSourceRoot
 import org.jetbrains.kotlin.cli.jvm.config.JvmClasspathRoot
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
@@ -26,7 +24,7 @@ import org.jetbrains.kotlin.kapt.base.ProcessorLoaderImpl
 import org.jetbrains.kotlin.kapt.base.incremental.IncrementalProcessor
 import org.jetbrains.kotlin.kapt.base.logString
 import org.jetbrains.kotlin.kapt.base.util.KaptLogger
-import org.jetbrains.kotlin.kapt.util.MessageCollectorBackedKaptLogger
+import org.jetbrains.kotlin.kapt.util.CompilerConfigurationBackedKaptLogger
 
 @ExperimentalCompilerApi
 internal class KctKaptCompilerPluginRegistrar(
@@ -52,19 +50,11 @@ internal class KctKaptCompilerPluginRegistrar(
         classesOutputDir ?: configuration.get(JVMConfigurationKeys.OUTPUT_DIRECTORY)
     }
 
-    val messageCollector =
-      configuration[CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY]
-        ?: PrintingMessageCollector(
-          System.err,
-          MessageRenderer.PLAIN_FULL_PATHS,
-          optionsBuilder.flags.contains(KaptFlag.VERBOSE),
-        )
-
     val logger =
-      MessageCollectorBackedKaptLogger(
-        optionsBuilder.flags.contains(KaptFlag.VERBOSE),
-        optionsBuilder.flags.contains(KaptFlag.INFO_AS_WARNINGS),
-        messageCollector,
+      CompilerConfigurationBackedKaptLogger(
+        isVerbose = optionsBuilder.flags.contains(KaptFlag.VERBOSE),
+        isInfoAsWarnings = optionsBuilder.flags.contains(KaptFlag.INFO_AS_WARNINGS),
+        configuration = configuration,
       )
 
     fun abortAnalysis() =
