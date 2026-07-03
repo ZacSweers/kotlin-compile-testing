@@ -24,8 +24,8 @@ tasks
   .named { it == "kspTestKotlin" }
   .configureEach { dependsOn(tasks.named { it == "generateTestBuildConfig" }) }
 
-val testAnnotations by configurations.registering
-val testProcessor by configurations.registering
+val testAnnotations = configurations.register("testAnnotations")
+val testProcessor = configurations.register("testProcessor")
 
 dependencies {
   ksp(libs.autoService.ksp)
