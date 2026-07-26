@@ -62,8 +62,7 @@ fun KaptOptions.Builder.toPluginOptions(): List<String> {
       }
 
       KaptCliOption.VERBOSE_MODE_OPTION -> (KaptFlag.VERBOSE in flags).pluginOption()
-      KaptCliOption.USE_LIGHT_ANALYSIS_OPTION ->
-        (KaptFlag.USE_LIGHT_ANALYSIS in flags).pluginOption()
+      KaptCliOption.USE_LIGHT_ANALYSIS_OPTION -> {}
       KaptCliOption.CORRECT_ERROR_TYPES_OPTION ->
         (KaptFlag.CORRECT_ERROR_TYPES in flags).pluginOption()
       KaptCliOption.DUMP_DEFAULT_PARAMETER_VALUES ->
