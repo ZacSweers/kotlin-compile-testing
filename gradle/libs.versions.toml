@@ -1,6 +1,6 @@
 [versions]
 gjf = "1.35.0"
-kotlin = "2.4.10"
+kotlin = "2.4.20-RC"
 kotlinpoet = "2.3.0"
 ksp = "2.3.10"
 ktfmt = "0.64"
@@ -22,7 +22,7 @@ javapoet = "com.squareup:javapoet:1.13.0"
 
 kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 kotlin-annotationProcessingEmbeddable = { module = "org.jetbrains.kotlin:kotlin-annotation-processing-embeddable", version.ref = "kotlin" }
-kotlin-scriptingCompiler = { module = "org.jetbrains.kotlin:kotlin-scripting-compiler", version.ref = "kotlin" }
+kotlin-scriptingCompiler = { module = "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 

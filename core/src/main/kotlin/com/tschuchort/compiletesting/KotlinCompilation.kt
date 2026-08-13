@@ -20,6 +20,7 @@ import com.facebook.buck.jvm.java.javax.SynchronizedToolProvider
 import com.tschuchort.compiletesting.kapt.toPluginOptions
 import java.io.File
 import java.io.OutputStreamWriter
+import java.io.PrintWriter
 import java.nio.file.Path
 import javax.annotation.processing.Processor
 import javax.tools.Diagnostic
@@ -37,7 +38,7 @@ import org.jetbrains.kotlin.kapt.base.KaptFlag
 import org.jetbrains.kotlin.kapt.base.KaptOptions
 import org.jetbrains.kotlin.kapt.base.incremental.DeclaredProcType
 import org.jetbrains.kotlin.kapt.base.incremental.IncrementalProcessor
-import org.jetbrains.kotlin.kapt.util.MessageCollectorBackedKaptLogger
+import org.jetbrains.kotlin.kapt.base.util.WriterBackedKaptLogger
 
 data class PluginOption(
   val pluginId: PluginId,
@@ -358,7 +359,13 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
 
     val compilerMessageCollector = createMessageCollector("kapt")
 
-    val kaptLogger = MessageCollectorBackedKaptLogger(kaptOptions.build(), compilerMessageCollector)
+    val kaptLogger =
+      WriterBackedKaptLogger(
+        isVerbose = verbose,
+        infoWriter = PrintWriter(internalMessageStream),
+        warnWriter = PrintWriter(internalMessageStream),
+        errorWriter = PrintWriter(internalMessageStream),
+      )
 
     /*
      * The main compiler plugin (MainComponentRegistrar)

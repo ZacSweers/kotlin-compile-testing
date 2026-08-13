@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- Remove the kapt light analysis option as it was removed upstream.
+
 0.13.0
 ------
 
