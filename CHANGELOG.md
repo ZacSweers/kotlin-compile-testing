@@ -4,8 +4,15 @@ Changelog
 **Unreleased**
 --------------
 
+0.14.0
+------
+
+_2026-09-15_
+
 - Remove the kapt light analysis option as it was removed upstream.
 - Remove the `noCheckActual` option as it was removed in Kotlin 2.5.
+- Update to Kotlin `2.4.20`.
+- Update to KSP `2.3.12`.
 
 0.13.0
 ------
