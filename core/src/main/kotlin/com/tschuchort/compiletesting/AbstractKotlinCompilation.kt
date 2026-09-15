@@ -87,9 +87,6 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
   /** Enable experimental multiplatform support */
   var multiplatform: Boolean = false
 
-  /** Do not check presence of 'actual' modifier in multi-platform projects */
-  var noCheckActual: Boolean = false
-
   /**
    * Enable usages of API that requires opt-in with an opt-in requirement marker with the given
    * fully qualified name
@@ -135,7 +132,6 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
     args.reportOutputFiles = reportOutputFiles
     args.reportPerf = reportPerformance
     args.multiPlatform = multiplatform
-    args.noCheckActual = noCheckActual
     args.optIn = optIn?.toTypedArray() ?: emptyArray()
 
     if (languageVersion != null) {
