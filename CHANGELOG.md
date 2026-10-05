@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- Build against Kotlin `2.5.0-RC`.
+
 0.14.0
 ------
 
