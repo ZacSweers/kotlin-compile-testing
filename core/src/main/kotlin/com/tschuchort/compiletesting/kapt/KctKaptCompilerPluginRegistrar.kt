@@ -1,7 +1,5 @@
 package com.facebook.buck.jvm.java.javax.com.tschuchort.compiletesting.kapt
 
-import java.io.File
-import javax.annotation.processing.Processor
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.jvm.config.JavaSourceRoot
 import org.jetbrains.kotlin.cli.jvm.config.JvmClasspathRoot
@@ -14,13 +12,11 @@ import org.jetbrains.kotlin.config.JVMConfigurationKeys
 import org.jetbrains.kotlin.fir.extensions.FirAnalysisHandlerExtension
 import org.jetbrains.kotlin.kapt.FirKaptAnalysisHandlerExtension
 import org.jetbrains.kotlin.kapt.KAPT_OPTIONS
-import org.jetbrains.kotlin.kapt.base.AptMode
 import org.jetbrains.kotlin.kapt.base.Kapt
 import org.jetbrains.kotlin.kapt.base.KaptFlag
 import org.jetbrains.kotlin.kapt.base.KaptOptions
 import org.jetbrains.kotlin.kapt.base.LoadedProcessors
 import org.jetbrains.kotlin.kapt.base.ProcessorLoader
-import org.jetbrains.kotlin.kapt.base.ProcessorLoaderImpl
 import org.jetbrains.kotlin.kapt.base.incremental.IncrementalProcessor
 import org.jetbrains.kotlin.kapt.base.logString
 import org.jetbrains.kotlin.kapt.base.util.KaptLogger
@@ -76,13 +72,13 @@ internal class KctKaptCompilerPluginRegistrar(
     val kaptFirAnalysisCompletedHandlerExtension =
       object : FirKaptAnalysisHandlerExtension(logger) {
         override fun createProcessorLoader(): ProcessorLoader {
-          return object : ProcessorLoaderImpl(options, logger) {
-            override fun doLoadProcessors(
-              classpath: LinkedHashSet<File>,
-              classLoader: ClassLoader,
-            ): List<Processor> {
-              return LoadedProcessors(processors = processors, classLoader = classLoader).processors
+          return object : ProcessorLoader {
+            override fun loadProcessors(parentClassLoader: ClassLoader): LoadedProcessors {
+              return LoadedProcessors(processors = processors, classLoader = parentClassLoader)
             }
+
+            // The caller supplies processor instances and owns their class loaders.
+            override fun close() {}
           }
         }
       }
@@ -110,23 +106,21 @@ internal class KctKaptCompilerPluginRegistrar(
     }
 
     if (sourcesOutputDir == null || classesOutputDir == null || stubsOutputDir == null) {
-      if (mode != AptMode.WITH_COMPILATION) {
-        val nonExistentOptionName =
-          when {
-            sourcesOutputDir == null -> "Sources output directory"
-            classesOutputDir == null -> "Classes output directory"
-            stubsOutputDir == null -> "Stubs output directory"
-            else -> throw IllegalStateException()
-          }
-        val moduleName =
-          configuration.get(CommonConfigurationKeys.MODULE_NAME)
-            ?: configuration.get(JVMConfigurationKeys.MODULES).orEmpty().joinToString()
+      val nonExistentOptionName =
+        when {
+          sourcesOutputDir == null -> "Sources output directory"
+          classesOutputDir == null -> "Classes output directory"
+          stubsOutputDir == null -> "Stubs output directory"
+          else -> throw IllegalStateException()
+        }
+      val moduleName =
+        configuration.get(CommonConfigurationKeys.MODULE_NAME)
+          ?: configuration.get(JVMConfigurationKeys.MODULES).orEmpty().joinToString()
 
-        logger.warn(
-          "$nonExistentOptionName is not specified for $moduleName, skipping annotation processing"
-        )
-        abortAnalysis()
-      }
+      logger.warn(
+        "$nonExistentOptionName is not specified for $moduleName, skipping annotation processing"
+      )
+      abortAnalysis()
       return false
     }
 
