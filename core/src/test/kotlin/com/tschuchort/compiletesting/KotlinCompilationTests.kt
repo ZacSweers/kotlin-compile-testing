@@ -1219,7 +1219,7 @@ class KotlinCompilationTests {
         .apply {
           sources = listOf(SourceFile.kotlin("kSource.kt", "class KSource"))
           pluginClasspaths = emptyList()
-          languageVersion = "2.0"
+          languageVersion = "2.2"
           inheritClassPath = true
           disableStandardScript = true
         }
