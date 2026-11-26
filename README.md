@@ -82,7 +82,7 @@ assertThat(kClazz).hasDeclaredMethods("foo")
     - Provide your own instances of annotation processors directly to the compiler instead of letting the compiler create them with a service locator
     - Debug annotation processors: Since the compilation runs in the same process as your application, you can easily debug it instead of having to attach your IDE's debugger manually to the compilation process
 - Inherit classpath: Compiled sources have access to classes in your application
-- Project Jigsaw compatible: Kotlin-Compile-Testing works with JDK 8 as well as JDK 9 and later
+- Project Jigsaw compatible: Discover dependencies on the host module path
 - JDK-crosscompilation: Provide your own JDK to compile the code against, instead of using the host application's JDK. This allows you to easily test your code on all JDK versions
 - Find dependencies automatically on the host classpath
 
@@ -100,6 +100,8 @@ dependencies {
 ```
 
 ## Compatibility
+
+Running tests with Kotlin-Compile-Testing requires JDK 17 or newer.
 
 Kotlin-Compile-Testing is compatible with all _local_ compiler versions. It does not matter what compiler you use to compile your project.
 

@@ -46,10 +46,13 @@ internal object HostEnvironment {
 
   /** Returns the files on the classloader's classpath and modulepath */
   private fun getHostClasspaths(): List<File> {
-    val classGraph = ClassGraph().enableSystemJarsAndModules().removeTemporaryFilesAfterScan()
+    val classGraph = ClassGraph().enableClasspath().enableSystemModules().enableNonSystemModules()
 
     val classpaths = classGraph.classpathFiles
-    val modules = classGraph.modules.mapNotNull { it.locationFile }
+    val modules =
+      classGraph.moduleReferences.mapNotNull { module ->
+        module.location().orElse(null)?.takeIf { it.scheme == "file" }?.let(::File)
+      }
 
     return (classpaths + modules).distinctBy(File::getAbsolutePath)
   }

@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- Use the running Kotlin compiler to parse and validate CLI arguments.
+
 0.14.0
 ------
 
@@ -13,6 +15,7 @@ _2026-09-15_
 - Remove the `noCheckActual` option as it was removed in Kotlin 2.5.
 - Update to Kotlin `2.4.20`.
 - Update to KSP `2.3.12`.
+- This library now requires Java 17 or later to run.
 
 0.13.0
 ------
