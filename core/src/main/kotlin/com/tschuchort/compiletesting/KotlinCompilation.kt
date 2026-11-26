@@ -263,8 +263,8 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
   }
 
   // setup common arguments for the two kotlinc calls
-  private fun commonK2JVMArgs() =
-    commonArguments(K2JVMCompilerArguments()) { args ->
+  private fun commonK2JVMArgs(compiler: K2JVMCompiler) =
+    commonArguments(compiler) { args ->
       args.destination = classesDir.absolutePath
       args.classpath = commonClasspaths().joinToString(separator = File.pathSeparator)
 
@@ -399,8 +399,9 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
       this.kotlincArguments += kaptOptions.toPluginOptions()
     }
 
+    val compiler = K2JVMCompiler()
     val k2JvmArgs =
-      commonK2JVMArgs().also {
+      commonK2JVMArgs(compiler).also {
         it.freeArgs = sourcePaths
         it.pluginClasspaths += arrayOf(getResourcesPath())
         if (kotlinSources.isEmpty()) {
@@ -408,9 +409,7 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
         }
       }
 
-    return convertKotlinExitCode(
-      K2JVMCompiler().exec(compilerMessageCollector, Services.EMPTY, k2JvmArgs)
-    )
+    return convertKotlinExitCode(compiler.exec(compilerMessageCollector, Services.EMPTY, k2JvmArgs))
   }
 
   /** Performs the 3rd compilation step to compile Kotlin source files */
@@ -420,7 +419,8 @@ class KotlinCompilation : AbstractKotlinCompilation<K2JVMCompilerArguments>() {
         kaptKotlinGeneratedDir.listFilesRecursively() +
         kaptSourceDir.listFilesRecursively()
 
-    return compileKotlin(sources, K2JVMCompiler(), commonK2JVMArgs())
+    val compiler = K2JVMCompiler()
+    return compileKotlin(sources, compiler, commonK2JVMArgs(compiler))
   }
 
   /**

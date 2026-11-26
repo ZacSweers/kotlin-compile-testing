@@ -19,6 +19,7 @@ import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
@@ -43,6 +44,21 @@ class KotlinCompilationTests {
 
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     assertClassLoadable(result, "KSource")
+  }
+
+  @Test
+  fun `invalid kotlinc arguments report the compiler error`() {
+    val compilation =
+      defaultCompilerConfig().apply {
+        sources = listOf(SourceFile.kotlin("KSource.kt", "class KSource"))
+        kotlincArguments = listOf("-jvm-target")
+      }
+
+    assertThatIllegalArgumentException()
+      .isThrownBy { compilation.compile() }
+      .withMessageStartingWith("Errors parsing kotlinc CLI arguments:")
+      .withMessageContaining("No value passed for argument")
+      .withMessageContaining("-jvm-target")
   }
 
   @Test

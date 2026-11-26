@@ -51,8 +51,8 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
     get() = workingDir.resolve("output")
 
   // setup common arguments for the two kotlinc calls
-  private fun jsArgs() =
-    commonArguments(K2JSCompilerArguments()) { args ->
+  private fun jsArgs(compiler: K2JSCompiler) =
+    commonArguments(compiler) { args ->
       args.moduleKind = "commonjs"
       args.outputDir = outputDir.absolutePath
       args.sourceMapBaseDirs = jsClasspath().joinToString(separator = File.pathSeparator)
@@ -93,7 +93,8 @@ class KotlinJsCompilation : AbstractKotlinCompilation<K2JSCompilerArguments>() {
     */
     withSystemProperty("idea.use.native.fs.for.win", "false") {
       // step 1: compile Kotlin files
-      return makeResult(compileKotlin(sourceFiles, K2JSCompiler(), jsArgs()))
+      val compiler = K2JSCompiler()
+      return makeResult(compileKotlin(sourceFiles, compiler, jsArgs(compiler)))
     }
   }
 
