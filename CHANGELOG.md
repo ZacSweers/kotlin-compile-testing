@@ -4,7 +4,7 @@ Changelog
 **Unreleased**
 --------------
 
-- Use the running Kotlin compiler to parse and validate CLI arguments, including on Kotlin 2.5.20 dev builds.
+- Use the running Kotlin compiler to parse and validate CLI arguments.
 
 0.14.0
 ------
