@@ -12,8 +12,6 @@ import okio.Buffer
 import org.jetbrains.kotlin.cli.common.CLICompiler
 import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
-import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
-import org.jetbrains.kotlin.cli.common.arguments.validateArguments
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
@@ -122,7 +120,8 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
   protected val sourcesDir
     get() = workingDir.resolve("sources")
 
-  protected fun commonArguments(args: A, configuration: (args: A) -> Unit): A {
+  protected fun commonArguments(compiler: CLICompiler<A>, configuration: (args: A) -> Unit): A {
+    val args = compiler.createArguments()
     args.pluginClasspaths = pluginClasspaths.map(File::getAbsolutePath).toTypedArray()
 
     args.verbose = verbose
@@ -170,10 +169,10 @@ abstract class AbstractKotlinCompilation<A : CommonCompilerArguments> internal c
 
     /* Parse extra CLI arguments that are given as strings so users can specify arguments that are not yet
     implemented here as well-typed properties. */
-    parseCommandLineArguments(kotlincArguments, args)
-
-    validateArguments(args.errors)?.let {
-      throw IllegalArgumentException("Errors parsing kotlinc CLI arguments:\n$it")
+    try {
+      compiler.parseArguments(kotlincArguments.toTypedArray(), args)
+    } catch (e: IllegalArgumentException) {
+      throw IllegalArgumentException("Errors parsing kotlinc CLI arguments:\n${e.message}", e)
     }
 
     return args

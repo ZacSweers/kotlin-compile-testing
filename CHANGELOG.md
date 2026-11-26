@@ -4,6 +4,8 @@ Changelog
 **Unreleased**
 --------------
 
+- Use the running Kotlin compiler to parse and validate CLI arguments.
+
 0.14.0
 ------
 
