@@ -40,5 +40,7 @@ fun assertClassLoadable(compileResult: JvmCompilationResult, className: String):
  */
 fun classpathOf(dependency: String): File {
   val regex = Regex(".*$dependency\\.jar")
-  return ClassGraph().classpathFiles.first { classpath -> classpath.name.matches(regex) }
+  return ClassGraph().enableClasspath().classpathFiles.first { classpath ->
+    classpath.name.matches(regex)
+  }
 }
