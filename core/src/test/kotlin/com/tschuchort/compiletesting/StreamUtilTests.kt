@@ -1,9 +1,8 @@
 package com.tschuchort.compiletesting
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import java.io.OutputStream
+import java.io.ByteArrayOutputStream
 import java.io.PrintStream
+import kotlin.test.assertEquals
 import okio.Buffer
 import org.assertj.core.api.Assertions
 import org.junit.Test
@@ -25,23 +24,39 @@ class StreamUtilTests {
 
   @Test
   fun `TeeOutPutStream flushes all streams`() {
-    val str1 = mock<OutputStream>()
-    val str2 = mock<OutputStream>()
+    val str1 = RecordingOutputStream()
+    val str2 = RecordingOutputStream()
 
     TeeOutputStream(str1, str2).flush()
 
-    verify(str1).flush()
-    verify(str2).flush()
+    assertEquals(1, str1.flushCount)
+    assertEquals(1, str2.flushCount)
   }
 
   @Test
   fun `TeeOutPutStream closes all streams`() {
-    val str1 = mock<OutputStream>()
-    val str2 = mock<OutputStream>()
+    val str1 = RecordingOutputStream()
+    val str2 = RecordingOutputStream()
 
     TeeOutputStream(str1, str2).close()
 
-    verify(str1).close()
-    verify(str2).close()
+    assertEquals(1, str1.closeCount)
+    assertEquals(1, str2.closeCount)
+  }
+
+  private class RecordingOutputStream : ByteArrayOutputStream() {
+    var flushCount = 0
+      private set
+
+    var closeCount = 0
+      private set
+
+    override fun flush() {
+      flushCount++
+    }
+
+    override fun close() {
+      closeCount++
+    }
   }
 }
