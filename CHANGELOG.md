@@ -4,6 +4,11 @@ Changelog
 **Unreleased**
 --------------
 
+0.15.0
+------
+
+_2026-11-26_
+
 - Use the running Kotlin compiler to parse and validate CLI arguments.
 - This library now requires Java 17 or later to run.
 - Update to KSP `2.3.14`.
