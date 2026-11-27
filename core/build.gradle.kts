@@ -26,6 +26,7 @@ tasks
 
 val testAnnotations = configurations.register("testAnnotations")
 val testProcessor = configurations.register("testProcessor")
+val mockitoAgent = configurations.resolvable("mockitoAgent") { isTransitive = false }
 
 dependencies {
   ksp(libs.autoService.ksp)
@@ -49,10 +50,19 @@ dependencies {
 
   testAnnotations(projects.testAnnotations)
   testProcessor(projects.testProcessor)
+  add(mockitoAgent.name, libs.mockito)
 }
 
 tasks.test {
   maxParallelForks = Runtime.getRuntime().availableProcessors() * 2
+
+  jvmArgumentProviders.add(
+    objects.newInstance<MockitoAgentArguments>().apply {
+      agentJar.from(mockitoAgent)
+    }
+  )
+  // Mockito appends to the bootstrap classpath, which prevents application class-data sharing.
+  jvmArgs("-Xshare:off")
 
   systemProperty("testAnnotationsClasspath", testAnnotations.get().asPath)
   systemProperty("testProcessorClasspath", testProcessor.get().asPath)
@@ -68,3 +78,9 @@ tasks.withType<KotlinCompile>().configureEach {
 }
 
 tasks.withType<Jar>().configureEach { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+
+abstract class MockitoAgentArguments : CommandLineArgumentProvider {
+  @get:Classpath abstract val agentJar: ConfigurableFileCollection
+
+  override fun asArguments(): Iterable<String> = listOf("-javaagent:${agentJar.singleFile}")
+}

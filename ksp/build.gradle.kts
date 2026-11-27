@@ -72,7 +72,6 @@ dependencies {
   testImplementation(libs.kotlinpoet.ksp)
   testImplementation(libs.autoService) { because("To test accessing inherited classpath symbols") }
   testImplementation(libs.kotlin.junit)
-  testImplementation(libs.mockito)
-  testImplementation(libs.mockitoKotlin)
   testImplementation(libs.assertJ)
+  testRuntimeOnly(libs.kotlin.scriptingCompiler)
 }
