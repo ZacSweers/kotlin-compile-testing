@@ -43,8 +43,6 @@ dependencies {
 
   testImplementation(projects.testProcessor)
   testImplementation(libs.kotlin.junit)
-  testImplementation(libs.mockito)
-  testImplementation(libs.mockitoKotlin)
   testImplementation(libs.assertJ)
 
   testAnnotations(projects.testAnnotations)
@@ -67,4 +65,6 @@ tasks.withType<KotlinCompile>().configureEach {
   }
 }
 
-tasks.withType<Jar>().configureEach { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+tasks.withType<Jar>().configureEach {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

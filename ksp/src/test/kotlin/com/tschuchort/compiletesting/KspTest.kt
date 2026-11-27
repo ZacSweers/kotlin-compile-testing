@@ -4,13 +4,9 @@ import com.google.auto.service.AutoService
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.inOrder
-import com.nhaarman.mockitokotlin2.mock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.toAnnotationSpec
@@ -26,7 +22,6 @@ import kotlin.text.Typography.ellipsis
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.junit.Test
-import org.mockito.Mockito.`when`
 
 class KspTest {
   companion object {
@@ -58,15 +53,11 @@ class KspTest {
 
   @Test
   fun failedKspTest() {
-    val instance = mock<SymbolProcessor>()
-    val providerInstance = mock<SymbolProcessorProvider>()
-    `when`(providerInstance.create(any())).thenReturn(instance)
-    `when`(instance.process(any())).thenThrow(RuntimeException("intentional fail"))
     val result =
       newCompilation()
         .apply {
           sources = listOf(DUMMY_KOTLIN_SRC)
-          symbolProcessorProviders += providerInstance
+          symbolProcessorProviders += simpleProcessor { _, _ -> error("intentional fail") }
         }
         .compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.INTERNAL_ERROR)
@@ -75,42 +66,37 @@ class KspTest {
 
   @Test
   fun allProcessorMethodsAreCalled() {
-    val instance = mock<SymbolProcessor>()
-    val providerInstance = mock<SymbolProcessorProvider>()
-    `when`(providerInstance.create(any())).thenReturn(instance)
-    val result =
-      newCompilation()
-        .apply {
-          sources = listOf(DUMMY_KOTLIN_SRC)
-          symbolProcessorProviders += providerInstance
-        }
-        .compile()
-    assertThat(result.exitCode).isEqualTo(ExitCode.OK)
-    providerInstance.inOrder { verify().create(any()) }
-    instance.inOrder {
-      verify().process(any())
-      verify().finish()
-    }
+    assertProcessorLifecycle(DUMMY_KOTLIN_SRC)
   }
 
   @Test
   fun allProcessorMethodsAreCalledWhenOnlyJavaFilesArePresent() {
-    val instance = mock<SymbolProcessor>()
-    val providerInstance = mock<SymbolProcessorProvider>()
-    `when`(providerInstance.create(any())).thenReturn(instance)
+    assertProcessorLifecycle(DUMMY_JAVA_SRC)
+  }
+
+  private fun assertProcessorLifecycle(source: SourceFile) {
+    val calls = mutableListOf<String>()
     val result =
       newCompilation()
         .apply {
-          sources = listOf(DUMMY_JAVA_SRC)
-          symbolProcessorProviders += providerInstance
+          sources = listOf(source)
+          symbolProcessorProviders += SymbolProcessorProvider { env ->
+            calls += "create"
+            object : AbstractTestSymbolProcessor(env.codeGenerator) {
+              override fun process(resolver: Resolver): List<KSAnnotated> {
+                calls += "process"
+                return emptyList()
+              }
+
+              override fun finish() {
+                calls += "finish"
+              }
+            }
+          }
         }
         .compile()
-    assertThat(result.exitCode).isEqualTo(ExitCode.OK)
-    providerInstance.inOrder { verify().create(any()) }
-    instance.inOrder {
-      verify().process(any())
-      verify().finish()
-    }
+    assertThat(result.exitCode).withFailMessage(result.messages).isEqualTo(ExitCode.OK)
+    assertThat(calls).containsExactly("create", "process", "finish")
   }
 
   @Test
@@ -219,8 +205,8 @@ class KspTest {
 
   @Test
   fun readProcessors() {
-    val instance1 = mock<SymbolProcessorProvider>()
-    val instance2 = mock<SymbolProcessorProvider>()
+    val instance1 = simpleProcessor { _, _ -> }
+    val instance2 = simpleProcessor { _, _ -> }
     newCompilation().apply {
       symbolProcessorProviders += instance1
       assertThat(symbolProcessorProviders).containsExactly(instance1)
@@ -308,7 +294,7 @@ class KspTest {
       java(
         "JavaSubject.java",
         """
-            import com.tschuchort.compiletesting.InheritedClasspathClass;
+            import ${InheritedClasspathClass::class.qualifiedName};
 
             @${AutoService::class.qualifiedName}(Runnable.class)
             class JavaSubject {
@@ -324,7 +310,7 @@ class KspTest {
         "KotlinSubject.kt",
         """
             import java.lang.Runnable
-            import com.tschuchort.compiletesting.InheritedClasspathClass
+            import ${InheritedClasspathClass::class.qualifiedName}
 
             @${AutoService::class.qualifiedName}(Runnable::class)
             class KotlinSubject {
@@ -352,7 +338,10 @@ class KspTest {
           }
         }
       }
-    compilation.compile()
+    val compilationResult = compilation.compile()
+    assertThat(compilationResult.exitCode)
+      .withFailMessage(compilationResult.messages)
+      .isEqualTo(ExitCode.OK)
     assertThat(result).containsExactlyInAnyOrder("JavaSubject", "KotlinSubject")
   }
 

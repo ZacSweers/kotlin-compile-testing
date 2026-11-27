@@ -1,19 +1,9 @@
 package com.tschuchort.compiletesting
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argWhere
-import com.nhaarman.mockitokotlin2.atLeastOnce
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
-import com.tschuchort.compiletesting.MockitoAdditionalMatchersKotlin.Companion.not
 import java.io.File
+import kotlin.test.assertEquals
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
-import org.jetbrains.kotlin.compiler.plugin.CliOption
-import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -150,13 +140,7 @@ fun main(addKotlincArgs: Array<String>) {
           .trimIndent(),
       )
 
-    val cliProcessor =
-      spy(
-        object : CommandLineProcessor {
-          override val pluginId = "myPluginId"
-          override val pluginOptions = listOf(CliOption("test_option_name", "", ""))
-        }
-      )
+    val cliProcessor = RecordingCommandLineProcessor("myPluginId", "test_option_name")
 
     val result =
       defaultJsCompilerConfig()
@@ -170,23 +154,6 @@ fun main(addKotlincArgs: Array<String>) {
 
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
 
-    verify(cliProcessor, atLeastOnce())
-      .processOption(
-        argWhere<AbstractCliOption> { it.optionName == "test_option_name" },
-        eq("test_value"),
-        any(),
-      )
-    verify(cliProcessor, never())
-      .processOption(
-        argWhere<AbstractCliOption> { it.optionName == "test_option_name" },
-        not(eq("test_value")),
-        any(),
-      )
-    verify(cliProcessor, never())
-      .processOption(
-        argWhere<AbstractCliOption> { it.optionName != "test_option_name" },
-        any(),
-        any(),
-      )
+    assertEquals(setOf("test_option_name" to "test_value"), cliProcessor.receivedOptions.toSet())
   }
 }
